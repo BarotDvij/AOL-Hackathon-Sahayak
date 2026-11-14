@@ -31,3 +31,5 @@ use the editor.
 
 - Journey stage, reason, suggestion and message logic lives as plain functions in `src/lib/journey/` (thresholds in `config.ts`); UI only reads it via the `JourneyProvider` store — so it can move to a database later without touching screens.
 - Phase 1 data is in-memory sample data with dates relative to today; no sending ever happens without a coordinator's Approve.
+- Coordinator screens are one route per section (dashboard, review, activity) inside `AppShell`; add a section as a new route plus a `NAV` entry, not as a tab inside an existing page, so every section keeps its own URL.
+- Anything a participant could see is read through the participant-scoped slice (`mySlice` / `useMe`); coordinator-wide data stays behind `useJourney`, so one person can never see another's records.
