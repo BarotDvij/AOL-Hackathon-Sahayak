@@ -67,6 +67,7 @@ export function SahayakTag({ className }: { className?: string }) {
  */
 export function SahayakLink({ to, className, children }: { to: SahayakLinkTo; className?: string; children: ReactNode }) {
   switch (to) {
+    case "/impact": return <Link to="/impact" className={className}>{children}</Link>;
     case "/inbox": return <Link to="/inbox" className={className}>{children}</Link>;
     case "/review": return <Link to="/review" className={className}>{children}</Link>;
     case "/participants": return <Link to="/participants" className={className}>{children}</Link>;

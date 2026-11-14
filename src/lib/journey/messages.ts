@@ -18,6 +18,12 @@ export const MAX_EMAIL_WORDS = 120;
 /** Draft a warm, simple message. Uses only the step's own title, date, place and link. */
 export function draftMessage(p: Participant, stage: StageId, step: NextStep, channel: Channel): string {
   const me = C.coordinatorName;
+  if (p.language === "French") {
+    const opener = stage === "quiet" || stage === "dormant" ? "Nous pensons à vous et espérons que vous allez bien." : "J’espère que votre pratique vous apporte du bien-être.";
+    const invite = step.type === "check-in" ? "Comment se passe votre pratique ? Répondez quand cela vous convient, sans aucune pression." : `Vous seriez bienvenue à ${step.title}${step.startDate ? ` le ${formatLong(step.startDate)}` : ""}. Sans aucune pression.${step.link ? ` Voici le lien : ${step.link}` : ""}`;
+    const body = `Bonjour ${p.firstName}, c’est ${me} du centre de ${p.city}. ${opener} ${invite} Chaleureusement, ${me}`;
+    return channel === "email" ? `Objet : ${step.type === "check-in" ? "Un petit bonjour" : step.shortTitle}\n\n${body}` : body;
+  }
   const centre = p.city === "Online" ? "Art of Living online community" : `${p.city} centre`;
   const hello = `Hi ${p.firstName}, it's ${me} from the ${centre}.`;
   let invite: string;

@@ -72,7 +72,7 @@ export interface SahayakPerson {
 export interface UpcomingItem { step: NextStep; suggestedFor: number }
 
 /** Every page Sahayak is allowed to point the coordinator at. */
-export type SahayakLinkTo = "/" | "/inbox" | "/review" | "/participants" | "/activity" | "/sahayak";
+export type SahayakLinkTo = "/" | "/inbox" | "/review" | "/participants" | "/activity" | "/sahayak" | "/impact";
 
 export interface BriefItem { id: string; text: string; why: string; to: SahayakLinkTo; actionLabel: string }
 
