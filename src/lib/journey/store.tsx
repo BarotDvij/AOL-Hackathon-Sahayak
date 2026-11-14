@@ -126,7 +126,7 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
   const [replies, setReplies] = useState<ParticipantReply[]>([]);
   const [activity, setActivity] = useState<ActivityEntry[]>([]);
   const [city, setCity] = useState("all");
-  const [meId, setMeId] = useState<string | null>(null);
+  const [meId, setMeId] = useState<string | null>(TEMP_PARTICIPANT_ID);
   const [sahayak, setSahayak] = useState<SahayakState>(SAHAYAK_DEFAULTS);
   const [inbox, setInbox] = useState<InboxMessage[]>(() => buildInbox());
   const seq = useRef(0);

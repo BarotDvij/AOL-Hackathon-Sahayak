@@ -11,18 +11,16 @@ const DEMO_UPCOMING = participantEvents(TEMP_PARTICIPANT_ID, "https://demo.inval
   calendarUrl: event.calendarUrl ? new URL(event.calendarUrl).pathname : null,
 }));
 
-function makeContextValue() {
-  return null as unknown as {
-    data: NonNullable<ReturnType<typeof useDemoData>>;
-    logToday: () => void;
-    showInterest: (eventId: string) => void;
-    saveGoal: (period: "quarter" | "year", text: string) => void;
-    respond: (messageId: string, reply: "join" | "not now") => void;
-    saveAnswers: (answers: OnboardingAnswers) => void;
-  };
+interface DemoParticipantValue {
+  data: NonNullable<ReturnType<typeof useDemoData>>;
+  logToday: () => void;
+  showInterest: (eventId: string) => void;
+  saveGoal: (period: "quarter" | "year", text: string) => void;
+  respond: (messageId: string, reply: "join" | "not now") => void;
+  saveAnswers: (answers: OnboardingAnswers) => void;
 }
 
-const DemoParticipantContext = createContext<ReturnType<typeof makeContextValue> | null>(null);
+const DemoParticipantContext = createContext<DemoParticipantValue | null>(null);
 
 function useDemoData(
   me: ReturnType<typeof useJourney>["me"],

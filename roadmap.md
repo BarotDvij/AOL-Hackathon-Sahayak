@@ -17,7 +17,7 @@
 - Visual restyle to the hackathon palette (navy / purple / sun orange / sun yellow, brand gradient in the dashboard banner and sidebar logo area only) and typography (Lora titles, Poppins headings and numbers, Inter body). Layout unchanged.
 
 ## Done
-- Participant Sahayak: signed-in participant app with Home, My journey, Messages and Settings; shared journey core; six-question onboarding in-app and through MCP; saved practice, interests, goals, approved messages and via Muse summaries; optional OAuth Muse connection.
+- Participant Sahayak: no-login participant demo using Priya, with Home, My journey, Messages and Settings; shared journey core; six-question onboarding in-app and through MCP; local demo practice, interests, goals and replies; optional OAuth Muse connection remains available outside demo mode.
 - Participant MCP: eleven tools, stateless streamable HTTP at `/mcp`, OAuth client-claim enforcement, caller-scoped RLS, shared audit helper and a reserved hashed-key table for future machine access.
 - Verified: 45 journey/participant tests plus audit tests, clean typecheck and builds, real participant flow after reload, RLS isolation, safe friendly wording, nine database-backed tool handlers with one audit row each, calendar downloads, coordinator summary display and approval persistence. External OAuth handshake remains a post-publish check.
 
@@ -25,4 +25,4 @@
 - External MCP client connection needs one final check after publishing; the sandbox's hosted login bridge prevented completing that handshake locally.
 - The floating "Ask Sahayak" button sits over the bottom-right of the participants table while scrolling (the spec asked for bottom right); move or shrink it if it gets in the way.
 - Catalog dates, course names and centre cities are placeholders; real ones needed before coordinators use it.
-- Coordinator demo state resets on reload; participant records now persist in Lovable Cloud.
+- Coordinator and no-login participant demo state reset on reload; authenticated participant/MCP records remain protected in Lovable Cloud for later account-based use.
