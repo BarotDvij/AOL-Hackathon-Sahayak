@@ -1,7 +1,7 @@
 # Roadmap
 
-## In progress
-- Move weekly plan to Weekly progress; add weekly/monthly/annual goals card left of the existing path and goals.
+## Done
+- Weekly progress now owns the weekly plan and daily completion controls. My journey shows weekly/monthly/annual goals left of Your path and Your goals, with weekly goals available in the goal selector and existing quarterly goals preserved. Verified saved goal readback, completion across navigation, desktop/phone layouts and 10 tests; demo state resets on reload.
 
 ## Done
 - Removed Practice, play controls and all activity guides. My journey now offers one Mark as done per day with weekly progress; verified independent days, navigation readback, phone layout and 12 tests. Demo marks reset on reload.
