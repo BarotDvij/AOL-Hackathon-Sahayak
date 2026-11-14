@@ -1,14 +1,14 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react";
 import { buildCatalog } from "./catalog";
-import { JOURNEY_CONFIG } from "./config";
-import { isoDaysFrom } from "./dates";
+import { JOURNEY_CONFIG as C, STAGE_PRIORITY } from "./config";
+import { daysSince, isoDaysFrom } from "./dates";
 import { PICKER_STAGES, demoSeed } from "./demo-seed";
 import { draftMessage } from "./messages";
 import { mySlice, participantStage, type MySlice } from "./participant";
 import { buildSampleData } from "./sample-data";
 import { computeStage, explainReasons } from "./stages";
 import { buildSuggestion } from "./suggestions";
-import type { Contact, History, Message, NextStep, Participant, ParticipantReply, PracticeLog, StageId, Suggestion } from "./types";
+import type { ActivityEntry, Channel, Contact, History, Message, NextStep, Participant, ParticipantReply, PracticeLog, StageId, Suggestion } from "./types";
 
 export interface ParticipantView {
   participant: Participant;
@@ -16,6 +16,12 @@ export interface ParticipantView {
   stage: StageId;
   why: string;
   suggestion: Suggestion | null;
+}
+
+export interface Summary {
+  total: number;
+  waiting: number;
+  sentThisWeek: number;
 }
 
 interface Store {
@@ -26,12 +32,20 @@ interface Store {
   practice: PracticeLog[];
   replies: ParticipantReply[];
   pickerIds: string[];
+  /** Dashboard figures: how many people, how many drafts waiting, how many messages out this week. */
+  summary: Summary;
+  /** People who still need a follow-up, drifting-away first. */
+  needsFollowUp: ParticipantView[];
+  /** What the coordinator has approved, edited or skipped, newest first. */
+  activity: ActivityEntry[];
   city: string; setCity: (c: string) => void;
   meId: string | null; setMeId: (id: string | null) => void;
   approve: (id: string, message: string) => void;
   skip: (id: string, reason: string) => void;
   useAlternate: (id: string) => void;
   editMessage: (id: string, message: string) => void;
+  setChannel: (id: string, channel: Channel) => void;
+  chooseStep: (participantId: string, stepId: string) => void;
   /** Participant-scoped data and actions. Only exposes the signed-in demo participant. */
   me: MySlice | null;
   logPractice: (minutes?: number | null) => void;
@@ -43,6 +57,18 @@ const Ctx = createContext<Store | null>(null);
 
 const historyFor = (id: string, courses: History["courses"], events: History["events"], contacts: Contact[]): History =>
   ({ courses: courses.filter((c) => c.participantId === id), events: events.filter((e) => e.participantId === id), contacts: contacts.filter((c) => c.participantId === id) });
+
+/** Days since the last message out to this person; null if we never wrote to them. */
+export function daysSinceLastContact(h: History): number | null {
+  const last = [...h.contacts].sort((a, b) => b.date.localeCompare(a.date))[0];
+  return last ? daysSince(last.date) : null;
+}
+/** People we never wrote to wait at the front of the queue. */
+const daysSinceContact = (v: ParticipantView) => daysSinceLastContact(v.history) ?? 9999;
+const priorityRank = (stage: StageId) => {
+  const i = STAGE_PRIORITY.indexOf(stage);
+  return i === -1 ? STAGE_PRIORITY.length : i;
+};
 
 function initial() {
   const data = buildSampleData();
@@ -70,8 +96,10 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
   const [practice, setPractice] = useState(seed.practice);
   const [messages, setMessages] = useState<Message[]>(seed.messages);
   const [replies, setReplies] = useState<ParticipantReply[]>([]);
+  const [activity, setActivity] = useState<ActivityEntry[]>([]);
   const [city, setCity] = useState("all");
   const [meId, setMeId] = useState<string | null>(null);
+  const seq = useRef(0);
   const catalog = useMemo(() => new Map(catalogList.map((s) => [s.id, s])), [catalogList]);
 
   const views = useMemo<ParticipantView[]>(() => data.participants.map((p) => {
@@ -82,7 +110,23 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
 
   const me = useMemo(() => meId ? mySlice(meId, { participants: data.participants, history: (id) => historyFor(id, data.courses, data.events, contacts), practice, messages }) : null, [meId, data, contacts, practice, messages]);
 
+  const summary = useMemo<Summary>(() => ({
+    total: data.participants.length,
+    waiting: suggestions.filter((s) => s.status === "pending").length,
+    sentThisWeek: contacts.filter((c) => c.direction === "out" && daysSince(c.date) < C.sentThisWeekDays).length,
+  }), [data, suggestions, contacts]);
+
+  const needsFollowUp = useMemo<ParticipantView[]>(() => views
+    .filter((v) => v.suggestion?.status === "pending")
+    .sort((a, b) => priorityRank(a.stage) - priorityRank(b.stage) || daysSinceContact(b) - daysSinceContact(a)),
+  [views]);
+
   const update = useCallback((id: string, fn: (s: Suggestion) => Suggestion) => setSuggestions((all) => all.map((s) => (s.id === id ? fn(s) : s))), []);
+  const nameOf = (participantId: string) => data.participants.find((x) => x.id === participantId)?.firstName ?? "participant";
+  const log = useCallback((kind: ActivityEntry["kind"], participantId: string, detail: string) => {
+    seq.current += 1;
+    setActivity((a) => [{ id: `a${seq.current}`, at: new Date().toISOString(), kind, participantId, detail }, ...a]);
+  }, []);
   const incoming = (participantId: string, kind: ParticipantReply["kind"], about: string, nextStepId?: string) => {
     const p = data.participants.find((x) => x.id === participantId)!;
     setContacts((c) => [...c, { participantId, channel: p.preferredChannel ?? "email", direction: "in", date: isoDaysFrom(0), outcome: kind === "not now" ? "declined" : "replied", ...(nextStepId ? { nextStepId } : {}) }]);
@@ -91,23 +135,55 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
 
   const store: Store = {
     views, catalog, catalogList, practice, replies, pickerIds, city, setCity, meId, setMeId, me,
+    summary, needsFollowUp, activity,
     pending: suggestions.filter((s) => s.status === "pending"),
-    editMessage: (id, message) => update(id, (s) => ({ ...s, editedMessage: message })),
+    editMessage: (id, message) => {
+      const s = suggestions.find((x) => x.id === id);
+      if (!s) return;
+      update(id, (x) => ({ ...x, editedMessage: message }));
+      log("edited", s.participantId, `Edited the message for ${nameOf(s.participantId)}`);
+    },
     approve: (id, message) => {
       const s = suggestions.find((x) => x.id === id);
       if (!s) return;
       const now = new Date().toISOString();
-      update(id, (x) => ({ ...x, editedMessage: message, status: "approved", reviewedBy: JOURNEY_CONFIG.coordinatorName, reviewedAt: now }));
+      const step = catalog.get(s.nextStepId);
+      update(id, (x) => ({ ...x, editedMessage: message, status: "approved", reviewedBy: C.coordinatorName, reviewedAt: now }));
       setContacts((c) => [...c, { participantId: s.participantId, channel: s.channel, direction: "out", date: isoDaysFrom(0), outcome: "no reply", nextStepId: s.nextStepId }]);
-      setMessages((m) => [...m, { id: `msg-${s.id}`, participantId: s.participantId, suggestionId: s.id, coordinatorName: JOURNEY_CONFIG.coordinatorName, text: message, sentAt: now, reply: null }]);
+      setMessages((m) => [...m, { id: `msg-${s.id}`, participantId: s.participantId, suggestionId: s.id, coordinatorName: C.coordinatorName, text: message, sentAt: now, reply: null }]);
+      log("approved", s.participantId, `Approved ${step?.shortTitle ?? "a next step"} for ${nameOf(s.participantId)} · ${s.channel}`);
     },
-    skip: (id, reason) => update(id, (s) => ({ ...s, status: "skipped", skipReason: reason, reviewedBy: JOURNEY_CONFIG.coordinatorName, reviewedAt: new Date().toISOString() })),
+    skip: (id, reason) => {
+      const s = suggestions.find((x) => x.id === id);
+      if (!s) return;
+      update(id, (x) => ({ ...x, status: "skipped", skipReason: reason, reviewedBy: C.coordinatorName, reviewedAt: new Date().toISOString() }));
+      log("skipped", s.participantId, `Skipped ${nameOf(s.participantId)}: ${reason}`);
+    },
     useAlternate: (id) => update(id, (s) => {
       if (!s.alternateNextStepId) return s;
       const v = views.find((x) => x.participant.id === s.participantId)!;
       const alt = catalog.get(s.alternateNextStepId)!;
-      return { ...s, nextStepId: alt.id, alternateNextStepId: s.nextStepId, editedMessage: null, draftMessage: draftMessage(v.participant, v.stage, alt, s.channel) };
+      return { ...s, nextStepId: alt.id, alternateNextStepId: s.nextStepId, editedMessage: null, lowData: false, draftMessage: draftMessage(v.participant, v.stage, alt, s.channel) };
     }),
+    setChannel: (id, channel) => {
+      const s = suggestions.find((x) => x.id === id);
+      if (!s || s.channel === channel) return;
+      const v = views.find((x) => x.participant.id === s.participantId);
+      update(id, (x) => {
+        const step = catalog.get(x.nextStepId);
+        if (!v || !step) return { ...x, channel };
+        return { ...x, channel, draftMessage: draftMessage(v.participant, v.stage, step, channel) };
+      });
+    },
+    chooseStep: (participantId, stepId) => {
+      const v = views.find((x) => x.participant.id === participantId);
+      const s = suggestions.find((x) => x.participantId === participantId);
+      const step = catalog.get(stepId);
+      if (!v || !s || !step) return;
+      setSuggestions((all) => all.map((x) => (x.participantId === participantId
+        ? { ...x, nextStepId: stepId, alternateNextStepId: x.nextStepId === stepId ? x.alternateNextStepId : x.nextStepId, editedMessage: null, lowData: false, draftMessage: draftMessage(v.participant, v.stage, step, x.channel) }
+        : x)));
+    },
     logPractice: (minutes = null) => {
       if (!meId) return;
       const d = isoDaysFrom(0);

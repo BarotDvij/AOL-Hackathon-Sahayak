@@ -54,6 +54,16 @@ export interface Suggestion {
   skipReason: string | null;
   reviewedBy: string | null;
   reviewedAt: string | null;
+  /** True when the participant has so little on record that only a check-in is honest. */
+  lowData: boolean;
+}
+/** One line in the coordinator's activity history: what happened, to whom, when. */
+export interface ActivityEntry {
+  id: string;
+  at: string;
+  kind: "approved" | "edited" | "skipped";
+  participantId: string;
+  detail: string;
 }
 export interface History {
   courses: CourseCompletion[];

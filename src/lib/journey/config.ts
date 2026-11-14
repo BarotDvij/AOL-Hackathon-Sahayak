@@ -15,9 +15,13 @@ export const JOURNEY_CONFIG = {
   dormantDays: 180,
   suggestionWindowDays: 45,
   startsSoonDays: 14,
+  sentThisWeekDays: 7,
   coordinatorName: "Meera",
   skyCourseName: "SKY Happiness Program",
 } as const;
+
+/** Follow-up priority: people drifting away first, then everyone else. Paused people are never listed. */
+export const STAGE_PRIORITY: StageId[] = ["quiet", "dormant", "new", "building", "active", "serving"];
 
 export const SCORE_WEIGHTS = { stageFit: 3, statedInterest: 2, startsSoon: 1.5, nearby: 1, alreadyDeclined: -2 } as const;
 
