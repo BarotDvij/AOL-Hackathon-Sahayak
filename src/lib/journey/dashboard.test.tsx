@@ -10,7 +10,7 @@ import { JourneyProvider, useJourney } from "./store";
 import { buildSuggestion, hasEnoughInfo, LOW_DATA_WHY } from "./suggestions";
 import type { History, Participant } from "./types";
 
-const base: Participant = { id: "x", firstName: "Test", lastName: "P", city: "Waterloo", language: "English", email: null, phone: "1", preferredChannel: null, doNotContact: false, sevaRole: null, interests: [] };
+const base: Participant = { id: "x", firstName: "Test", lastName: "P", age: 30, city: "Waterloo", language: "English", email: null, phone: "1", preferredChannel: null, doNotContact: false, sevaRole: null, interests: [] };
 const sky = (d: number) => ({ participantId: "x", courseName: "SKY Happiness Program", completedOn: daysAgoIso(d) });
 const h = (x: Partial<History>): History => ({ courses: [], events: [], contacts: [], ...x });
 
