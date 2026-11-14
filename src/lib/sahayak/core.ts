@@ -84,8 +84,23 @@ export function friendlyStageFor(bundle: ParticipantBundle) {
 const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 const WEEKENDS = ["Saturday", "Sunday"];
 
+/** Catalog-based reminders only; never instructions for performing a technique. */
+export function practiceReminders(history: Pick<History, "courses"> | undefined, programs: Program[]) {
+  if (!history) return [] as string[];
+  const completed = new Set(history.courses.map((course) => canonicalCourseName(course.courseName)));
+  const reminders: string[] = [];
+  if (completed.has(PART_1)) reminders.push("SKY once a day", "One weekly group follow-up");
+  if (completed.has(SAHAJ)) reminders.push("Sahaj Samadhi for 20 minutes, twice a day");
+  const latestOther = [...history.courses]
+    .sort((a, b) => b.completedOn.localeCompare(a.completedOn))
+    .map((course) => programs.find((program) => program.name === canonicalCourseName(course.courseName)))
+    .find((program) => program && program.name !== PART_1 && program.name !== SAHAJ && program.home_practice !== "Not stated");
+  if (latestOther) reminders.push(latestOther.home_practice);
+  return reminders;
+}
+
 /** A realistic, gentle schedule derived only from saved answers and the shared stage. */
-export function recommendedSchedule(answers: OnboardingAnswers, stage: StageId) {
+export function recommendedSchedule(answers: OnboardingAnswers, stage: StageId, history?: Pick<History, "courses">, programs: Program[] = []) {
   const rhythm = answers.practice_rhythm ?? (stage === "new" ? "weekly" : "occasionally");
   let days = rhythm === "daily" ? [...WEEKDAYS, ...WEEKENDS] : rhythm === "weekly" ? ["Tuesday", "Thursday", "Saturday"] : ["Saturday"];
   if (answers.practice_days === "weekdays") days = days.filter((d) => WEEKDAYS.includes(d));
@@ -101,24 +116,30 @@ export function recommendedSchedule(answers: OnboardingAnswers, stage: StageId) 
     days,
     time,
     minutes,
+    reminders: practiceReminders(history, programs),
+    safetyNote: "Reminders and encouragement only. Techniques are taught by certified teachers.",
     note: answers.support === "none" ? "A suggestion to keep for yourself — no reminders." : "Start gently. You can change this rhythm whenever you like.",
   };
 }
 
-export function participantEvents(participantId: string, origin: string, max = 3) {
+export function participantEvents(participantId: string, origin: string, max = 3, catalog = buildCatalog(), options: { prefersOnline?: boolean } = {}) {
   const bundle = participantBundle(participantId);
   if (!bundle) return [];
-  return comingUpFor(bundle.participant, bundle.history, buildCatalog(), max).map((step) => eventDto(step, origin));
+  return comingUpFor(bundle.participant, bundle.history, catalog, max, today(), options).map((step) => eventDto(step, origin));
 }
 
 export function eventDto(step: NextStep, origin: string) {
+  const online = step.program ? step.program.online_option === "yes" || step.program.online_option === "some_regions" : step.city === "Online";
   return {
     id: step.id,
     title: step.shortTitle,
     description: step.title,
     startDate: step.startDate ?? null,
-    city: step.city,
-    online: step.city === "Online",
+    suggestedTiming: step.program?.suggested_timing ?? null,
+    needsLocalCheck: step.program?.needs_local_check ?? false,
+    level: step.program?.level ?? null,
+    city: step.program ? (online ? "Online availability" : "Local centre") : step.city,
+    online,
     link: step.link || null,
     calendarUrl: step.startDate ? new URL(`/api/public/calendar/${encodeURIComponent(step.id)}`, origin).toString() : null,
   };
