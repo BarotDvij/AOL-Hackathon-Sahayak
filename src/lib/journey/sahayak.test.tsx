@@ -66,7 +66,9 @@ describe("Sahayak", () => {
     const get = openOn();
     const before = get().reminders.map((r) => r.id);
     expect(before.length).toBeGreaterThanOrEqual(2);
-    const [snoozed, dropped, ...rest] = before;
+    const snoozed = before[0]!;
+    const dropped = before[1]!;
+    const rest = before.slice(2);
 
     act(() => { get().snoozeReminder(snoozed, 3); get().dismissReminder(dropped); });
 
