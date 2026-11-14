@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatFull } from "@/lib/journey/dates";
-import { cn } from "@/lib/utils";
+import { WeeklyPracticePlan } from "@/components/participant/WeeklyPracticePlan";
 import { answerLabel, GOAL_QUESTION, type GoalPeriod } from "@/lib/sahayak/core";
 
 export const Route = createFileRoute("/me/journey")({
@@ -66,16 +66,7 @@ function JourneyPage() {
           </ParticipantCard>
         </div>
         <ParticipantCard>
-          <h2 className="font-heading text-base font-semibold text-primary">Your weekly plan</h2>
-          <p className="mt-1 text-xs text-muted-foreground">Built from your course, how your practice is going and your goals. Reminders only — techniques are taught by certified teachers.</p>
-          <ul className="mt-4 divide-y divide-border" aria-label="Weekly plan">
-            {data.plan.map((day) => (
-              <li key={day.day} className="flex gap-4 py-3">
-                <span className="w-24 shrink-0 font-heading text-sm font-semibold text-primary">{day.day}</span>
-                <ul className="space-y-1">{day.items.map((item) => <li key={item.text} className={cn("text-sm", item.kind === "rest" ? "text-muted-foreground" : item.kind === "goal" ? "text-purple" : "text-foreground")}>{item.text}</li>)}</ul>
-              </li>
-            ))}
-          </ul>
+          <WeeklyPracticePlan />
         </ParticipantCard>
       </div>
       <ParticipantCard><h2 className="font-heading text-base font-semibold text-primary">Journey so far</h2><ol className="mt-4 space-y-4 border-l border-border pl-5">{data.timeline.map((item, index) => <li key={`${item.date}-${index}`} className="relative"><span className="absolute -left-[27px] top-0.5 size-3 rounded-full bg-secondary ring-2 ring-card" /><p className="flex items-center gap-2 text-sm text-primary">{item.kind === "course" ? <BookOpen className="size-4 text-purple" aria-hidden /> : <CalendarHeart className="size-4 text-purple" aria-hidden />}{item.text}</p><p className="ml-6 text-xs text-muted-foreground">{formatFull(item.date)}</p></li>)}</ol></ParticipantCard>

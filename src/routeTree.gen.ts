@@ -29,8 +29,10 @@ import { Route as CheckInSessionIdRouteImport } from './routes/check-in.$session
 import { Route as MeIndexRouteImport } from './routes/me/index'
 import { Route as MeJourneyRouteImport } from './routes/me/journey'
 import { Route as MeMessagesRouteImport } from './routes/me/messages'
+import { Route as MePracticeRouteImport } from './routes/me/practice'
 import { Route as MeSettingsRouteImport } from './routes/me/settings'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as MePracticeActivityRouteImport } from './routes/me/practice_.$activity'
 import { Route as SessionsSessionIdCheckInRouteImport } from './routes/sessions_.$sessionId.check-in'
 import { Route as ApiPublicCalendarEventIdRouteImport } from './routes/api/public/calendar/$eventId'
 
@@ -135,6 +137,11 @@ const MeMessagesRoute = MeMessagesRouteImport.update({
   path: '/messages',
   getParentRoute: () => MeRouteRoute,
 } as any)
+const MePracticeRoute = MePracticeRouteImport.update({
+  id: '/practice',
+  path: '/practice',
+  getParentRoute: () => MeRouteRoute,
+} as any)
 const MeSettingsRoute = MeSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -144,6 +151,11 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   id: '/.lovable/oauth/consent',
   path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
+} as any)
+const MePracticeActivityRoute = MePracticeActivityRouteImport.update({
+  id: '/practice_/$activity',
+  path: '/practice/$activity',
+  getParentRoute: () => MeRouteRoute,
 } as any)
 const SessionsSessionIdCheckInRoute =
   SessionsSessionIdCheckInRouteImport.update({
@@ -178,9 +190,11 @@ export interface FileRoutesByFullPath {
   '/check-in/$sessionId': typeof CheckInSessionIdRoute
   '/me/journey': typeof MeJourneyRoute
   '/me/messages': typeof MeMessagesRoute
+  '/me/practice': typeof MePracticeRoute
   '/me/settings': typeof MeSettingsRoute
   '/me/': typeof MeIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/me/practice/$activity': typeof MePracticeActivityRoute
   '/sessions/$sessionId/check-in': typeof SessionsSessionIdCheckInRoute
   '/api/public/calendar/$eventId': typeof ApiPublicCalendarEventIdRoute
 }
@@ -203,9 +217,11 @@ export interface FileRoutesByTo {
   '/check-in/$sessionId': typeof CheckInSessionIdRoute
   '/me/journey': typeof MeJourneyRoute
   '/me/messages': typeof MeMessagesRoute
+  '/me/practice': typeof MePracticeRoute
   '/me/settings': typeof MeSettingsRoute
   '/me': typeof MeIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/me/practice/$activity': typeof MePracticeActivityRoute
   '/sessions/$sessionId/check-in': typeof SessionsSessionIdCheckInRoute
   '/api/public/calendar/$eventId': typeof ApiPublicCalendarEventIdRoute
 }
@@ -230,9 +246,11 @@ export interface FileRoutesById {
   '/check-in/$sessionId': typeof CheckInSessionIdRoute
   '/me/journey': typeof MeJourneyRoute
   '/me/messages': typeof MeMessagesRoute
+  '/me/practice': typeof MePracticeRoute
   '/me/settings': typeof MeSettingsRoute
   '/me/': typeof MeIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/me/practice_/$activity': typeof MePracticeActivityRoute
   '/sessions_/$sessionId/check-in': typeof SessionsSessionIdCheckInRoute
   '/api/public/calendar/$eventId': typeof ApiPublicCalendarEventIdRoute
 }
@@ -258,9 +276,11 @@ export interface FileRouteTypes {
     | '/check-in/$sessionId'
     | '/me/journey'
     | '/me/messages'
+    | '/me/practice'
     | '/me/settings'
     | '/me/'
     | '/.lovable/oauth/consent'
+    | '/me/practice/$activity'
     | '/sessions/$sessionId/check-in'
     | '/api/public/calendar/$eventId'
   fileRoutesByTo: FileRoutesByTo
@@ -283,9 +303,11 @@ export interface FileRouteTypes {
     | '/check-in/$sessionId'
     | '/me/journey'
     | '/me/messages'
+    | '/me/practice'
     | '/me/settings'
     | '/me'
     | '/.lovable/oauth/consent'
+    | '/me/practice/$activity'
     | '/sessions/$sessionId/check-in'
     | '/api/public/calendar/$eventId'
   id:
@@ -309,9 +331,11 @@ export interface FileRouteTypes {
     | '/check-in/$sessionId'
     | '/me/journey'
     | '/me/messages'
+    | '/me/practice'
     | '/me/settings'
     | '/me/'
     | '/.lovable/oauth/consent'
+    | '/me/practice_/$activity'
     | '/sessions_/$sessionId/check-in'
     | '/api/public/calendar/$eventId'
   fileRoutesById: FileRoutesById
@@ -481,6 +505,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MeMessagesRouteImport
       parentRoute: typeof MeRouteRoute
     }
+    '/me/practice': {
+      id: '/me/practice'
+      path: '/practice'
+      fullPath: '/me/practice'
+      preLoaderRoute: typeof MePracticeRouteImport
+      parentRoute: typeof MeRouteRoute
+    }
     '/me/settings': {
       id: '/me/settings'
       path: '/settings'
@@ -494,6 +525,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/.lovable/oauth/consent'
       preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/me/practice_/$activity': {
+      id: '/me/practice_/$activity'
+      path: '/practice/$activity'
+      fullPath: '/me/practice/$activity'
+      preLoaderRoute: typeof MePracticeActivityRouteImport
+      parentRoute: typeof MeRouteRoute
     }
     '/sessions_/$sessionId/check-in': {
       id: '/sessions_/$sessionId/check-in'
@@ -515,15 +553,19 @@ declare module '@tanstack/react-router' {
 interface MeRouteRouteChildren {
   MeJourneyRoute: typeof MeJourneyRoute
   MeMessagesRoute: typeof MeMessagesRoute
+  MePracticeRoute: typeof MePracticeRoute
   MeSettingsRoute: typeof MeSettingsRoute
   MeIndexRoute: typeof MeIndexRoute
+  MePracticeActivityRoute: typeof MePracticeActivityRoute
 }
 
 const MeRouteRouteChildren: MeRouteRouteChildren = {
   MeJourneyRoute: MeJourneyRoute,
   MeMessagesRoute: MeMessagesRoute,
+  MePracticeRoute: MePracticeRoute,
   MeSettingsRoute: MeSettingsRoute,
   MeIndexRoute: MeIndexRoute,
+  MePracticeActivityRoute: MePracticeActivityRoute,
 }
 
 const MeRouteRouteWithChildren =

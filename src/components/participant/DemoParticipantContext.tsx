@@ -4,6 +4,8 @@ import { TEMP_PARTICIPANT_ID } from "@/lib/journey/demo-seed";
 import type { Program } from "@/lib/journey/programs";
 import type { NextStep } from "@/lib/journey/types";
 import { useJourney } from "@/lib/journey/store";
+import { completionKey, markActivityDone, planActivities } from "@/lib/sahayak/practice-plan";
+import type { PlanItem } from "@/lib/sahayak/intake";
 import { friendlyStageFor, journeyPosition, levelFromHistory, prefersOnline, weeklyPlan, JOURNEY_LADDER, milestones, normalizeOnboardingAnswers, participantEvents, practiceDto, recommendedSchedule, type OnboardingAnswers } from "@/lib/sahayak/core";
 
 interface DemoGoal { id: string; period: "month" | "quarter" | "year"; text: string; createdAt: string }
@@ -12,6 +14,8 @@ export interface DemoChatReply { id: string; messageId: string; text: string; se
 interface DemoParticipantValue {
   data: NonNullable<ReturnType<typeof useDemoData>>;
   logToday: () => void;
+  isActivityDone: (day: string, item: PlanItem) => boolean;
+  completeActivity: (activityId: string) => void;
   showInterest: (eventId: string) => void;
   saveGoal: (period: "month" | "quarter" | "year", text: string) => void;
   respond: (messageId: string, reply: "join" | "not now") => void;
@@ -80,6 +84,7 @@ export function DemoParticipantProvider({ children }: { children: ReactNode }) {
   const [sahayakAccess, setSahayakAccess] = useState<SahayakAccessId[]>([]);
   const [consentOpen, setConsentOpen] = useState(false);
   const [chatReplies, setChatReplies] = useState<DemoChatReply[]>([]);
+  const [completedActivities, setCompletedActivities] = useState<string[]>([]);
   const data = useDemoData(me, answers, goals, interests, catalogList, programCatalog.programs);
 
   if (!data) return <main className="p-8 text-sm text-muted-foreground">Loading the sample journey…</main>;
@@ -101,6 +106,12 @@ export function DemoParticipantProvider({ children }: { children: ReactNode }) {
   const value: NonNullable<React.ContextType<typeof DemoParticipantContext>> = {
     data,
     logToday: () => logPractice(),
+    isActivityDone: (day, item) => completedActivities.includes(completionKey(day, item)),
+    completeActivity: (activityId) => {
+      const activity = planActivities(data.plan).find((entry) => entry.id === activityId);
+      if (!activity) return;
+      setCompletedActivities((current) => markActivityDone(current, activity.day, activity.item));
+    },
     showInterest: (eventId) => {
       setInterests((current) => current.includes(eventId) ? current : [...current, eventId]);
       markInterested(eventId);
