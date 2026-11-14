@@ -1,14 +1,19 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react";
 import { buildCatalog } from "./catalog";
 import { JOURNEY_CONFIG as C, STAGE_PRIORITY, STAGES } from "./config";
+import { contactText, daysSinceLastContact } from "./contact";
 import { daysSince, daysUntil, isoDaysFrom, parseIso, today } from "./dates";
 import { PICKER_STAGES, demoSeed } from "./demo-seed";
+import { buildInbox, type InboxMessage } from "./inbox-seed";
 import { draftMessage } from "./messages";
 import { mySlice, participantStage, type MySlice } from "./participant";
 import { buildSampleData } from "./sample-data";
+import { briefItems, buildReminders, SAHAYAK_DEFAULTS, type BriefItem, type Nudge, type Reminder, type SahayakFeature, type SahayakState } from "./sahayak";
 import { computeStage, explainReasons } from "./stages";
 import { buildSuggestion } from "./suggestions";
 import type { ActivityEntry, Channel, Contact, History, Message, NextStep, Participant, ParticipantReply, PracticeLog, StageId, Suggestion } from "./types";
+
+export { contactText, daysSinceLastContact };
 
 export interface ParticipantView {
   participant: Participant;
@@ -68,19 +73,6 @@ const Ctx = createContext<Store | null>(null);
 const historyFor = (id: string, courses: History["courses"], events: History["events"], contacts: Contact[]): History =>
   ({ courses: courses.filter((c) => c.participantId === id), events: events.filter((e) => e.participantId === id), contacts: contacts.filter((c) => c.participantId === id) });
 
-/** Days since the last message out to this person; null if we never wrote to them. */
-export function daysSinceLastContact(h: History): number | null {
-  const last = [...h.contacts].sort((a, b) => b.date.localeCompare(a.date))[0];
-  return last ? daysSince(last.date) : null;
-}
-/** Plain words for how long it has been since we last wrote to someone. */
-export function contactText(h: History): string {
-  const d = daysSinceLastContact(h);
-  if (d === null) return "never contacted";
-  if (d === 0) return "contacted today";
-  if (d === 1) return "contacted yesterday";
-  return `last contact ${d} days ago`;
-}
 /** People we never wrote to wait at the front of the queue. */
 const daysSinceContact = (v: ParticipantView) => daysSinceLastContact(v.history) ?? 9999;
 const priorityRank = (stage: StageId) => {

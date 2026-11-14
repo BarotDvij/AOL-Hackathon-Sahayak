@@ -61,7 +61,7 @@ export interface Suggestion {
 export interface ActivityEntry {
   id: string;
   at: string;
-  kind: "approved" | "edited" | "skipped";
+  kind: "approved" | "edited" | "skipped" | "replied";
   participantId: string;
   detail: string;
 }
