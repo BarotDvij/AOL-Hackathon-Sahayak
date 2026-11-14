@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { CalendarPlus, Check, Clock3, Plus } from "lucide-react";
+import { Check, Clock3, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useDemoParticipant } from "@/components/participant/DemoParticipantContext";
 import { ParticipantCard, EmptyParticipantNote } from "@/components/participant/ParticipantShell";
@@ -11,16 +11,16 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/me/")({
   head: () => ({ meta: [
     { title: "My home · Sahayak" },
-    { name: "description", content: "A gentle view of your practice, friendly journey stage and upcoming sessions." },
+    { name: "description", content: "A gentle view of your practice, friendly journey stage and suggested rhythm." },
     { property: "og:title", content: "My home · Sahayak" },
-    { property: "og:description", content: "A gentle view of your practice, friendly journey stage and upcoming sessions." },
+    { property: "og:description", content: "A gentle view of your practice, friendly journey stage and suggested rhythm." },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
   ] }),
   component: ParticipantHome,
 });
 
 function ParticipantHome() {
-  const { data, logToday, showInterest, saveAnswers, welcomeOpen, closeWelcome } = useDemoParticipant();
+  const { data, logToday, saveAnswers, welcomeOpen, closeWelcome } = useDemoParticipant();
   const navigate = useNavigate();
   const today = new Date().toISOString().slice(0, 10);
   const practisedToday = data.practice.entries.some((entry) => entry.date === today);
