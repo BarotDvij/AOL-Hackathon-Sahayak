@@ -34,17 +34,17 @@ function SettingsPage() {
       <div className="max-w-3xl space-y-4">
         <header className="mb-2">
           <h1 className="font-display text-[32px] font-normal text-primary">{t("Settings")}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">How the app decides who needs a follow-up. Read-only in this version.</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t('How the app decides who needs a follow-up. Read-only in this version.')}</p>
         </header>
 
-        <section className="border-y border-border py-5"><label htmlFor="app-language" className="font-heading text-base font-semibold">{t("App language")}</label><Select value={language} onValueChange={v=>setLanguage(v === "French" ? "French" : "English")}><SelectTrigger id="app-language" className="mt-3 w-52"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="English">English</SelectItem><SelectItem value="French">Français</SelectItem></SelectContent></Select></section>
+        <section className="border-y border-border py-5"><label htmlFor="app-language" className="font-heading text-base font-semibold">{t("App language")}</label><Select value={language} onValueChange={v=>setLanguage(v === "French" ? "French" : "English")}><SelectTrigger id="app-language" className="mt-3 w-52"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="English">{t('English')}</SelectItem><SelectItem value="French">Français</SelectItem></SelectContent></Select></section>
         <section className="rounded-lg border border-border bg-card p-5 shadow-soft">
-          <h2 className="font-heading text-base font-semibold text-primary">Journey stages</h2>
+          <h2 className="font-heading text-base font-semibold text-primary">{t('Journey stages')}</h2>
           <p className="mt-0.5 text-xs text-muted-foreground">Everyone is placed in the first stage that fits, checked in this order.</p>
           <dl className="mt-4 divide-y divide-border">
             {STAGES.map((s) => (
               <div key={s.id} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 py-2.5">
-                <dt className="w-40 shrink-0 text-sm font-medium text-foreground">{stageLabel(s.id)}</dt>
+                <dt className="w-40 shrink-0 text-sm font-medium text-foreground">{t(stageLabel(s.id))}</dt>
                 <dd className="min-w-0 flex-1 text-sm text-muted-foreground">{RULES[s.id]}</dd>
               </div>
             ))}
@@ -52,7 +52,7 @@ function SettingsPage() {
         </section>
 
         <section className="rounded-lg border border-border bg-card p-5 shadow-soft">
-          <h2 className="font-heading text-base font-semibold text-primary">Sahayak</h2>
+          <h2 className="font-heading text-base font-semibold text-primary">{t('Sahayak')}</h2>
           <p className="mt-0.5 text-xs text-muted-foreground">
             Sahayak means helper. It keeps track of follow-ups so no one slips through the cracks.
           </p>
@@ -62,19 +62,19 @@ function SettingsPage() {
         </section>
 
         <section className="rounded-lg border border-border bg-card p-5 shadow-soft">
-          <h2 className="font-heading text-base font-semibold text-primary">This centre</h2>
+          <h2 className="font-heading text-base font-semibold text-primary">{t('This centre')}</h2>
           <dl className="mt-3 divide-y divide-border">
             <div className="flex items-baseline justify-between gap-4 py-2.5">
-              <dt className="text-sm font-medium text-foreground">Coordinator</dt>
+              <dt className="text-sm font-medium text-foreground">{t('Coordinator')}</dt>
               <dd className="text-sm text-muted-foreground">{C.coordinatorName}</dd>
             </div>
             <div className="flex items-baseline justify-between gap-4 py-2.5">
-              <dt className="text-sm font-medium text-foreground">Data</dt>
-              <dd className="text-sm text-muted-foreground">Sample participants and a sample calendar</dd>
+              <dt className="text-sm font-medium text-foreground">{t('Data')}</dt>
+              <dd className="text-sm text-muted-foreground">{t('Sample participants and a sample calendar')}</dd>
             </div>
             <div className="flex items-baseline justify-between gap-4 py-2.5">
-              <dt className="text-sm font-medium text-foreground">Sending</dt>
-              <dd className="text-sm text-muted-foreground">Nothing is sent automatically — every message needs your approval</dd>
+              <dt className="text-sm font-medium text-foreground">{t('Sending')}</dt>
+              <dd className="text-sm text-muted-foreground">{t('Nothing is sent automatically — every message needs your approval')}</dd>
             </div>
           </dl>
         </section>

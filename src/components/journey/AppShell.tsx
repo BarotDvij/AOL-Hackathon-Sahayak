@@ -50,13 +50,14 @@ function NavItemLink({ to, label, Icon, exact, alsoActive, waiting, onNavigate }
 
 /** The one place Sahayak is turned on or off without leaving the page. */
 function SahayakSwitch({ onNavigate }: { onNavigate?: () => void }) {
+  const {t} = useLanguage();
   const { sahayak, setSahayakOn } = useJourney();
   return (
     <div className="mx-3 mt-3 rounded-lg border border-border bg-secondary/60 p-3">
       <div className="flex items-center gap-2">
         <Sparkles className={cn("size-4 shrink-0", sahayak.on ? "text-purple" : "text-muted-foreground")} aria-hidden />
         <span className="min-w-0 flex-1 truncate font-heading text-sm font-semibold text-primary">Sahayak</span>
-        <span className="text-xs font-medium text-muted-foreground">{sahayak.on ? "On" : "Off"}</span>
+        <span className="text-xs font-medium text-muted-foreground">{t(sahayak.on ? "On" : "Off")}</span>
         <Switch checked={sahayak.on} onCheckedChange={setSahayakOn} aria-label="Turn Sahayak on or off" />
       </div>
       <Link
@@ -64,7 +65,7 @@ function SahayakSwitch({ onNavigate }: { onNavigate?: () => void }) {
         onClick={onNavigate}
         className="mt-1.5 inline-block text-xs font-medium text-purple hover:underline"
       >
-        Sahayak settings
+        {t("Sahayak settings")}
       </Link>
     </div>
   );
@@ -108,7 +109,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <nav className="mt-2 flex flex-1 flex-col gap-1 px-3" aria-label="Sections">
           {NAV.map((n) => <NavItemLink key={n.to} {...n} waiting={badgeFor(n.to)} />)}
         </nav>
-        <p className="px-5 py-4 text-xs leading-relaxed text-muted-foreground">Nothing is ever sent without you approving it.</p>
+        <p className="px-5 py-4 text-xs leading-relaxed text-muted-foreground">{t("Nothing is ever sent without you approving it.")}</p>
       </aside>
 
       <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-border bg-card px-4 py-3 lg:hidden">
@@ -128,7 +129,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <nav className="mt-2 flex flex-1 flex-col gap-1 px-3" aria-label="Sections">
                 {NAV.map((n) => <NavItemLink key={n.to} {...n} waiting={badgeFor(n.to)} onNavigate={() => setOpen(false)} />)}
               </nav>
-              <p className="px-5 py-4 text-xs leading-relaxed text-muted-foreground">Nothing is ever sent without you approving it.</p>
+              <p className="px-5 py-4 text-xs leading-relaxed text-muted-foreground">{t("Nothing is ever sent without you approving it.")}</p>
             </SheetContent>
           </Sheet>
         </div>

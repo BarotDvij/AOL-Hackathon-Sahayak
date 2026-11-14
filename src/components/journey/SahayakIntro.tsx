@@ -1,9 +1,11 @@
+import {useLanguage} from "@/lib/journey/i18n";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useJourney } from "@/lib/journey/store";
 
 /** The first-time question. Answering it once is what stops it coming back. */
 export function SahayakIntro() {
+  const {t} = useLanguage();
   const { sahayak, decideSahayak } = useJourney();
 
   return (
@@ -11,7 +13,7 @@ export function SahayakIntro() {
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-display text-[26px] font-normal text-primary">
-            Meet Sahayak, your follow-up helper
+            {t("Meet Sahayak, your follow-up helper")}
           </DialogTitle>
           <DialogDescription className="mt-1 text-sm leading-relaxed text-muted-foreground">
             Sahayak means helper. It looks over your participants each day, tells you who is waiting for a
@@ -21,11 +23,11 @@ export function SahayakIntro() {
         </DialogHeader>
 
         <div className="mt-2 flex flex-wrap gap-2">
-          <Button onClick={() => decideSahayak(true)}>Yes, turn on Sahayak</Button>
-          <Button variant="outline" onClick={() => decideSahayak(false)}>I will do it manually</Button>
+          <Button onClick={() => decideSahayak(true)}>{t("Yes, turn on Sahayak")}</Button>
+          <Button variant="outline" onClick={() => decideSahayak(false)}>{t("I will do it manually")}</Button>
         </div>
 
-        <p className="text-xs text-muted-foreground">You can change this anytime in settings.</p>
+        <p className="text-xs text-muted-foreground">{t("You can change this anytime in settings.")}</p>
       </DialogContent>
     </Dialog>
   );

@@ -1,6 +1,7 @@
 import { useLanguage } from "@/lib/journey/i18n";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {messageOutcome} from "@/lib/journey/operations";
 import { useJourney } from "@/lib/journey/store";
 import { SahayakLink, SahayakTag, useGreeting } from "./bits";
 
@@ -10,7 +11,7 @@ import { SahayakLink, SahayakTag, useGreeting } from "./bits";
  */
 export function DailyBrief() {
   const {t} = useLanguage();
-  const { sahayak, brief, dismissBrief } = useJourney();
+  const { sahayak, brief, dismissBrief, sentMessages, views, secondFollowUp } = useJourney();
   const greeting = useGreeting();
 
   if (!sahayak.on || brief.length === 0) return null;
@@ -42,6 +43,7 @@ export function DailyBrief() {
           </li>
         ))}
       </ul>
+      {sentMessages.filter(m=>messageOutcome(m)==="No response after 14 days" && !views.find(v=>v.participant.id===m.participantId)?.participant.doNotContact).slice(0,2).map(m=><div key={m.id} className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3 text-sm"><p>{views.find(v=>v.participant.id===m.participantId)?.participant.firstName}: {t("No reply after 14 days")}</p><Button size="sm" variant="accent" onClick={()=>secondFollowUp(m.id)}>{t("Draft gentle second follow-up")}</Button></div>)}
     </section>
   );
 }
