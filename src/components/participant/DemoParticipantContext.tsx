@@ -77,6 +77,20 @@ export function DemoParticipantProvider({ children }: { children: ReactNode }) {
 
   if (!data) return <main className="p-8 text-sm text-muted-foreground">Loading the sample journey…</main>;
 
+  const requestSahayak = (on: boolean) => {
+    if (on) setConsentOpen(true);
+    else { setSahayakOn(false); setSahayakAccess([]); }
+  };
+  const acceptSahayakConsent = (ids: SahayakAccessId[]) => {
+    const granted = ids.filter((id) => ALL_SAHAYAK_ACCESS_IDS.includes(id));
+    if (granted.length === 0) return;
+    setSahayakAccess(granted);
+    setSahayakOn(true);
+    setConsentOpen(false);
+  };
+  const declineSahayakConsent = () => setConsentOpen(false);
+  const openSahayakConsent = () => setConsentOpen(true);
+
   const value: NonNullable<React.ContextType<typeof DemoParticipantContext>> = {
     data,
     logToday: () => logPractice(),
@@ -91,20 +105,11 @@ export function DemoParticipantProvider({ children }: { children: ReactNode }) {
     closeWelcome: () => setWelcomeOpen(false),
     sahayakOn,
     sahayakAccess,
-    requestSahayak: (on) => {
-      if (on) setConsentOpen(true);
-      else { setSahayakOn(false); setSahayakAccess([]); }
-    },
+    requestSahayak,
     sahayakConsentOpen: consentOpen,
-    acceptSahayakConsent: (ids) => {
-      const granted = ids.filter((id) => ALL_SAHAYAK_ACCESS_IDS.includes(id));
-      if (granted.length === 0) return;
-      setSahayakAccess(granted);
-      setSahayakOn(true);
-      setConsentOpen(false);
-    },
-    declineSahayakConsent: () => setConsentOpen(false),
-    openSahayakConsent: () => setConsentOpen(true),
+    acceptSahayakConsent,
+    declineSahayakConsent,
+    openSahayakConsent,
   };
 
   return (
