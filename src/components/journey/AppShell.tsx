@@ -137,7 +137,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           ) : (
             <span className="text-xs text-muted-foreground">Sahayak is off · manual mode</span>
           )}
-          {sahayak.on && <BellButton count={reminders.length} onClick={() => setRemindersOpen(true)} />}
+          <div className="flex items-center gap-3">
+            <Link to="/start" className="text-xs font-medium text-purple hover:underline">Switch view</Link>
+            {sahayak.on && <BellButton count={reminders.length} onClick={() => setRemindersOpen(true)} />}
+          </div>
         </div>
         <div className="mx-auto w-full max-w-[1280px] px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pb-24 lg:pt-8">{children}</div>
       </main>

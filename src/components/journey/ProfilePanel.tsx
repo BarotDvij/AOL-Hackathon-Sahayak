@@ -9,6 +9,7 @@ import { useJourney, type ParticipantView } from "@/lib/journey/store";
 import { eligibleSteps } from "@/lib/journey/suggestions";
 import type { NextStep } from "@/lib/journey/types";
 import { ChannelIcon, StageBadge } from "./bits";
+import { CoordinatorSummaries } from "./CoordinatorSummaries";
 
 /** A person's detail opens as a panel from the right, so the coordinator never leaves the list. */
 export function ProfilePanel({ view, onOpenChange }: { view: ParticipantView | null; onOpenChange: (o: boolean) => void }) {
@@ -62,6 +63,8 @@ function Body({ view }: { view: ParticipantView }) {
             ))}
           </ol>
         </section>
+
+        <CoordinatorSummaries participantId={p.id} />
 
         {step && s ? (
           <section className="rounded-lg border border-border bg-secondary p-4">
