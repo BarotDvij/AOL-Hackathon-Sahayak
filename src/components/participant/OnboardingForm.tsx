@@ -43,7 +43,7 @@ export function OnboardingForm({ initialAnswers, onSave }: { initialAnswers: Onb
     <div>
       <p className="text-xs font-medium text-muted-foreground">Question {index + 1} of {ONBOARDING_QUESTIONS.length} · optional</p>
       <h3 className="mt-2 font-heading text-base font-semibold text-primary">{question.text}</h3>
-      <RadioGroup aria-label={question.text} value={answers[question.id] ?? ""} onValueChange={(value) => setAnswers((current) => ({ ...current, [question.id]: value })) className="mt-4 divide-y divide-border gap-0">
+      <RadioGroup aria-label={question.text} value={answers[question.id] ?? ""} onValueChange={(value) => setAnswers((current) => ({ ...current, [question.id]: value }))} className="mt-4 divide-y divide-border gap-0">
         {question.options.map((option) => (
           <label key={option.value} className={cn("flex cursor-pointer items-center gap-3 px-2 py-3 text-sm transition-colors hover:bg-secondary/50", answers[question.id] === option.value ? "bg-secondary font-medium text-purple" : "text-foreground")}><RadioGroupItem value={option.value} />{option.label}</label>
         ))}
