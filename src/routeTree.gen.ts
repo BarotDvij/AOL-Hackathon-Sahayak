@@ -16,6 +16,7 @@ import { Route as InboxRouteImport } from './routes/inbox'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MeRouteRouteImport } from './routes/me/route'
 import { Route as ParticipantsRouteImport } from './routes/participants'
+import { Route as ProgramsRouteImport } from './routes/programs'
 import { Route as ReviewRouteImport } from './routes/review'
 import { Route as SahayakRouteImport } from './routes/sahayak'
 import { Route as SettingsRouteImport } from './routes/settings'
@@ -61,6 +62,11 @@ const MeRouteRoute = MeRouteRouteImport.update({
 const ParticipantsRoute = ParticipantsRouteImport.update({
   id: '/participants',
   path: '/participants',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgramsRoute = ProgramsRouteImport.update({
+  id: '/programs',
+  path: '/programs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReviewRoute = ReviewRouteImport.update({
@@ -129,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/inbox': typeof InboxRoute
   '/mcp': typeof McpRoute
   '/participants': typeof ParticipantsRoute
+  '/programs': typeof ProgramsRoute
   '/review': typeof ReviewRoute
   '/sahayak': typeof SahayakRoute
   '/settings': typeof SettingsRoute
@@ -148,6 +155,7 @@ export interface FileRoutesByTo {
   '/inbox': typeof InboxRoute
   '/mcp': typeof McpRoute
   '/participants': typeof ParticipantsRoute
+  '/programs': typeof ProgramsRoute
   '/review': typeof ReviewRoute
   '/sahayak': typeof SahayakRoute
   '/settings': typeof SettingsRoute
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/inbox': typeof InboxRoute
   '/mcp': typeof McpRoute
   '/participants': typeof ParticipantsRoute
+  '/programs': typeof ProgramsRoute
   '/review': typeof ReviewRoute
   '/sahayak': typeof SahayakRoute
   '/settings': typeof SettingsRoute
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/inbox'
     | '/mcp'
     | '/participants'
+    | '/programs'
     | '/review'
     | '/sahayak'
     | '/settings'
@@ -210,6 +220,7 @@ export interface FileRouteTypes {
     | '/inbox'
     | '/mcp'
     | '/participants'
+    | '/programs'
     | '/review'
     | '/sahayak'
     | '/settings'
@@ -230,6 +241,7 @@ export interface FileRouteTypes {
     | '/inbox'
     | '/mcp'
     | '/participants'
+    | '/programs'
     | '/review'
     | '/sahayak'
     | '/settings'
@@ -251,6 +263,7 @@ export interface RootRouteChildren {
   InboxRoute: typeof InboxRoute
   McpRoute: typeof McpRoute
   ParticipantsRoute: typeof ParticipantsRoute
+  ProgramsRoute: typeof ProgramsRoute
   ReviewRoute: typeof ReviewRoute
   SahayakRoute: typeof SahayakRoute
   SettingsRoute: typeof SettingsRoute
@@ -309,6 +322,13 @@ declare module '@tanstack/react-router' {
       path: '/participants'
       fullPath: '/participants'
       preLoaderRoute: typeof ParticipantsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/programs': {
+      id: '/programs'
+      path: '/programs'
+      fullPath: '/programs'
+      preLoaderRoute: typeof ProgramsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/review': {
@@ -416,6 +436,7 @@ const rootRouteChildren: RootRouteChildren = {
   InboxRoute: InboxRoute,
   McpRoute: McpRoute,
   ParticipantsRoute: ParticipantsRoute,
+  ProgramsRoute: ProgramsRoute,
   ReviewRoute: ReviewRoute,
   SahayakRoute: SahayakRoute,
   SettingsRoute: SettingsRoute,

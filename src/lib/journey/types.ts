@@ -1,3 +1,5 @@
+import type { Program, ProgramPrerequisite } from "./programs";
+
 export type Channel = "whatsapp" | "email" | "sms";
 export type EventType = "follow-up" | "satsang" | "retreat" | "online session" | "seva";
 export type StageId = "paused" | "new" | "building" | "active" | "serving" | "quiet" | "dormant";
@@ -6,11 +8,14 @@ export interface Participant {
   id: string;
   firstName: string;
   lastName: string;
+  /** Fictional demo age, used to enforce youth/adult program eligibility. */
+  age: number;
   city: string; // "Online" for online-only
   language: string;
   email: string | null;
   phone: string | null;
   preferredChannel: Channel | null;
+  prefersOnline?: boolean;
   doNotContact: boolean;
   sevaRole: string | null;
   interests: string[];
@@ -33,11 +38,14 @@ export interface NextStep {
   startDate?: string;
   city: string; // city name or "Online"
   language: string;
-  prerequisite?: string; // course name required
-  completesCourse?: string; // course name this step is (skip if already done)
+  prerequisite?: string; // non-course demo events only
+  completesCourse?: string;
   stageFit: StageId[];
   tags: string[];
   link: string;
+  /** Present only for courses loaded from Lovable Cloud. */
+  program?: Program;
+  programPrerequisites?: ProgramPrerequisite[];
 }
 export interface Reason { code: string; days?: number | undefined; count?: number | undefined; text?: string | undefined }
 export interface StageResult { stage: StageId; reasons: Reason[] }

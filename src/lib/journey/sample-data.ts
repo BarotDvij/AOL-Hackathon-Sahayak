@@ -2,7 +2,7 @@ import { daysAgoIso } from "./dates";
 import type { Channel, Contact, CourseCompletion, EventAttendance, EventType, Participant } from "./types";
 
 type Row = {
-  n: [string, string]; city: string; ch: Channel | null; lang?: string; dnc?: boolean; seva?: string; int?: string[];
+  n: [string, string]; age?: number; city: string; ch: Channel | null; lang?: string; dnc?: boolean; seva?: string; int?: string[];
   c: [string, number][]; e?: [EventType, number, boolean?][]; k?: [Channel, "out" | "in", number, Contact["outcome"]][];
 };
 const SKY = "SKY Happiness Program";
@@ -57,9 +57,9 @@ export function buildSampleData(base?: Date) {
     const id = `p${String(i + 1).padStart(2, "0")}`;
     const slug = `${r.n[0]}.${r.n[1]}`.toLowerCase().replace(/[^a-z.]/g, "");
     participants.push({
-      id, firstName: r.n[0], lastName: r.n[1], city: r.city, language: r.lang ?? "English",
+      id, firstName: r.n[0], lastName: r.n[1], age: r.age ?? 30, city: r.city, language: r.lang ?? "English",
       email: `${slug}@example.com`, phone: r.ch === "email" && i % 2 ? null : `555-01${String(i).padStart(2, "0")}`,
-      preferredChannel: r.ch, doNotContact: !!r.dnc, sevaRole: r.seva ?? null, interests: r.int ?? [],
+      preferredChannel: r.ch, prefersOnline: r.city === "Online" || !!r.int?.includes("online"), doNotContact: !!r.dnc, sevaRole: r.seva ?? null, interests: r.int ?? [],
     });
     r.c.forEach(([courseName, d]) => courses.push({ participantId: id, courseName, completedOn: daysAgoIso(d, base) }));
     (r.e ?? []).forEach(([eventType, d, online]) => events.push({ participantId: id, eventType, date: daysAgoIso(d, base), city: online ? "Online" : r.city, online: !!online }));
