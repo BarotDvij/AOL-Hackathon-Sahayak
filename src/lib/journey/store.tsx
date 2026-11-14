@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react";
 import { buildCatalog } from "./catalog";
-import { JOURNEY_CONFIG as C, STAGE_PRIORITY } from "./config";
-import { daysSince, isoDaysFrom } from "./dates";
+import { JOURNEY_CONFIG as C, STAGE_PRIORITY, STAGES } from "./config";
+import { daysSince, daysUntil, isoDaysFrom, parseIso, today } from "./dates";
 import { PICKER_STAGES, demoSeed } from "./demo-seed";
 import { draftMessage } from "./messages";
 import { mySlice, participantStage, type MySlice } from "./participant";
@@ -19,10 +19,14 @@ export interface ParticipantView {
 }
 
 export interface Summary {
-  total: number;
-  waiting: number;
-  sentThisWeek: number;
+  total: number; totalNote: string;
+  needFollowUp: number; needTrend: string;
+  waiting: number; waitingNote: string;
+  sentThisWeek: number; sentTrend: string;
 }
+
+export interface StageCount { id: StageId; label: string; count: number }
+export interface Opportunity { step: NextStep; suggestedFor: number }
 
 interface Store {
   views: ParticipantView[];
@@ -32,10 +36,16 @@ interface Store {
   practice: PracticeLog[];
   replies: ParticipantReply[];
   pickerIds: string[];
-  /** Dashboard figures: how many people, how many drafts waiting, how many messages out this week. */
+  /** Dashboard figures with the small line under each number. */
   summary: Summary;
+  /** How many people sit in each stage, in display order. */
+  stageCounts: StageCount[];
+  /** The first five people to reach out to; drifting people first. */
+  priority: ParticipantView[];
   /** People who still need a follow-up, drifting-away first. */
   needsFollowUp: ParticipantView[];
+  /** Upcoming events and courses, soonest first, with how many people each is suggested for. */
+  upcoming: Opportunity[];
   /** What the coordinator has approved, edited or skipped, newest first. */
   activity: ActivityEntry[];
   city: string; setCity: (c: string) => void;
@@ -69,6 +79,8 @@ const priorityRank = (stage: StageId) => {
   const i = STAGE_PRIORITY.indexOf(stage);
   return i === -1 ? STAGE_PRIORITY.length : i;
 };
+/** "+3 from last week", "−2 from last week" or "no change from last week". */
+const weekTrend = (delta: number) => (delta === 0 ? "no change from last week" : `${delta > 0 ? "+" : "−"}${Math.abs(delta)} from last week`);
 
 function initial() {
   const data = buildSampleData();
@@ -110,16 +122,47 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
 
   const me = useMemo(() => meId ? mySlice(meId, { participants: data.participants, history: (id) => historyFor(id, data.courses, data.events, contacts), practice, messages }) : null, [meId, data, contacts, practice, messages]);
 
-  const summary = useMemo<Summary>(() => ({
-    total: data.participants.length,
-    waiting: suggestions.filter((s) => s.status === "pending").length,
-    sentThisWeek: contacts.filter((c) => c.direction === "out" && daysSince(c.date) < C.sentThisWeekDays).length,
-  }), [data, suggestions, contacts]);
-
   const needsFollowUp = useMemo<ParticipantView[]>(() => views
     .filter((v) => v.suggestion?.status === "pending")
     .sort((a, b) => priorityRank(a.stage) - priorityRank(b.stage) || daysSinceContact(b) - daysSinceContact(a)),
   [views]);
+
+  const summary = useMemo<Summary>(() => {
+    // "Needed a follow-up last week" is the same rule run against the date a week ago.
+    const lastWeek = parseIso(isoDaysFrom(-7));
+    const neededThen = data.participants.filter((p) => computeStage(p, historyFor(p.id, data.courses, data.events, contacts), lastWeek).stage !== "paused").length;
+    const needNow = views.filter((v) => v.stage !== "paused").length;
+    const out = contacts.filter((c) => c.direction === "out");
+    const sentThisWeek = out.filter((c) => daysSince(c.date) < 7).length;
+    const sentBefore = out.filter((c) => { const d = daysSince(c.date); return d >= 7 && d < 14; }).length;
+    const joined = data.participants.filter((p) => {
+      const first = data.courses.filter((c) => c.participantId === p.id).map((c) => c.completedOn).sort()[0];
+      return first !== undefined && daysSince(first) < 7;
+    }).length;
+    const todayIso = today().toISOString().slice(0, 10);
+    const reviewedToday = activity.filter((a) => a.kind !== "edited" && a.at.slice(0, 10) === todayIso).length;
+    return {
+      total: data.participants.length,
+      totalNote: joined === 0 ? "no one new this week" : `${joined} joined this week`,
+      needFollowUp: needNow,
+      needTrend: weekTrend(needNow - neededThen),
+      waiting: suggestions.filter((s) => s.status === "pending").length,
+      waitingNote: reviewedToday === 0 ? "nothing reviewed yet today" : `${reviewedToday} reviewed today`,
+      sentThisWeek,
+      sentTrend: weekTrend(sentThisWeek - sentBefore),
+    };
+  }, [data, views, contacts, suggestions, activity]);
+
+  const stageCounts = useMemo<StageCount[]>(() => STAGES.map((st) => ({ id: st.id, label: st.label, count: views.filter((v) => v.stage === st.id).length })), [views]);
+
+  const priority = useMemo<ParticipantView[]>(() => needsFollowUp.slice(0, 5), [needsFollowUp]);
+
+  const upcoming = useMemo<Opportunity[]>(() => catalogList
+    .filter((s) => s.startDate && daysUntil(s.startDate) >= 0)
+    .map((s) => ({ step: s, suggestedFor: suggestions.filter((x) => x.status === "pending" && x.nextStepId === s.id).length }))
+    .sort((a, b) => (a.step.startDate ?? "9").localeCompare(b.step.startDate ?? "9"))
+    .slice(0, 6),
+  [catalogList, suggestions]);
 
   const update = useCallback((id: string, fn: (s: Suggestion) => Suggestion) => setSuggestions((all) => all.map((s) => (s.id === id ? fn(s) : s))), []);
   const nameOf = (participantId: string) => data.participants.find((x) => x.id === participantId)?.firstName ?? "participant";
@@ -135,7 +178,7 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
 
   const store: Store = {
     views, catalog, catalogList, practice, replies, pickerIds, city, setCity, meId, setMeId, me,
-    summary, needsFollowUp, activity,
+    summary, stageCounts, priority, needsFollowUp, upcoming, activity,
     pending: suggestions.filter((s) => s.status === "pending"),
     editMessage: (id, message) => {
       const s = suggestions.find((x) => x.id === id);
