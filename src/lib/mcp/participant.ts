@@ -16,17 +16,19 @@ export async function withParticipant(tool: string, ctx: ToolContext, work: (inp
   const userId = ctx.getUserId();
   if (!userId || !ctx.isAuthenticated()) throw new ToolError("Please connect with participant OAuth.");
   const supabase = supabaseForUser(ctx);
+  let audited = false;
   try {
     const { data: account, error } = await supabase.from("participant_accounts").select("participant_id").eq("user_id", userId).maybeSingle();
     if (error) throw new ToolError("Your participant link could not be loaded.");
     if (!account) throw new ToolError("Open Journey Companion and choose your sample participant first.");
     const bundle = participantBundle(account.participant_id);
     if (!bundle) throw new ToolError("Your participant record is unavailable.");
-    const result = await work({ ...bundle, supabase, userId, participantId: account.participant_id });
     await recordSahayakCall(supabase, { userId, role: "participant", tool });
+    audited = true;
+    const result = await work({ ...bundle, supabase, userId, participantId: account.participant_id });
     return { content: [{ type: "text", text: JSON.stringify(result) }], structuredContent: result };
   } catch (error) {
-    await recordSahayakCall(supabase, { userId, role: "participant", tool });
+    if (!audited) await recordSahayakCall(supabase, { userId, role: "participant", tool });
     throw error;
   }
 }

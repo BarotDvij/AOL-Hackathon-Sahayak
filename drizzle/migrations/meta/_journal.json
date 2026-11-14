@@ -15,6 +15,13 @@
       "when": 1794683393375,
       "tag": "0001_add_participant_interests",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794683796010,
+      "tag": "0002_restrict_participant_message_replies",
+      "breakpoints": true
     }
   ]
 }
