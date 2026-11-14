@@ -81,7 +81,7 @@ export function DemoParticipantProvider({ children }: { children: ReactNode }) {
     saveAnswers: (next) => setAnswers(normalizeOnboardingAnswers(next)),
     welcomeOpen,
     closeWelcome: () => setWelcomeOpen(false),
-    sahayaakOn: sahayaakOnValue(),
+    sahayaakOn,
     setSahayakOn,
   };
 
