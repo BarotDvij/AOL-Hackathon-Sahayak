@@ -19,7 +19,7 @@ export const ALL_SAHAYAK_ACCESS_IDS = SAHAYAK_ACCESS.map((item) => item.id) as S
 const NEVER = [
   "It never sends a message to anyone",
   "It never shows your records to another participant",
-  "You can turn it off any time, right from this sidebar",
+  "You can turn it off any time, from the sidebar or these settings",
 ];
 
 const CHECKBOX = "mt-0.5 border-purple data-[state=checked]:border-purple data-[state=checked]:bg-purple data-[state=checked]:text-primary-foreground";
