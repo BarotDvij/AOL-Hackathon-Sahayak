@@ -102,7 +102,15 @@ export const markMyInterest = createServerFn({ method: "POST" })
   .inputValidator((input) => z.object({ eventId: z.string().trim().min(1).max(120) }).parse(input))
   .handler(async ({ data, context }) => {
     const { data: account } = await context.supabase.from("participant_accounts").select("participant_id").eq("user_id", context.userId).single();
-    if (!account || !participantEvents(account.participant_id, "https://events.invalid", 50).some((e) => e.id === data.eventId)) throw new Error("That event is not in your upcoming list.");
+    if (!account) throw new Error("Choose your sample participant first.");
+    const [programCatalog, onboarding] = await Promise.all([
+      fetchProgramCatalog(context.supabase),
+      context.supabase.from("participant_onboarding").select("answers").eq("user_id", context.userId).maybeSingle(),
+    ]);
+    if (onboarding.error) throw new Error("Your preferences could not be loaded.");
+    const answers = normalizeOnboardingAnswers(onboarding.data?.answers ?? {});
+    const catalog = buildCatalog(programCatalog.programs, programCatalog.prerequisites);
+    if (!participantEvents(account.participant_id, "https://events.invalid", 50, catalog, { prefersOnline: answers.support === "online" }).some((e) => e.id === data.eventId)) throw new Error("That event is not in your upcoming list.");
     const { error } = await context.supabase.from("participant_interests").upsert({ user_id: context.userId, event_id: data.eventId }, { onConflict: "user_id,event_id" });
     if (error) throw new Error("Your interest could not be saved.");
     return { ok: true };
