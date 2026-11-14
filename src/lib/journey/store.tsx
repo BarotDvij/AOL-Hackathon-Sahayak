@@ -11,6 +11,8 @@ import { buildSampleData } from "./sample-data";
 import { briefItems, buildReminders, SAHAYAK_DEFAULTS, type BriefItem, type Nudge, type Reminder, type SahayakFeature, type SahayakState } from "./sahayak";
 import { computeStage, explainReasons } from "./stages";
 import { buildSuggestion } from "./suggestions";
+import { supabase } from "@/integrations/supabase/client";
+import { saveApprovedMessage } from "@/lib/participant.functions";
 import type { ActivityEntry, Channel, Contact, History, Message, NextStep, Participant, ParticipantReply, PracticeLog, StageId, Suggestion } from "./types";
 
 export { contactText, daysSinceLastContact };
@@ -242,6 +244,11 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
       setContacts((c) => [...c, { participantId: s.participantId, channel: s.channel, direction: "out", date: isoDaysFrom(0), outcome: "no reply", nextStepId: s.nextStepId }]);
       setMessages((m) => [...m, { id: `msg-${s.id}`, participantId: s.participantId, suggestionId: s.id, coordinatorName: C.coordinatorName, text: message, sentAt: now, reply: null }]);
       log("approved", s.participantId, `Approved ${step?.shortTitle ?? "a next step"} for ${nameOf(s.participantId)} · ${s.channel}`);
+      // Signed-in coordinators also persist the approval for the participant app and Muse.
+      void supabase.auth.getSession().then(({ data }) => {
+        if (!data.session) return;
+        return saveApprovedMessage({ data: { participantId: s.participantId, suggestionId: s.id, coordinatorName: C.coordinatorName, text: message, sentAt: now } });
+      }).catch(() => { /* The existing local demo approval remains available without a coordinator session. */ });
     },
     skip: (id, reason) => {
       const s = suggestions.find((x) => x.id === id);
