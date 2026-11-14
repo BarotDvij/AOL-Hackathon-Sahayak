@@ -14,6 +14,8 @@ interface DemoParticipantValue {
   saveGoal: (period: "quarter" | "year", text: string) => void;
   respond: (messageId: string, reply: "join" | "not now") => void;
   saveAnswers: (answers: OnboardingAnswers) => void;
+  welcomeOpen: boolean;
+  closeWelcome: () => void;
 }
 
 const DemoParticipantContext = createContext<DemoParticipantValue | null>(null);
@@ -59,6 +61,7 @@ export function DemoParticipantProvider({ children }: { children: ReactNode }) {
   const [answers, setAnswers] = useState<OnboardingAnswers>({});
   const [goals, setGoals] = useState<DemoGoal[]>([]);
   const [interests, setInterests] = useState<string[]>([]);
+  const [welcomeOpen, setWelcomeOpen] = useState(true);
   const data = useDemoData(me, answers, goals, interests, catalogList, programCatalog.programs);
 
   if (!data) return <main className="p-8 text-sm text-muted-foreground">Loading the sample journey…</main>;
@@ -73,6 +76,8 @@ export function DemoParticipantProvider({ children }: { children: ReactNode }) {
     saveGoal: (period, text) => setGoals((current) => [{ id: `goal-${Date.now()}`, period, text, createdAt: new Date().toISOString() }, ...current]),
     respond: replyToMessage,
     saveAnswers: (next) => setAnswers(normalizeOnboardingAnswers(next)),
+    welcomeOpen,
+    closeWelcome: () => setWelcomeOpen(false),
   };
 
   return <DemoParticipantContext.Provider value={value}>{children}</DemoParticipantContext.Provider>;

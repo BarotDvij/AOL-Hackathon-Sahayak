@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { useDemoParticipant } from "@/components/participant/DemoParticipantContext";
 import { ParticipantCard, EmptyParticipantNote } from "@/components/participant/ParticipantShell";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { OnboardingForm } from "@/components/participant/OnboardingForm";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/me/")({
@@ -18,12 +20,22 @@ export const Route = createFileRoute("/me/")({
 });
 
 function ParticipantHome() {
-  const { data, logToday, showInterest } = useDemoParticipant();
+  const { data, logToday, showInterest, saveAnswers, welcomeOpen, closeWelcome } = useDemoParticipant();
   const today = new Date().toISOString().slice(0, 10);
   const practisedToday = data.practice.entries.some((entry) => entry.date === today);
 
   return (
     <div className="space-y-4">
+      <Dialog open={welcomeOpen} onOpenChange={(open) => { if (!open) closeWelcome(); }}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display text-2xl font-normal text-primary">Welcome, {data.participant.firstName}</DialogTitle>
+            <DialogDescription>Six gentle questions help us suggest a rhythm that fits you. Skip any of them — you can change your answers anytime in Settings.</DialogDescription>
+          </DialogHeader>
+          <OnboardingForm initialAnswers={data.answers} onSave={(answers) => { saveAnswers(answers); closeWelcome(); toast.success("Thank you — your answers are saved."); }} />
+          <Button variant="ghost" className="w-full" onClick={closeWelcome}>Maybe later</Button>
+        </DialogContent>
+      </Dialog>
       <header className="brand-gradient mb-2 rounded-lg border border-border px-5 py-5"><p className="font-heading text-xs font-semibold text-purple">Your journey · Demo</p><h1 className="mt-1 font-display text-[32px] font-normal leading-tight text-primary">Hello, {data.participant.firstName}</h1><p className="mt-1 text-sm text-muted-foreground">A little awareness today is enough.</p></header>
       <ParticipantCard><p className="font-heading text-xs font-semibold text-purple">Your journey today</p><p className="mt-2 font-heading text-lg font-semibold text-primary">{data.stage.name}</p><p className="mt-1 text-sm leading-relaxed text-muted-foreground">{data.stage.line}</p></ParticipantCard>
       <div className="grid gap-4 md:grid-cols-2">
