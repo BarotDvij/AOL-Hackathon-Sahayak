@@ -9,6 +9,9 @@ import { useJourney, type ParticipantView } from "@/lib/journey/store";
 import { eligibleSteps } from "@/lib/sahayak/core";
 import type { NextStep } from "@/lib/journey/types";
 import { ChannelIcon, StageBadge } from "./bits";
+import { useLanguage } from "@/lib/journey/i18n";
+import { VOLUNTEERS, broughtBack, messageOutcome } from "@/lib/journey/operations";
+import { OutcomeBadge, VolunteerAvatar } from "./OperationsBits";
 import { CoordinatorSummaries } from "./CoordinatorSummaries";
 
 /** A person's detail opens as a panel from the right, so the coordinator never leaves the list. */
@@ -23,12 +26,15 @@ export function ProfilePanel({ view, onOpenChange }: { view: ParticipantView | n
 }
 
 function Body({ view }: { view: ParticipantView }) {
-  const { catalog, catalogList, chooseStep } = useJourney();
+  const { catalog, catalogList, chooseStep, sentMessages, assignments, assign, setParticipantLanguage, secondFollowUp } = useJourney();
+  const {t} = useLanguage();
+  const personMessages = sentMessages.filter(m=>m.participantId===view.participant.id);
   const { participant: p, history: h, suggestion: s } = view;
   const items = [
-    ...h.courses.map((c) => ({ date: c.completedOn, Icon: BookOpen, text: `Completed ${c.courseName}` })),
-    ...h.events.map((e) => ({ date: e.date, Icon: CalendarHeart, text: `Attended a ${e.eventType}${e.online ? " (online)" : ""}` })),
-    ...h.contacts.map((c) => ({ date: c.date, Icon: MessageCircleReply, text: `${c.direction === "out" ? "Reached out" : "Heard back"} by ${c.channel} · ${c.outcome}` })),
+    ...h.courses.map((c) => ({ date: c.completedOn, Icon: BookOpen, text: `Completed ${c.courseName}`, message: undefined as typeof personMessages[number] | undefined })),
+    ...h.events.map((e) => ({ date: e.date, Icon: CalendarHeart, text: `Attended a ${e.eventType}${e.online ? " (online)" : ""}`, message: undefined as typeof personMessages[number] | undefined })),
+    ...h.contacts.map((c) => ({ date: c.date, Icon: MessageCircleReply, text: `${c.direction === "out" ? "Reached out" : "Heard back"} by ${c.channel} · ${c.outcome}`, message: undefined as typeof personMessages[number] | undefined })),
+    ...personMessages.map(message => ({date: message.sentAt.slice(0,10), Icon: MessageCircleReply, text: message.text, message})),
   ].sort((a, b) => b.date.localeCompare(a.date));
   const paused = view.stage === "paused";
   const step = !paused && s && s.status === "pending" ? catalog.get(s.nextStepId) ?? null : null;
@@ -45,19 +51,20 @@ function Body({ view }: { view: ParticipantView }) {
         <SheetTitle className="font-display text-[22px] font-normal text-primary">{p.firstName} {p.lastName}</SheetTitle>
         <SheetDescription className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
           <StageBadge stage={view.stage} />
-          <span>{p.city}</span>
+          <span>{p.city}</span><span className="rounded-full bg-secondary px-2 py-0.5 text-xs text-purple">{p.language === "French" ? "FR" : "EN"}</span><VolunteerAvatar id={assignments[p.id]}/>{personMessages.some(broughtBack)&&<span className="rounded-full bg-stage-new px-2 py-0.5 text-xs text-stage-new-foreground">{t("Brought back")}</span>}
           {channel && <ChannelIcon channel={channel} withLabel />}
         </SheetDescription>
       </div>
 
       <div className="flex-1 space-y-6 overflow-y-auto px-6 py-5">
+        <section className="space-y-3"><label className="block text-xs font-medium">{t("Assigned volunteer")}<Select value={assignments[p.id] ?? "unassigned"} onValueChange={id=>assign(p.id,id=== "unassigned" ? "" : id)}><SelectTrigger className="mt-1"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="unassigned">{t("Unassigned")}</SelectItem>{VOLUNTEERS.map(v=><SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>)}</SelectContent></Select></label><label className="block text-xs font-medium">{t("Preferred language")}<Select value={p.language} onValueChange={language=>setParticipantLanguage(p.id,language)}><SelectTrigger className="mt-1"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="English">English</SelectItem><SelectItem value="French">Français</SelectItem></SelectContent></Select></label></section>
         <section>
           <h3 className="mb-3 font-heading text-sm font-semibold text-primary">Journey so far</h3>
           <ol className="space-y-3 border-l border-border pl-4">
             {items.map((it, i) => (
               <li key={i} className="relative text-sm">
                 <span className="absolute -left-[1.4rem] top-1 grid size-3 place-items-center rounded-full bg-secondary ring-2 ring-card" />
-                <span className="flex items-start gap-2"><it.Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />{it.text}</span>
+                <span className="flex items-start gap-2"><it.Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden /><span className="min-w-0 whitespace-pre-wrap break-words">{it.text}</span></span>{it.message&&<div className="ml-6 mt-2"><OutcomeBadge message={it.message}/>{messageOutcome(it.message)==="No response after 14 days"&&!p.doNotContact&&<Button size="sm" variant="accent" className="mt-1 h-auto whitespace-normal" onClick={()=>secondFollowUp(it.message?.id ?? "")}>{t("Draft gentle second follow-up")}</Button>}</div>}
                 <span className="ml-6 block text-xs text-muted-foreground">{formatFull(it.date)}</span>
               </li>
             ))}

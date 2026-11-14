@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ActivityRouteImport } from './routes/activity'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ImpactRouteImport } from './routes/impact'
 import { Route as InboxRouteImport } from './routes/inbox'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MeRouteRouteImport } from './routes/me/route'
@@ -19,14 +20,18 @@ import { Route as ParticipantsRouteImport } from './routes/participants'
 import { Route as ProgramsRouteImport } from './routes/programs'
 import { Route as ReviewRouteImport } from './routes/review'
 import { Route as SahayakRouteImport } from './routes/sahayak'
+import { Route as SessionsRouteImport } from './routes/sessions'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StartRouteImport } from './routes/start'
+import { Route as TeamRouteImport } from './routes/team'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as CheckInSessionIdRouteImport } from './routes/check-in.$sessionId'
 import { Route as MeIndexRouteImport } from './routes/me/index'
 import { Route as MeJourneyRouteImport } from './routes/me/journey'
 import { Route as MeMessagesRouteImport } from './routes/me/messages'
 import { Route as MeSettingsRouteImport } from './routes/me/settings'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as SessionsSessionIdCheckInRouteImport } from './routes/sessions_.$sessionId.check-in'
 import { Route as ApiPublicCalendarEventIdRouteImport } from './routes/api/public/calendar/$eventId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -42,6 +47,11 @@ const ActivityRoute = ActivityRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImpactRoute = ImpactRouteImport.update({
+  id: '/impact',
+  path: '/impact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InboxRoute = InboxRouteImport.update({
@@ -79,6 +89,11 @@ const SahayakRoute = SahayakRouteImport.update({
   path: '/sahayak',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SessionsRoute = SessionsRouteImport.update({
+  id: '/sessions',
+  path: '/sessions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -89,12 +104,22 @@ const StartRoute = StartRouteImport.update({
   path: '/start',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TeamRoute = TeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char91DotwellKnownChar93OauthProtectedResourceRoute =
   Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
     id: '/.well-known/oauth-protected-resource',
     path: '/.well-known/oauth-protected-resource',
     getParentRoute: () => rootRouteImport,
   } as any)
+const CheckInSessionIdRoute = CheckInSessionIdRouteImport.update({
+  id: '/check-in/$sessionId',
+  path: '/check-in/$sessionId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MeIndexRoute = MeIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -120,6 +145,12 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SessionsSessionIdCheckInRoute =
+  SessionsSessionIdCheckInRouteImport.update({
+    id: '/sessions_/$sessionId/check-in',
+    path: '/sessions/$sessionId/check-in',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicCalendarEventIdRoute =
   ApiPublicCalendarEventIdRouteImport.update({
     id: '/api/public/calendar/$eventId',
@@ -132,40 +163,50 @@ export interface FileRoutesByFullPath {
   '/me': typeof MeRouteRouteWithChildren
   '/activity': typeof ActivityRoute
   '/auth': typeof AuthRoute
+  '/impact': typeof ImpactRoute
   '/inbox': typeof InboxRoute
   '/mcp': typeof McpRoute
   '/participants': typeof ParticipantsRoute
   '/programs': typeof ProgramsRoute
   '/review': typeof ReviewRoute
   '/sahayak': typeof SahayakRoute
+  '/sessions': typeof SessionsRoute
   '/settings': typeof SettingsRoute
   '/start': typeof StartRoute
+  '/team': typeof TeamRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/check-in/$sessionId': typeof CheckInSessionIdRoute
   '/me/journey': typeof MeJourneyRoute
   '/me/messages': typeof MeMessagesRoute
   '/me/settings': typeof MeSettingsRoute
   '/me/': typeof MeIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/sessions/$sessionId/check-in': typeof SessionsSessionIdCheckInRoute
   '/api/public/calendar/$eventId': typeof ApiPublicCalendarEventIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/activity': typeof ActivityRoute
   '/auth': typeof AuthRoute
+  '/impact': typeof ImpactRoute
   '/inbox': typeof InboxRoute
   '/mcp': typeof McpRoute
   '/participants': typeof ParticipantsRoute
   '/programs': typeof ProgramsRoute
   '/review': typeof ReviewRoute
   '/sahayak': typeof SahayakRoute
+  '/sessions': typeof SessionsRoute
   '/settings': typeof SettingsRoute
   '/start': typeof StartRoute
+  '/team': typeof TeamRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/check-in/$sessionId': typeof CheckInSessionIdRoute
   '/me/journey': typeof MeJourneyRoute
   '/me/messages': typeof MeMessagesRoute
   '/me/settings': typeof MeSettingsRoute
   '/me': typeof MeIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/sessions/$sessionId/check-in': typeof SessionsSessionIdCheckInRoute
   '/api/public/calendar/$eventId': typeof ApiPublicCalendarEventIdRoute
 }
 export interface FileRoutesById {
@@ -174,20 +215,25 @@ export interface FileRoutesById {
   '/me': typeof MeRouteRouteWithChildren
   '/activity': typeof ActivityRoute
   '/auth': typeof AuthRoute
+  '/impact': typeof ImpactRoute
   '/inbox': typeof InboxRoute
   '/mcp': typeof McpRoute
   '/participants': typeof ParticipantsRoute
   '/programs': typeof ProgramsRoute
   '/review': typeof ReviewRoute
   '/sahayak': typeof SahayakRoute
+  '/sessions': typeof SessionsRoute
   '/settings': typeof SettingsRoute
   '/start': typeof StartRoute
+  '/team': typeof TeamRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/check-in/$sessionId': typeof CheckInSessionIdRoute
   '/me/journey': typeof MeJourneyRoute
   '/me/messages': typeof MeMessagesRoute
   '/me/settings': typeof MeSettingsRoute
   '/me/': typeof MeIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/sessions_/$sessionId/check-in': typeof SessionsSessionIdCheckInRoute
   '/api/public/calendar/$eventId': typeof ApiPublicCalendarEventIdRoute
 }
 export interface FileRouteTypes {
@@ -197,40 +243,50 @@ export interface FileRouteTypes {
     | '/me'
     | '/activity'
     | '/auth'
+    | '/impact'
     | '/inbox'
     | '/mcp'
     | '/participants'
     | '/programs'
     | '/review'
     | '/sahayak'
+    | '/sessions'
     | '/settings'
     | '/start'
+    | '/team'
     | '/.well-known/oauth-protected-resource'
+    | '/check-in/$sessionId'
     | '/me/journey'
     | '/me/messages'
     | '/me/settings'
     | '/me/'
     | '/.lovable/oauth/consent'
+    | '/sessions/$sessionId/check-in'
     | '/api/public/calendar/$eventId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/activity'
     | '/auth'
+    | '/impact'
     | '/inbox'
     | '/mcp'
     | '/participants'
     | '/programs'
     | '/review'
     | '/sahayak'
+    | '/sessions'
     | '/settings'
     | '/start'
+    | '/team'
     | '/.well-known/oauth-protected-resource'
+    | '/check-in/$sessionId'
     | '/me/journey'
     | '/me/messages'
     | '/me/settings'
     | '/me'
     | '/.lovable/oauth/consent'
+    | '/sessions/$sessionId/check-in'
     | '/api/public/calendar/$eventId'
   id:
     | '__root__'
@@ -238,20 +294,25 @@ export interface FileRouteTypes {
     | '/me'
     | '/activity'
     | '/auth'
+    | '/impact'
     | '/inbox'
     | '/mcp'
     | '/participants'
     | '/programs'
     | '/review'
     | '/sahayak'
+    | '/sessions'
     | '/settings'
     | '/start'
+    | '/team'
     | '/.well-known/oauth-protected-resource'
+    | '/check-in/$sessionId'
     | '/me/journey'
     | '/me/messages'
     | '/me/settings'
     | '/me/'
     | '/.lovable/oauth/consent'
+    | '/sessions_/$sessionId/check-in'
     | '/api/public/calendar/$eventId'
   fileRoutesById: FileRoutesById
 }
@@ -260,16 +321,21 @@ export interface RootRouteChildren {
   MeRouteRoute: typeof MeRouteRouteWithChildren
   ActivityRoute: typeof ActivityRoute
   AuthRoute: typeof AuthRoute
+  ImpactRoute: typeof ImpactRoute
   InboxRoute: typeof InboxRoute
   McpRoute: typeof McpRoute
   ParticipantsRoute: typeof ParticipantsRoute
   ProgramsRoute: typeof ProgramsRoute
   ReviewRoute: typeof ReviewRoute
   SahayakRoute: typeof SahayakRoute
+  SessionsRoute: typeof SessionsRoute
   SettingsRoute: typeof SettingsRoute
   StartRoute: typeof StartRoute
+  TeamRoute: typeof TeamRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  CheckInSessionIdRoute: typeof CheckInSessionIdRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  SessionsSessionIdCheckInRoute: typeof SessionsSessionIdCheckInRoute
   ApiPublicCalendarEventIdRoute: typeof ApiPublicCalendarEventIdRoute
 }
 
@@ -294,6 +360,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/impact': {
+      id: '/impact'
+      path: '/impact'
+      fullPath: '/impact'
+      preLoaderRoute: typeof ImpactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inbox': {
@@ -345,6 +418,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SahayakRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sessions': {
+      id: '/sessions'
+      path: '/sessions'
+      fullPath: '/sessions'
+      preLoaderRoute: typeof SessionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings': {
       id: '/settings'
       path: '/settings'
@@ -359,11 +439,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StartRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/team': {
+      id: '/team'
+      path: '/team'
+      fullPath: '/team'
+      preLoaderRoute: typeof TeamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/.well-known/oauth-protected-resource': {
       id: '/.well-known/oauth-protected-resource'
       path: '/.well-known/oauth-protected-resource'
       fullPath: '/.well-known/oauth-protected-resource'
       preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/check-in/$sessionId': {
+      id: '/check-in/$sessionId'
+      path: '/check-in/$sessionId'
+      fullPath: '/check-in/$sessionId'
+      preLoaderRoute: typeof CheckInSessionIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/me/': {
@@ -401,6 +495,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sessions_/$sessionId/check-in': {
+      id: '/sessions_/$sessionId/check-in'
+      path: '/sessions/$sessionId/check-in'
+      fullPath: '/sessions/$sessionId/check-in'
+      preLoaderRoute: typeof SessionsSessionIdCheckInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/calendar/$eventId': {
       id: '/api/public/calendar/$eventId'
       path: '/api/public/calendar/$eventId'
@@ -433,17 +534,22 @@ const rootRouteChildren: RootRouteChildren = {
   MeRouteRoute: MeRouteRouteWithChildren,
   ActivityRoute: ActivityRoute,
   AuthRoute: AuthRoute,
+  ImpactRoute: ImpactRoute,
   InboxRoute: InboxRoute,
   McpRoute: McpRoute,
   ParticipantsRoute: ParticipantsRoute,
   ProgramsRoute: ProgramsRoute,
   ReviewRoute: ReviewRoute,
   SahayakRoute: SahayakRoute,
+  SessionsRoute: SessionsRoute,
   SettingsRoute: SettingsRoute,
   StartRoute: StartRoute,
+  TeamRoute: TeamRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  CheckInSessionIdRoute: CheckInSessionIdRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  SessionsSessionIdCheckInRoute: SessionsSessionIdCheckInRoute,
   ApiPublicCalendarEventIdRoute: ApiPublicCalendarEventIdRoute,
 }
 export const routeTree = rootRouteImport

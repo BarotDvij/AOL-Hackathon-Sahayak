@@ -1,3 +1,4 @@
+import { useLanguage } from "@/lib/journey/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -45,6 +46,7 @@ const FILTERS: { id: InboxStatus | "all"; label: string }[] = [
 ];
 
 function InboxPage() {
+  const {t} = useLanguage();
   const { inbox, sahayak } = useJourney();
   const [filter, setFilter] = useState<InboxStatus | "all">("all");
   const [openId, setOpenId] = useState<string | null>(null);
@@ -58,7 +60,7 @@ function InboxPage() {
     <AppShell>
       <div className="space-y-4">
         <header className="mb-2">
-          <h1 className="font-display text-[32px] font-normal text-primary">Inbox</h1>
+          <h1 className="font-display text-[32px] font-normal text-primary">{t('Inbox')}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             What your participants have written, oldest first. Nothing is answered without you.
           </p>
@@ -75,7 +77,7 @@ function InboxPage() {
                 filter === f.id ? "border-purple bg-secondary font-semibold text-purple" : "border-border text-muted-foreground hover:text-foreground",
               )}
             >
-              {f.label}
+              {t(f.label)}
             </button>
           ))}
         </div>
@@ -99,6 +101,7 @@ function InboxPage() {
 }
 
 function MessageCard({ message: m, open, onToggle }: { message: InboxMessage; open: boolean; onToggle: () => void }) {
+  const {t} = useLanguage();
   const { sahayak, views, catalogList, replyInbox } = useJourney();
   const person = views.find((v) => v.participant.id === m.participantId) ?? null;
   const waited = sahayak.on ? waitingDays(m) : null;
@@ -141,7 +144,7 @@ function MessageCard({ message: m, open, onToggle }: { message: InboxMessage; op
 
           {m.status === "replied" && m.replyText ? (
             <div className="mt-3 rounded-lg bg-secondary p-3">
-              <p className="text-xs font-semibold text-primary">Your reply</p>
+              <p className="text-xs font-semibold text-primary">{t('Your reply')}</p>
               <p className="mt-1 whitespace-pre-wrap text-sm text-foreground">{m.replyText}</p>
             </div>
           ) : needsReply(m) ? (
@@ -155,11 +158,11 @@ function MessageCard({ message: m, open, onToggle }: { message: InboxMessage; op
                 <Button size="sm" disabled={!text.trim()} onClick={() => { replyInbox(m.id, text); setDraft(null); }}>
                   <Check className="size-4" aria-hidden />Approve and send reply
                 </Button>
-                <Button size="sm" variant="ghost" onClick={() => setDraft(null)}>Clear</Button>
+                <Button size="sm" variant="ghost" onClick={() => setDraft(null)}>{t('Clear')}</Button>
               </div>
             </div>
           ) : (
-            <p className="mt-3 text-xs text-muted-foreground">No reply needed for this one.</p>
+            <p className="mt-3 text-xs text-muted-foreground">{t('No reply needed for this one.')}</p>
           )}
         </div>
       )}

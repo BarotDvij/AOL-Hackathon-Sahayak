@@ -88,6 +88,6 @@ export function mySlice(id: string, all: { participants: Participant[]; history:
     history: { courses: h.courses, events: h.events },
     stage: participantStage(participant, h),
     practice: all.practice.filter((l) => l.participantId === id),
-    messages: all.messages.filter((m) => m.participantId === id).sort((a, b) => b.sentAt.localeCompare(a.sentAt)),
+    messages: all.messages.filter((m) => m.participantId === id).map(m => ({id:m.id,participantId:m.participantId,suggestionId:m.suggestionId,coordinatorName:m.coordinatorName,text:m.text,sentAt:m.sentAt,reply:m.reply})).sort((a, b) => b.sentAt.localeCompare(a.sentAt)),
   };
 }

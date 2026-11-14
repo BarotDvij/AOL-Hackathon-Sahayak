@@ -1,3 +1,4 @@
+import { useLanguage } from "@/lib/journey/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check, History, MessageCircleReply, Pencil, X } from "lucide-react";
 import { AppShell } from "@/components/journey/AppShell";
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/activity")({
 });
 
 const KIND: Record<ActivityEntry["kind"], { label: string; Icon: typeof Check; className: string }> = {
+  attended: { label: "Attended", Icon: Check, className: "bg-stage-new text-stage-new-foreground" },
   approved: { label: "Approved", Icon: Check, className: "bg-sun-yellow text-primary" },
   edited: { label: "Edited", Icon: Pencil, className: "bg-secondary text-primary" },
   skipped: { label: "Skipped", Icon: X, className: "bg-muted text-muted-foreground" },
@@ -34,6 +36,7 @@ function when(iso: string) {
 }
 
 function ActivityPage() {
+  const {t} = useLanguage();
   const { activity } = useJourney();
 
   if (activity.length === 0) {
@@ -41,9 +44,9 @@ function ActivityPage() {
       <AppShell>
         <div className="mx-auto max-w-md rounded-lg border border-border bg-card p-8 text-center shadow-soft">
           <History className="mx-auto size-6 text-muted-foreground" aria-hidden />
-          <h1 className="mt-3 font-display text-[32px] font-normal text-primary">Nothing reviewed yet</h1>
+          <h1 className="mt-3 font-display text-[32px] font-normal text-primary">{t('Nothing reviewed yet')}</h1>
           <p className="mt-2 text-sm text-muted-foreground">As soon as you approve, edit or skip a message, it shows up here with the time.</p>
-          <Button asChild className="mt-5"><Link to="/review">Go to review queue</Link></Button>
+          <Button asChild className="mt-5"><Link to="/review">{t('Go to review queue')}</Link></Button>
         </div>
       </AppShell>
     );
@@ -58,7 +61,7 @@ function ActivityPage() {
   return (
     <AppShell>
       <header className="mb-5">
-        <h1 className="font-display text-[32px] font-normal text-primary">Activity</h1>
+        <h1 className="font-display text-[32px] font-normal text-primary">{t('Activity')}</h1>
         <p className="mt-1 text-sm text-muted-foreground">What you approved, edited or skipped, and when.</p>
       </header>
       <div className="space-y-6">

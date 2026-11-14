@@ -1,3 +1,4 @@
+import { useLanguage } from "@/lib/journey/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { Sparkles } from "lucide-react";
 import { AppShell } from "@/components/journey/AppShell";
@@ -31,13 +32,14 @@ const FEATURES: SahayakFeature[] = ["dailyBrief", "replyReminders", "followUpRem
 const NUDGES: Nudge[] = ["gentle", "normal", "frequent"];
 
 function SahayakSettingsPage() {
+  const {t} = useLanguage();
   const { sahayak, setSahayakOn, setSahayakFeature, setNudge, resetSahayakDemo } = useJourney();
 
   return (
     <AppShell>
       <div className="max-w-3xl space-y-4">
         <header className="mb-2">
-          <h1 className="font-display text-[32px] font-normal text-primary">Sahayak settings</h1>
+          <h1 className="font-display text-[32px] font-normal text-primary">{t('Sahayak settings')}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Sahayak means helper. It keeps track of follow-ups so no one slips through the cracks.
           </p>
@@ -47,7 +49,7 @@ function SahayakSettingsPage() {
           <div className="flex items-center gap-3">
             <Sparkles className={cn("size-5 shrink-0", sahayak.on ? "text-purple" : "text-muted-foreground")} aria-hidden />
             <div className="min-w-0 flex-1">
-              <h2 className="font-heading text-base font-semibold text-primary">Sahayak</h2>
+              <h2 className="font-heading text-base font-semibold text-primary">{t('Sahayak')}</h2>
               <p className="text-xs text-muted-foreground">
                 {sahayak.on ? "On — it suggests, reminds and drafts. You approve everything." : "Off — the dashboard works in manual mode, exactly as before."}
               </p>
@@ -57,7 +59,7 @@ function SahayakSettingsPage() {
         </section>
 
         <section className={cn("rounded-lg border border-border bg-card p-5 shadow-soft", !sahayak.on && "opacity-60")}>
-          <h2 className="font-heading text-base font-semibold text-primary">What Sahayak keeps an eye on</h2>
+          <h2 className="font-heading text-base font-semibold text-primary">{t('What Sahayak keeps an eye on')}</h2>
           <p className="mt-0.5 text-xs text-muted-foreground">
             {sahayak.on ? "Turn any of these off and that part simply disappears." : "Turn Sahayak on above to change these."}
           </p>
@@ -80,8 +82,8 @@ function SahayakSettingsPage() {
         </section>
 
         <section className={cn("rounded-lg border border-border bg-card p-5 shadow-soft", !sahayak.on && "opacity-60")}>
-          <h2 className="font-heading text-base font-semibold text-primary">Nudge frequency</h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">How much Sahayak brings to you at once.</p>
+          <h2 className="font-heading text-base font-semibold text-primary">{t('Nudge frequency')}</h2>
+          <p className="mt-0.5 text-xs text-muted-foreground">{t('How much Sahayak brings to you at once.')}</p>
           <div role="group" aria-label="Nudge frequency" className="mt-3 inline-flex rounded-lg border border-border bg-secondary/50 p-1">
             {NUDGES.map((n) => (
               <button
@@ -103,9 +105,9 @@ function SahayakSettingsPage() {
         </section>
 
         <section className="rounded-lg border border-border bg-card p-5 shadow-soft">
-          <h2 className="font-heading text-base font-semibold text-primary">Demo</h2>
+          <h2 className="font-heading text-base font-semibold text-primary">{t('Demo')}</h2>
           <p className="mt-0.5 text-xs text-muted-foreground">Shows the first-time question again, so you can see both ways of working.</p>
-          <Button variant="outline" size="sm" className="mt-3" onClick={resetSahayakDemo}>Reset demo</Button>
+          <Button variant="outline" size="sm" className="mt-3" onClick={resetSahayakDemo}>{t('Reset demo')}</Button>
         </section>
       </div>
     </AppShell>

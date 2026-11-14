@@ -8,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { SKIP_REASONS } from "@/lib/journey/config";
 import { formatShort } from "@/lib/journey/dates";
-import { messageLimitNote } from "@/lib/journey/messages";
+import { useLanguage } from "@/lib/journey/i18n";
+import { draftMessage, messageLimitNote } from "@/lib/journey/messages";
 import { useJourney } from "@/lib/journey/store";
 import type { Channel } from "@/lib/journey/types";
 import { cn } from "@/lib/utils";
@@ -27,7 +28,9 @@ export const Route = createFileRoute("/review")({
 });
 
 function ReviewPage() {
-  const { pending, catalog, views, approve, skip, editMessage, setChannel, useAlternate } = useJourney();
+  const { pending, catalog, views, approve, skip, editMessage, setChannel, useAlternate, setMessageLanguage } = useJourney();
+  const {t} = useLanguage();
+  const [translation, setTranslation] = useState(false);
   const total = views.filter((v) => v.suggestion).length;
   const reviewed = total - pending.length;
   const [i, setI] = useState(0);
@@ -43,7 +46,7 @@ function ReviewPage() {
   const text = s ? s.editedMessage ?? s.draftMessage : "";
   const limit = s ? messageLimitNote(text, s.channel) : null;
 
-  const done = () => { setMode("view"); setReason(""); setOther(""); setDraft(""); };
+  const done = () => { setTranslation(false); setMode("view"); setReason(""); setOther(""); setDraft(""); };
   const approveNow = () => { if (s) approve(s.id, text); done(); };
   const skipNow = () => { if (s) skip(s.id, reason === "Other" ? (other.trim() || "Other") : reason); done(); };
 
@@ -65,7 +68,7 @@ function ReviewPage() {
   return (
     <AppShell>
       <header className="mb-5">
-        <h1 className="font-display text-[32px] font-normal text-primary">Review queue</h1>
+        <h1 className="font-display text-[32px] font-normal text-primary">{t("Review queue")}</h1>
         <p className="mt-1 text-sm text-muted-foreground">Nothing is ever sent without you approving it.</p>
       </header>
 
@@ -79,7 +82,7 @@ function ReviewPage() {
       <article className="rounded-lg border border-border bg-card p-5 shadow-soft">
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="font-display text-xl font-normal text-primary">{v.participant.firstName} {v.participant.lastName}</h2>
-          <StageBadge stage={v.stage} />
+          <StageBadge stage={v.stage} /><span className="rounded-full bg-secondary px-2 py-0.5 text-xs text-purple">{v.participant.language === "French" ? "FR" : "EN"}</span>
         </div>
         <p className="mt-0.5 text-xs text-muted-foreground">{v.participant.city}</p>
 
@@ -105,13 +108,15 @@ function ReviewPage() {
           </Select>
         </div>
 
+        <div className="mt-3 flex flex-wrap items-center gap-3"><span className="text-xs text-muted-foreground">{t("Message language")}</span><Select value={s.messageLanguage ?? v.participant.language} onValueChange={language=>{setMessageLanguage(s.id, language);done()}}><SelectTrigger className="w-40" aria-label="Message language"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="English">English</SelectItem><SelectItem value="French">Français</SelectItem></SelectContent></Select></div>
+        {(s.messageLanguage ?? v.participant.language)==="French"&&<div className="mt-2"><Button size="sm" variant="accent" onClick={()=>setTranslation(!translation)} aria-pressed={translation}>{t("Show English translation")}</Button>{translation&&<p className="mt-2 whitespace-pre-wrap border-l-2 border-purple pl-3 text-sm text-muted-foreground">{draftMessage({...v.participant,language:"English"},v.stage,step,s.channel)}<span className="mt-2 block text-xs">English template reference; manual edits are not translated.</span></p>}</div>}
         {mode === "edit" ? (
           <div className="mt-3">
             <Textarea value={draft} onChange={(e) => setDraft(e.target.value)} rows={9} aria-label="Message text" className="bg-card font-normal" />
             <p className={cn("mt-1 text-xs", limit?.ok ? "text-muted-foreground" : "text-destructive")}>{limit?.label}</p>
             <div className="mt-3 flex flex-wrap gap-2">
-              <Button size="sm" onClick={() => { editMessage(s.id, draft); done(); }}>Save changes</Button>
-              <Button size="sm" variant="ghost" onClick={done}>Cancel</Button>
+              <Button size="sm" onClick={() => { editMessage(s.id, draft); done(); }}>{t("Save changes")}</Button>
+              <Button size="sm" variant="ghost" onClick={done}>{t("Cancel")}</Button>
             </div>
           </div>
         ) : mode === "skip" ? (
@@ -134,17 +139,17 @@ function ReviewPage() {
               <Inputish value={other} onChange={setOther} placeholder="Tell us in your words" />
             )}
             <div className="mt-3 flex flex-wrap gap-2">
-              <Button size="sm" onClick={skipNow}>Skip for now</Button>
-              <Button size="sm" variant="ghost" onClick={done}>Back</Button>
+              <Button size="sm" onClick={skipNow}>{t("Skip for now")}</Button>
+              <Button size="sm" variant="ghost" onClick={done}>{t("Back")}</Button>
             </div>
           </div>
         ) : (
           <div className="mt-3">
             <p className="whitespace-pre-wrap rounded-lg border border-border bg-background p-4 text-sm leading-relaxed">{text}</p>
             <div className="mt-4 flex flex-wrap gap-2">
-              <Button onClick={approveNow}><Check className="size-4" aria-hidden />Approve and send</Button>
-              <Button variant="outline" onClick={() => { setDraft(text); setMode("edit"); }}><Pencil className="size-4" aria-hidden />Edit</Button>
-              <Button variant="accent" onClick={() => setMode("skip")}>Skip for now</Button>
+              <Button onClick={approveNow}><Check className="size-4" aria-hidden />{t("Approve and send")}</Button>
+              <Button variant="outline" onClick={() => { setDraft(text); setMode("edit"); }}><Pencil className="size-4" aria-hidden />{t("Edit")}</Button>
+              <Button variant="accent" onClick={() => setMode("skip")}>{t("Skip for now")}</Button>
             </div>
           </div>
         )}

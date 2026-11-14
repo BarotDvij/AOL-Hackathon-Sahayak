@@ -1,3 +1,4 @@
+import { useLanguage } from "@/lib/journey/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 import { AppShell } from "@/components/journey/AppShell";
@@ -17,17 +18,18 @@ export const Route = createFileRoute("/programs")({
 const label = (value: string) => value.replaceAll("_", " ").replace(/^./, (letter) => letter.toUpperCase());
 
 function ProgramsPage() {
+  const {t} = useLanguage();
   const { programCatalog } = useJourney();
   return (
     <AppShell>
       <header className="mb-5">
-        <h1 className="font-display text-[32px] font-normal text-primary">Programs</h1>
+        <h1 className="font-display text-[32px] font-normal text-primary">{t('Programs')}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{programCatalog.programs.length} programs from the uploaded catalog. Course suggestions use these records.</p>
       </header>
       <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-soft">
         <table className="w-full min-w-[850px] border-collapse text-left text-sm">
           <thead className="bg-secondary text-xs text-muted-foreground">
-            <tr><th className="px-5 py-3 font-medium">Name</th><th className="px-4 py-3 font-medium">Level</th><th className="px-4 py-3 font-medium">Online option</th><th className="px-4 py-3 font-medium">Prerequisites</th><th className="px-4 py-3 font-medium">Local availability</th><th className="px-5 py-3 font-medium">Source</th></tr>
+            <tr><th className="px-5 py-3 font-medium">{t('Name')}</th><th className="px-4 py-3 font-medium">{t('Level')}</th><th className="px-4 py-3 font-medium">{t('Online option')}</th><th className="px-4 py-3 font-medium">{t('Prerequisites')}</th><th className="px-4 py-3 font-medium">{t('Local availability')}</th><th className="px-5 py-3 font-medium">{t('Source')}</th></tr>
           </thead>
           <tbody className="divide-y divide-border">
             {programCatalog.programs.map((program) => (
@@ -36,8 +38,8 @@ function ProgramsPage() {
                 <td className="px-4 py-4 text-muted-foreground">{label(program.level)}</td>
                 <td className="px-4 py-4 text-muted-foreground">{label(program.online_option)}</td>
                 <td className="max-w-[330px] px-4 py-4 text-muted-foreground">{program.prerequisite_text}</td>
-                <td className="px-4 py-4">{program.needs_local_check ? <span className="inline-flex rounded-full bg-sun-orange px-2.5 py-1 text-xs font-semibold text-primary">Confirm locally</span> : <span className="text-xs text-muted-foreground">—</span>}</td>
-                <td className="px-5 py-4">{program.source_url ? <a href={program.source_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-medium text-purple hover:underline">Source page<ExternalLink className="size-3" aria-hidden /></a> : <span className="text-xs text-muted-foreground">Not provided in CSV</span>}</td>
+                <td className="px-4 py-4">{program.needs_local_check ? <span className="inline-flex rounded-full bg-sun-orange px-2.5 py-1 text-xs font-semibold text-primary">{t('Confirm locally')}</span> : <span className="text-xs text-muted-foreground">—</span>}</td>
+                <td className="px-5 py-4">{program.source_url ? <a href={program.source_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-medium text-purple hover:underline">{t('Source page')}<ExternalLink className="size-3" aria-hidden /></a> : <span className="text-xs text-muted-foreground">{t('Not provided in CSV')}</span>}</td>
               </tr>
             ))}
           </tbody>

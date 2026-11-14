@@ -57,7 +57,7 @@ export function buildSampleData(base?: Date) {
     const id = `p${String(i + 1).padStart(2, "0")}`;
     const slug = `${r.n[0]}.${r.n[1]}`.toLowerCase().replace(/[^a-z.]/g, "");
     participants.push({
-      id, firstName: r.n[0], lastName: r.n[1], age: r.age ?? 30, city: r.city, language: r.lang ?? "English",
+      id, firstName: r.n[0], lastName: r.n[1], age: r.age ?? 30, city: r.city, language: [6, 12, 16, 23, 30].includes(i) ? "French" : "English",
       email: `${slug}@example.com`, phone: r.ch === "email" && i % 2 ? null : `555-01${String(i).padStart(2, "0")}`,
       preferredChannel: r.ch, prefersOnline: r.city === "Online" || !!r.int?.includes("online"), doNotContact: !!r.dnc, sevaRole: r.seva ?? null, interests: r.int ?? [],
     });

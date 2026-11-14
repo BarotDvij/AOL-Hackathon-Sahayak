@@ -1,4 +1,5 @@
-import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react";
+import { createContext, useEffect, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react";
+import { buildSessions, seedOutcomes, messageOutcome, broughtBack, differentChannel, VOLUNTEERS, type SentRecord, type Session, type CheckIn, type AssignmentProposal } from "./operations";
 import { buildCatalog } from "./catalog";
 import { JOURNEY_CONFIG as C, STAGE_PRIORITY, STAGES } from "./config";
 import { contactText, daysSinceLastContact } from "./contact";
@@ -36,6 +37,12 @@ export interface StageCount { id: StageId; label: string; count: number }
 export interface Opportunity { step: NextStep; suggestedFor: number }
 
 interface Store {
+  sentMessages: SentRecord[]; sessions: Session[]; checkIns: CheckIn[]; assignments: Record<string, string>;
+  activeVolunteer: string; setActiveVolunteer: (id: string) => void; myFollowUps: boolean; setMyFollowUps: (on: boolean) => void;
+  assign: (participantId: string, volunteerId: string) => void; confirmAssignments: (proposals: AssignmentProposal[]) => void;
+  checkIn: (sessionId: string, identity: string) => { ok: boolean; name: string; message?: string };
+  endSession: (id: string) => void; setParticipantLanguage: (id: string, language: string) => void;
+  setMessageLanguage: (id: string, language: string) => void; secondFollowUp: (messageId: string) => void;
   views: ParticipantView[];
   programCatalog: ProgramCatalog;
   catalog: Map<string, NextStep>;
@@ -102,6 +109,16 @@ const weekTrend = (delta: number) => (delta === 0 ? "no change from last week" :
 
 function initial(programCatalog: ProgramCatalog) {
   const data = buildSampleData();
+  for (const id of ["p23", "p24", "p28"]) { const p = data.participants.find(p=>p.id===id); if (p) data.events.push({participantId:id,eventType:"follow-up",date:isoDaysFrom(id === "p23" ? -2 : id === "p24" ? -4 : -6),city:p.city,online:false}); }
+  // Fictional six-month cohorts make the demo's Sahayak activation trend reproducible.
+  const cohortIds = ['p01','p03','p10','p11','p12','p13','p14','p15','p16','p17','p18','p19'];
+  cohortIds.forEach((id,index) => {
+    const month = Math.floor(index / 2); const date = new Date(today().getFullYear(), today().getMonth() - 5 + month, 2);
+    const completion = isoDaysFrom(0,date); const course = data.courses.find(c=>c.participantId===id && c.courseName===C.skyCourseName);
+    if (course) course.completedOn = completion;
+    data.events = data.events.filter(e=>e.participantId!==id || e.eventType!== 'follow-up' || !(e.date>=completion && daysSince(completion,parseIso(e.date))<=30));
+    if (month >= 4 || (month >= 2 && index % 2 === 0)) { const p=data.participants.find(p=>p.id===id); if(p) data.events.push({participantId:id,eventType:'follow-up',date:isoDaysFrom(3,date),city:p.city,online:p.city==='Online'}); }
+  });
   const catalogList = buildCatalog(programCatalog.programs, programCatalog.prerequisites);
   const suggestions: Suggestion[] = [];
   const pickerIds: string[] = [];
@@ -121,10 +138,19 @@ function initial(programCatalog: ProgramCatalog) {
 
 export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATALOG }: { children: ReactNode; programCatalog?: ProgramCatalog }) {
   const [{ data, catalogList, suggestions: s0, pickerIds, seed }] = useState(() => initial(programCatalog));
+  const [participants, setParticipants] = useState(data.participants);
+  const [events, setEvents] = useState(data.events);
+  const [courses, setCourses] = useState(data.courses);
+  const [sessions, setSessions] = useState(buildSessions);
+  const [checkIns, setCheckIns] = useState<CheckIn[]>([]);
+  const [assignments, setAssignments] = useState<Record<string,string>>(() => Object.fromEntries(data.participants.filter((p,i) => i < 10).map((p,i) => [p.id, VOLUNTEERS[i % 5]?.id ?? "v1"])));
+  const [activeVolunteer, setActiveVolunteer] = useState("v1");
+  const [myFollowUps, setMyFollowUps] = useState(false);
+  const [sentMessages, setSentMessages] = useState<SentRecord[]>(() => seedOutcomes([...data.participants.filter(p=>["p23","p24","p28"].includes(p.id)), ...data.participants.filter(p=>!["p23","p24","p28"].includes(p.id))], id => historyFor(id, data.courses, data.events, data.contacts), id => { const p = data.participants.find(x => x.id === id); return id === "p28" ? "dormant" : ["p23","p24"].includes(id) ? "quiet" : p ? computeStage(p, historyFor(id, data.courses, data.events, data.contacts)).stage : "new"; }));
   const [suggestions, setSuggestions] = useState(s0);
   const [contacts, setContacts] = useState(data.contacts);
   const [practice, setPractice] = useState(seed.practice);
-  const [messages, setMessages] = useState<Message[]>(seed.messages);
+  const [messages, setMessages] = useState<Message[]>(() => [...seed.messages, ...sentMessages]);
   const [replies, setReplies] = useState<ParticipantReply[]>([]);
   const [activity, setActivity] = useState<ActivityEntry[]>([]);
   const [city, setCity] = useState("all");
@@ -134,13 +160,13 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
   const seq = useRef(0);
   const catalog = useMemo(() => new Map(catalogList.map((s) => [s.id, s])), [catalogList]);
 
-  const views = useMemo<ParticipantView[]>(() => data.participants.map((p) => {
-    const history = historyFor(p.id, data.courses, data.events, contacts);
+  const views = useMemo<ParticipantView[]>(() => participants.map((p) => {
+    const history = historyFor(p.id, courses, events, contacts);
     const { stage, reasons } = computeStage(p, history);
     return { participant: p, history, stage, why: explainReasons(reasons), suggestion: suggestions.find((s) => s.participantId === p.id) ?? null };
-  }), [data, contacts, suggestions]);
+  }), [participants, courses, events, contacts, suggestions]);
 
-  const me = useMemo(() => meId ? mySlice(meId, { participants: data.participants, history: (id) => historyFor(id, data.courses, data.events, contacts), practice, messages }) : null, [meId, data, contacts, practice, messages]);
+  const me = useMemo(() => meId ? mySlice(meId, { participants: participants, history: (id) => historyFor(id, courses, events, contacts), practice, messages }) : null, [meId, participants, courses, events, contacts, practice, messages]);
 
   const needsFollowUp = useMemo<ParticipantView[]>(() => views
     .filter((v) => v.suggestion?.status === "pending")
@@ -150,19 +176,19 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
   const summary = useMemo<Summary>(() => {
     // "Needed a follow-up last week" is the same rule run against the date a week ago.
     const lastWeek = parseIso(isoDaysFrom(-7));
-    const neededThen = data.participants.filter((p) => computeStage(p, historyFor(p.id, data.courses, data.events, contacts), lastWeek).stage !== "paused").length;
+    const neededThen = participants.filter((p) => computeStage(p, historyFor(p.id, courses, events, contacts), lastWeek).stage !== "paused").length;
     const needNow = views.filter((v) => v.stage !== "paused").length;
     const out = contacts.filter((c) => c.direction === "out");
     const sentThisWeek = out.filter((c) => daysSince(c.date) < 7).length;
     const sentBefore = out.filter((c) => { const d = daysSince(c.date); return d >= 7 && d < 14; }).length;
-    const joined = data.participants.filter((p) => {
-      const first = data.courses.filter((c) => c.participantId === p.id).map((c) => c.completedOn).sort()[0];
+    const joined = participants.filter((p) => {
+      const first = courses.filter((c) => c.participantId === p.id).map((c) => c.completedOn).sort()[0];
       return first !== undefined && daysSince(first) < 7;
     }).length;
     const todayIso = today().toISOString().slice(0, 10);
     const reviewedToday = activity.filter((a) => a.kind !== "edited" && a.at.slice(0, 10) === todayIso).length;
     return {
-      total: data.participants.length,
+      total: participants.length,
       totalNote: joined === 0 ? "no one new this week" : `${joined} joined this week`,
       needFollowUp: needNow,
       needTrend: weekTrend(needNow - neededThen),
@@ -171,7 +197,7 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
       sentThisWeek,
       sentTrend: weekTrend(sentThisWeek - sentBefore),
     };
-  }, [data, views, contacts, suggestions, activity]);
+  }, [participants, courses, events, views, contacts, suggestions, activity]);
 
   const stageCounts = useMemo<StageCount[]>(() => STAGES.map((st) => ({ id: st.id, label: st.label, count: views.filter((v) => v.stage === st.id).length })), [views]);
 
@@ -187,31 +213,72 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
   /** The morning brief: nothing at all while Sahayak is off, or once it has been dismissed for today. */
   const brief = useMemo<BriefItem[]>(
     () => (sahayak.on && sahayak.features.dailyBrief && sahayak.briefDismissedOn !== isoDaysFrom(0)
-      ? briefItems({ views, upcoming, inbox })
+      ? [{id: "brief-impact", text: `Your messages brought back ${new Set(sentMessages.filter(m => broughtBack(m) && m.attendedAt && daysSince(m.attendedAt) < 7).map(m => m.participantId)).size} people this week`, why: "Visits recorded after an approved message to someone going quiet or dormant.", to: "/impact" as const, actionLabel: "Recent wins"}, ...briefItems({ views, upcoming, inbox })]
       : []),
-    [sahayak, views, upcoming, inbox],
+    [sahayak, views, upcoming, inbox, sentMessages],
   );
 
   /** Live reminders, already trimmed to the chosen nudge frequency. */
   const reminders = useMemo<Reminder[]>(
-    () => buildReminders({ views, upcoming, inbox, state: sahayak }),
-    [sahayak, views, upcoming, inbox],
+    () => buildReminders({ views, upcoming, inbox, state: sahayak }).filter(r => !r.participantId || !checkIns.some(c => c.participantId === r.participantId)),
+    [sahayak, views, upcoming, inbox, checkIns],
   );
 
   const update = useCallback((id: string, fn: (s: Suggestion) => Suggestion) => setSuggestions((all) => all.map((s) => (s.id === id ? fn(s) : s))), []);
-  const nameOf = (participantId: string) => data.participants.find((x) => x.id === participantId)?.firstName ?? "participant";
+  const nameOf = (participantId: string) => participants.find((x) => x.id === participantId)?.firstName ?? "participant";
   const log = useCallback((kind: ActivityEntry["kind"], participantId: string, detail: string) => {
     seq.current += 1;
     setActivity((a) => [{ id: `a${seq.current}`, at: new Date().toISOString(), kind, participantId, detail }, ...a]);
   }, []);
   const incoming = (participantId: string, kind: ParticipantReply["kind"], about: string, nextStepId?: string) => {
-    const p = data.participants.find((x) => x.id === participantId)!;
+    const p = participants.find((x) => x.id === participantId);
+    if (!p) return;
     setContacts((c) => [...c, { participantId, channel: p.preferredChannel ?? "email", direction: "in", date: isoDaysFrom(0), outcome: kind === "not now" ? "declined" : "replied", ...(nextStepId ? { nextStepId } : {}) }]);
+    const latest = [...sentMessages].filter(m=>m.participantId===participantId).sort((a,b)=>b.sentAt.localeCompare(a.sentAt))[0];
+    if (latest) setSentMessages(all=>all.map(m=>m.id===latest.id?{...m,reply:kind=== "not now"?"not now":"join"}:m));
     setReplies((r) => [{ id: `r${Date.now()}`, participantId, kind, about, at: new Date().toISOString() }, ...r]);
   };
 
   const store: Store = {
     views, programCatalog, catalog, catalogList, practice, replies, pickerIds, city, setCity, meId, setMeId, me,
+    sentMessages, sessions, checkIns, assignments, activeVolunteer, setActiveVolunteer, myFollowUps, setMyFollowUps,
+    assign: (id, volunteerId) => setAssignments(all => ({...all, [id]: volunteerId})),
+    confirmAssignments: proposals => setAssignments(all => ({...all, ...Object.fromEntries(proposals.map(p => [p.participantId, p.volunteerId]))})),
+    endSession: id => setSessions(all => all.map(s => s.id === id ? {...s, ended: true} : s)),
+    setParticipantLanguage: (id, language) => {
+      setParticipants(all => all.map(p => p.id === id ? {...p, language} : p));
+      const v = views.find(v => v.participant.id === id);
+      if (v) setSuggestions(all => all.map(s => { const step = catalog.get(s.nextStepId); return s.participantId === id && step ? {...s, editedMessage: null, draftMessage: draftMessage({...v.participant, language}, v.stage, step, s.channel)} : s; }));
+    },
+    setMessageLanguage: (id, language) => { const s = suggestions.find(s => s.id === id); const v = views.find(v => v.participant.id === s?.participantId); const step = s ? catalog.get(s.nextStepId) : undefined; if (s && v && step) update(id, x => ({...x, messageLanguage: language, editedMessage: null, draftMessage: draftMessage({...v.participant, language}, v.stage, step, x.channel)})); },
+    secondFollowUp: messageId => {
+      const m = sentMessages.find(m => m.id === messageId); const v = views.find(v => v.participant.id === m?.participantId);
+      if (!m || !v || v.participant.doNotContact || messageOutcome(m) !== "No response after 14 days") return;
+      const step = catalogList.find(s => s.id === "gentle-checkin"); if (!step) return;
+      const channel = differentChannel(m.channel, v.participant);
+      const replacement: Suggestion = {id: `second-${m.id}`, participantId: m.participantId, nextStepId: step.id, alternateNextStepId: null, channel, why: "No response after 14 days. Try a gentle note through a different channel.", draftMessage: draftMessage(v.participant, v.stage, step, channel), editedMessage: null, status: "pending", skipReason: null, reviewedBy: null, reviewedAt: null, lowData: false};
+      setSuggestions(all => [...all.filter(s => s.participantId !== m.participantId), replacement]);
+    },
+    checkIn: (sessionId, identity) => {
+      const session = sessions.find(s => s.id === sessionId);
+      if (!session || session.ended || !identity.trim()) return {ok: false, name: "", message: "This check-in is closed or the name is missing."};
+      const needle = identity.trim().toLowerCase();
+      let person = participants.find(p => `${p.firstName} ${p.lastName}`.toLowerCase() === needle || p.firstName.toLowerCase() === needle || p.phone === identity.trim());
+      const firstTimer = !person || !events.some(e => e.participantId === person?.id);
+      if (!person) { const words = identity.trim().split(/\s+/); const isPhone = /^[+\d ()-]+$/.test(identity.trim()); person = {id: `guest-${Date.now()}`, firstName: isPhone ? "Guest" : words[0] ?? "Guest", lastName: isPhone ? "" : words.slice(1).join(" "), age: 30, city: session.city, language: "English", email: null, phone: isPhone ? identity.trim() : null, preferredChannel: isPhone ? "sms" : null, doNotContact: false, sevaRole: null, interests: []}; setParticipants(all => [...all, person as Participant]); }
+      if (checkIns.some(c => c.sessionId === sessionId && c.participantId === person?.id)) return {ok: true, name: person.firstName, message: "Already checked in"};
+      const id = person.id; const stageBefore = views.find(v => v.participant.id === id)?.stage ?? "new"; const at = isoDaysFrom(0);
+      setCheckIns(all => [...all, {sessionId, participantId: id, at, firstTimer, stageBefore}]);
+      setEvents(all => [...all, {participantId: id, eventType: session.eventType, date: at, city: session.city, online: session.city === "Online"}]);
+      if (session.courseName) setCourses(all => [...all, {participantId: id, courseName: session.courseName ?? session.name, completedOn: at}]);
+      setContacts(all => [...all, {participantId: id, channel: person?.preferredChannel ?? "email", direction: "in", date: at, outcome: "enrolled"}]);
+      const latest = [...sentMessages].filter(m => m.participantId === id && !m.attendedAt && m.sentAt.slice(0,10) <= at).sort((a,b) => b.sentAt.localeCompare(a.sentAt))[0];
+      if (latest) setSentMessages(all => all.map(m => m.id === latest.id ? {...m, attendedAt: at, attendedSession: session.name} : m));
+      setSahayak(s => ({...s, dismissed: [...s.dismissed, ...reminders.filter(r => r.participantId === id).map(r => r.id)]}));
+      setSuggestions(all=>all.map(s=>s.participantId===id && s.status=== "pending" ? {...s,status:"skipped",skipReason:"Attended a session; reminder resolved",reviewedAt:new Date().toISOString()} : s));
+      log("attended", id, `Checked in to ${session.name}`);
+      return {ok: true, name: person.firstName};
+    },
     summary, stageCounts, priority, needsFollowUp, upcoming, activity,
     pending: suggestions.filter((s) => s.status === "pending"),
     sahayak, brief, reminders, inbox,
@@ -228,6 +295,7 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
       if (!m || m.status === "replied") return;
       setInbox((all) => all.map((x): InboxMessage => (x.id === id ? { ...x, status: "replied", replyText: text } : x)));
       setContacts((c) => [...c, { participantId: m.participantId, channel: m.channel, direction: "out", date: isoDaysFrom(0), outcome: "no reply" }]);
+      setSentMessages(all => [...all, {id: `inbox-reply-${m.id}`, participantId: m.participantId, suggestionId: null, coordinatorName: C.coordinatorName, text, sentAt: new Date().toISOString(), reply: null, channel: m.channel, stageBefore: views.find(v=>v.participant.id===m.participantId)?.stage ?? "new", volunteerId: assignments[m.participantId]}]);
       log("replied", m.participantId, `Replied to ${m.from} on ${m.channel}`);
     },
     editMessage: (id, message) => {
@@ -239,7 +307,9 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
     approve: (id, message) => {
       const s = suggestions.find((x) => x.id === id);
       if (!s) return;
+      if (s.status !== "pending") return;
       const now = new Date().toISOString();
+      setSentMessages(all => [...all, {id: `msg-${s.id}`, participantId: s.participantId, suggestionId: s.id, coordinatorName: C.coordinatorName, text: message, sentAt: now, reply: null, channel: s.channel, stageBefore: views.find(v => v.participant.id === s.participantId)?.stage ?? "new", volunteerId: assignments[s.participantId]}]);
       const step = catalog.get(s.nextStepId);
       update(id, (x) => ({ ...x, editedMessage: message, status: "approved", reviewedBy: C.coordinatorName, reviewedAt: now }));
       setContacts((c) => [...c, { participantId: s.participantId, channel: s.channel, direction: "out", date: isoDaysFrom(0), outcome: "no reply", nextStepId: s.nextStepId }]);
@@ -259,8 +329,9 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
     },
     useAlternate: (id) => update(id, (s) => {
       if (!s.alternateNextStepId) return s;
-      const v = views.find((x) => x.participant.id === s.participantId)!;
-      const alt = catalog.get(s.alternateNextStepId)!;
+      const v = views.find((x) => x.participant.id === s.participantId);
+      const alt = catalog.get(s.alternateNextStepId);
+      if (!v || !alt) return s;
       return { ...s, nextStepId: alt.id, alternateNextStepId: s.nextStepId, editedMessage: null, lowData: false, draftMessage: draftMessage(v.participant, v.stage, alt, s.channel) };
     }),
     setChannel: (id, channel) => {
@@ -270,7 +341,7 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
       update(id, (x) => {
         const step = catalog.get(x.nextStepId);
         if (!v || !step) return { ...x, channel };
-        return { ...x, channel, draftMessage: draftMessage(v.participant, v.stage, step, channel) };
+        return { ...x, channel, draftMessage: draftMessage({...v.participant, language: x.messageLanguage ?? v.participant.language}, v.stage, step, channel) };
       });
     },
     chooseStep: (participantId, stepId) => {
@@ -292,9 +363,15 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
       const m = messages.find((x) => x.id === messageId);
       if (!m || m.participantId !== meId) return;
       setMessages((all) => all.map((x) => (x.id === messageId ? { ...x, reply } : x)));
+      setSentMessages(all => all.map(x => x.id === messageId ? {...x, reply} : x));
       incoming(m.participantId, reply, "your message");
     },
   };
+  useEffect(() => {
+    const channel = new BroadcastChannel('journey-check-in');
+    channel.onmessage = event => { const value = event.data; if (typeof value?.sessionId === 'string' && typeof value?.identity === 'string') store.checkIn(value.sessionId, value.identity); };
+    return () => channel.close();
+  }, [sessions, checkIns, participants, events, sentMessages]);
   return <Ctx.Provider value={store}>{children}</Ctx.Provider>;
 }
 

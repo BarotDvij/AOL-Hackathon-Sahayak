@@ -64,12 +64,13 @@ export interface Suggestion {
   reviewedAt: string | null;
   /** True when the participant has so little on record that only a check-in is honest. */
   lowData: boolean;
+  messageLanguage?: string;
 }
 /** One line in the coordinator's activity history: what happened, to whom, when. */
 export interface ActivityEntry {
   id: string;
   at: string;
-  kind: "approved" | "edited" | "skipped" | "replied";
+  kind: "approved" | "edited" | "skipped" | "replied" | "attended";
   participantId: string;
   detail: string;
 }

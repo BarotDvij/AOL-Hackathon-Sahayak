@@ -1,16 +1,18 @@
+import { useLanguage } from "@/lib/journey/i18n";
 import { formatShort } from "@/lib/journey/dates";
 import { useJourney } from "@/lib/journey/store";
 
 /** The next events and courses in date order, with how many people each one is suggested for. */
 export function UpcomingList() {
+  const {t} = useLanguage();
   const { upcoming } = useJourney();
 
   return (
     <section aria-label="Upcoming opportunities" className="flex h-full flex-col rounded-lg border border-border bg-card p-5 shadow-soft">
-      <h2 className="font-heading text-base font-semibold text-primary">Upcoming opportunities</h2>
+      <h2 className="font-heading text-base font-semibold text-primary">{t('Upcoming opportunities')}</h2>
       <p className="mt-0.5 text-xs text-muted-foreground">What is coming up, and who it fits.</p>
       {upcoming.length === 0 ? (
-        <p className="mt-4 rounded-lg bg-muted p-4 text-sm text-muted-foreground">Nothing is on the calendar yet.</p>
+        <p className="mt-4 rounded-lg bg-muted p-4 text-sm text-muted-foreground">{t('Nothing is on the calendar yet.')}</p>
       ) : (
         <ul className="mt-2 divide-y divide-border">
           {upcoming.map(({ step, suggestedFor }) => (

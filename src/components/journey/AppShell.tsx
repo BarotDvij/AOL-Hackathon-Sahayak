@@ -1,21 +1,25 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Bell, BookOpen, History, Inbox, LayoutDashboard, Mail, Menu, Settings, Sparkles, Users } from "lucide-react";
+import { BarChart3, CalendarDays, UserRound, Bell, BookOpen, History, Inbox, LayoutDashboard, Mail, Menu, Settings, Sparkles, Users } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { needsReply } from "@/lib/journey/inbox-seed";
 import { useJourney } from "@/lib/journey/store";
+import { useLanguage } from "@/lib/journey/i18n";
 import { cn } from "@/lib/utils";
 import { RemindersPanel } from "./RemindersPanel";
 import { SahayakChat } from "./SahayakChat";
 import { SahayakIntro } from "./SahayakIntro";
 
-type To = "/" | "/participants" | "/programs" | "/review" | "/inbox" | "/activity" | "/settings";
+type To = "/" | "/impact" | "/sessions" | "/team" | "/participants" | "/programs" | "/review" | "/inbox" | "/activity" | "/settings";
 type NavItem = { to: To; label: string; Icon: typeof LayoutDashboard; exact?: boolean; alsoActive?: string };
 
 const NAV: NavItem[] = [
   { to: "/", label: "Dashboard", Icon: LayoutDashboard, exact: true },
   { to: "/participants", label: "Participants", Icon: Users },
+  { to: "/impact", label: "Impact", Icon: BarChart3 },
+  { to: "/sessions", label: "Sessions", Icon: CalendarDays },
+  { to: "/team", label: "Team", Icon: UserRound },
   { to: "/programs", label: "Programs", Icon: BookOpen },
   { to: "/review", label: "Review Queue", Icon: Inbox },
   { to: "/inbox", label: "Inbox", Icon: Mail },
@@ -24,6 +28,7 @@ const NAV: NavItem[] = [
 ];
 
 function NavItemLink({ to, label, Icon, exact, alsoActive, waiting, onNavigate }: NavItem & { waiting?: number | undefined; onNavigate?: () => void }) {
+  const {t} = useLanguage();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const highlight = !!alsoActive && pathname.startsWith(alsoActive);
 
@@ -37,7 +42,7 @@ function NavItemLink({ to, label, Icon, exact, alsoActive, waiting, onNavigate }
       activeProps={{ className: "bg-secondary text-primary font-semibold" }}
     >
       <Icon className="size-4 shrink-0" aria-hidden />
-      <span className="flex-1 truncate">{label}</span>
+      <span className="flex-1 truncate">{t(label)}</span>
       {waiting ? <span className="rounded-full bg-sun-orange px-1.5 text-[11px] font-semibold leading-4 tabular-nums text-primary">{waiting}</span> : null}
     </Link>
   );
@@ -45,13 +50,14 @@ function NavItemLink({ to, label, Icon, exact, alsoActive, waiting, onNavigate }
 
 /** The one place Sahayak is turned on or off without leaving the page. */
 function SahayakSwitch({ onNavigate }: { onNavigate?: () => void }) {
+  const {t} = useLanguage();
   const { sahayak, setSahayakOn } = useJourney();
   return (
     <div className="mx-3 mt-3 rounded-lg border border-border bg-secondary/60 p-3">
       <div className="flex items-center gap-2">
         <Sparkles className={cn("size-4 shrink-0", sahayak.on ? "text-purple" : "text-muted-foreground")} aria-hidden />
         <span className="min-w-0 flex-1 truncate font-heading text-sm font-semibold text-primary">Sahayak</span>
-        <span className="text-xs font-medium text-muted-foreground">{sahayak.on ? "On" : "Off"}</span>
+        <span className="text-xs font-medium text-muted-foreground">{t(sahayak.on ? "On" : "Off")}</span>
         <Switch checked={sahayak.on} onCheckedChange={setSahayakOn} aria-label="Turn Sahayak on or off" />
       </div>
       <Link
@@ -59,7 +65,7 @@ function SahayakSwitch({ onNavigate }: { onNavigate?: () => void }) {
         onClick={onNavigate}
         className="mt-1.5 inline-block text-xs font-medium text-purple hover:underline"
       >
-        Sahayak settings
+        {t("Sahayak settings")}
       </Link>
     </div>
   );
@@ -85,6 +91,7 @@ function BellButton({ count, onClick, className }: { count: number; onClick: () 
 
 /** The coordinator's frame: a fixed 240px sidebar on wide screens, a slide-out menu on phones. */
 export function AppShell({ children }: { children: ReactNode }) {
+  const {t} = useLanguage();
   const { summary, sahayak, reminders, inbox } = useJourney();
   const [open, setOpen] = useState(false);
   const [remindersOpen, setRemindersOpen] = useState(false);
@@ -102,7 +109,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <nav className="mt-2 flex flex-1 flex-col gap-1 px-3" aria-label="Sections">
           {NAV.map((n) => <NavItemLink key={n.to} {...n} waiting={badgeFor(n.to)} />)}
         </nav>
-        <p className="px-5 py-4 text-xs leading-relaxed text-muted-foreground">Nothing is ever sent without you approving it.</p>
+        <p className="px-5 py-4 text-xs leading-relaxed text-muted-foreground">{t("Nothing is ever sent without you approving it.")}</p>
       </aside>
 
       <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-border bg-card px-4 py-3 lg:hidden">
@@ -122,7 +129,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <nav className="mt-2 flex flex-1 flex-col gap-1 px-3" aria-label="Sections">
                 {NAV.map((n) => <NavItemLink key={n.to} {...n} waiting={badgeFor(n.to)} onNavigate={() => setOpen(false)} />)}
               </nav>
-              <p className="px-5 py-4 text-xs leading-relaxed text-muted-foreground">Nothing is ever sent without you approving it.</p>
+              <p className="px-5 py-4 text-xs leading-relaxed text-muted-foreground">{t("Nothing is ever sent without you approving it.")}</p>
             </SheetContent>
           </Sheet>
         </div>
@@ -139,7 +146,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span className="text-xs text-muted-foreground">Sahayak is off · manual mode</span>
           )}
           <div className="flex items-center gap-3">
-            <Link to="/start" className="text-xs font-medium text-purple hover:underline">Switch view</Link>
+            <Link to="/start" className="text-xs font-medium text-purple hover:underline">{t("Switch view")}</Link>
             {sahayak.on && <BellButton count={reminders.length} onClick={() => setRemindersOpen(true)} />}
           </div>
         </div>

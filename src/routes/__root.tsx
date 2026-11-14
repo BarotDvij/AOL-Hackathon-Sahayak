@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
+import { LanguageProvider } from "@/lib/journey/i18n";
 import { JourneyProvider } from "@/lib/journey/store";
 import { Toaster } from "@/components/ui/sonner";
 import appCss from "../styles.css?url";
@@ -141,10 +142,10 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <JourneyProvider programCatalog={programCatalog}>
+      <LanguageProvider><JourneyProvider programCatalog={programCatalog}>
           <Outlet />
         <Toaster position="bottom-right" />
-      </JourneyProvider>
+      </JourneyProvider></LanguageProvider>
     </QueryClientProvider>
   );
 }
