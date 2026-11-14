@@ -1,5 +1,5 @@
 import { Link, useRouterState, type LinkProps } from "@tanstack/react-router";
-import { CalendarDays, Home, Play, Route as JourneyIcon, Settings, Sparkles } from "lucide-react";
+import { CalendarDays, Home, Route as JourneyIcon, Settings, Sparkles } from "lucide-react";
 import type { ReactNode } from "react";
 import { Switch } from "@/components/ui/switch";
 import { useDemoParticipant } from "@/components/participant/DemoParticipantContext";
@@ -9,7 +9,6 @@ import { ParticipantMessageBox } from "./ParticipantMessageBox";
 const NAV = [
   { to: "/me", label: "Home", Icon: Home, exact: true },
   { to: "/me/journey", label: "My journey", Icon: JourneyIcon },
-  { to: "/me/practice", label: "Practice", Icon: Play },
   { to: "/me/settings", label: "Settings", Icon: Settings },
 ] satisfies { to: LinkProps["to"]; label: string; Icon: typeof Home; exact?: boolean }[];
 
@@ -55,7 +54,7 @@ export function ParticipantShell({ children }: { children: ReactNode }) {
       <main className="mx-auto w-full max-w-[1280px] px-4 pb-8 pt-6 sm:px-6 lg:px-8 lg:pt-8">{children}</main>
       </div>
       <ParticipantMessageBox />
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-border bg-card lg:hidden" aria-label="Participant sections">
+      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-3 border-t border-border bg-card lg:hidden" aria-label="Participant sections">
         {NAV.map(({ to, label, Icon, exact }) => {
           const active = exact ? pathname === to : pathname.startsWith(to);
           return <Link key={to} to={to} aria-current={active ? "page" : undefined} className={cn("flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition-colors", active ? "bg-secondary text-primary" : "text-muted-foreground hover:bg-secondary")}><Icon className="size-5" aria-hidden />{label}</Link>;
