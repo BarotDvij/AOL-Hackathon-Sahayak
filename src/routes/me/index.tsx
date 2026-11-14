@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Check, Clock3, Plus } from "lucide-react";
 import { toast } from "sonner";
+import { formatShort } from "@/lib/journey/dates";
 import { useDemoParticipant } from "@/components/participant/DemoParticipantContext";
 import { ParticipantCard, EmptyParticipantNote } from "@/components/participant/ParticipantShell";
 import { Button } from "@/components/ui/button";
@@ -55,6 +57,7 @@ function ParticipantHome() {
           <p className="mt-3 text-xs text-muted-foreground">{data.schedule.note} {data.schedule.safetyNote}</p>
         </ParticipantCard>
       </div>
+      <UpcomingEventsCard events={data.upcoming} />
       {data.messages.length === 0 && <EmptyParticipantNote>No coordinator messages yet. When one is approved, it will appear in Messages.</EmptyParticipantNote>}
     </div>
   );
