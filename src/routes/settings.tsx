@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/journey/AppShell";
-import { JOURNEY_CONFIG as C, STAGES } from "@/lib/journey/config";
-import { stageLabel } from "@/lib/journey/config";
+import { JOURNEY_CONFIG as C, STAGES, stageLabel } from "@/lib/journey/config";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
