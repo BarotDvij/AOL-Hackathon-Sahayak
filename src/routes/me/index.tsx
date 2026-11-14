@@ -55,10 +55,6 @@ function ParticipantHome() {
           <p className="mt-3 text-xs text-muted-foreground">{data.schedule.note} {data.schedule.safetyNote}</p>
         </ParticipantCard>
       </div>
-      <section className="pt-2" aria-label="Coming up for you">
-        <h2 className="font-heading text-base font-semibold text-primary">Coming up for you</h2>
-        {data.upcoming.length === 0 ? <p className="mt-3 text-sm text-muted-foreground">Nothing scheduled just now. Your practice is still here for you.</p> : <div className="mt-3 grid gap-4 md:grid-cols-3">{data.upcoming.slice(0, 3).map((event) => <article key={event.id} className="flex flex-col rounded-lg border border-border bg-card p-5 shadow-soft"><h3 className="font-heading text-sm font-semibold text-primary">{event.title}</h3><p className="mt-1 text-xs text-muted-foreground">{event.startDate ?? (event.suggestedTiming ? `Suggested timing: ${event.suggestedTiming}` : "Timing to be confirmed")} · {event.city}</p>{event.needsLocalCheck && <p className="mt-3 inline-flex rounded-full bg-sun-orange px-2.5 py-1 text-xs font-semibold text-primary">Confirm with your centre</p>}<div className="mt-auto flex flex-wrap gap-2 pt-4"><Button size="sm" disabled={data.interests.includes(event.id)} variant={data.interests.includes(event.id) ? "secondary" : "outline"} onClick={() => { showInterest(event.id); toast.success("Your interest is noted for this demo."); }}>{data.interests.includes(event.id) ? "Interested" : "I'm interested"}</Button>{event.calendarUrl && <Button asChild size="sm" variant="accent"><a href={event.calendarUrl}><CalendarPlus className="size-4" aria-hidden />Calendar</a></Button>}</div></article>)}</div>}
-      </section>
       {data.messages.length === 0 && <EmptyParticipantNote>No coordinator messages yet. When one is approved, it will appear in Messages.</EmptyParticipantNote>}
     </div>
   );
