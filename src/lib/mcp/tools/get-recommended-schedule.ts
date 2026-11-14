@@ -1,6 +1,7 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { normalizeOnboardingAnswers, recommendedSchedule } from "@/lib/sahayak/core";
 import { withParticipant } from "../participant";
+import { fetchProgramCatalog } from "@/lib/program-catalog";
 
 export default defineTool({
   name: "get_recommended_schedule",

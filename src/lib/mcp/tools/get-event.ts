@@ -1,8 +1,10 @@
 import { defineTool, ToolError } from "@lovable.dev/mcp-js";
 import { getRequestUrl } from "@tanstack/react-start/server";
 import { z } from "zod";
-import { participantEvents } from "@/lib/sahayak/core";
+import { normalizeOnboardingAnswers, participantEvents } from "@/lib/sahayak/core";
 import { withParticipant } from "../participant";
+import { fetchProgramCatalog } from "@/lib/program-catalog";
+import { buildCatalog } from "@/lib/journey/catalog";
 
 export default defineTool({
   name: "get_event",
