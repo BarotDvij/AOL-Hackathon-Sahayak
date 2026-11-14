@@ -30,7 +30,7 @@ describe("dashboard and review state", () => {
     expect(hasEnoughInfo(hist)).toBe(false);
     expect(s?.lowData).toBe(true);
     expect(s?.why).toBe(LOW_DATA_WHY);
-    expect(buildCatalog().get(s!.nextStepId)?.type).toBe("check-in");
+    expect(buildCatalog().find((x) => x.id === s!.nextStepId)?.type).toBe("check-in");
   });
 
   it("recommends with confidence once there is a second course on record", () => {
