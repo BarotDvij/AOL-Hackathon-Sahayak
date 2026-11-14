@@ -1,6 +1,9 @@
 # Roadmap
 
 ## Done
+- Replaced participant Messages navigation with a bottom-left openable message box, keeping replies and the direct URL. Verified open/close, reply readback, page navigation, and desktop/phone layouts; five participant tests pass.
+
+## Done
 - Added editable location intake and Montréal official-source event listings checked November 14, 2026; graduate-only follow-ups respect intake, dated occurrences expire, and official calendar/details links stay available. This is a verified snapshot, not automatic live synchronization. Verified intake save → My journey → Home, calendar download and phone layout; 19 relevant tests pass.
 
 ## Done
