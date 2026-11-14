@@ -1,5 +1,8 @@
 # Roadmap
 
+## In progress
+- Add editable location intake and official Montréal event listings, with source links and verified dates; check intake-to-calendar flow.
+
 ## Done
 - Participant Home: an "Upcoming events" card lists the person's own fitting events in date order — dated ones show a date chip and an "Add to calendar" link that downloads a real .ics, undated catalog options show a clock chip and their suggested timing, and anything needing local confirmation says "Confirm with your centre". Long lists collapse behind "Show all". Verified in the preview; 10 participant tests pass.
 

@@ -20,6 +20,7 @@ const GOAL_OPTIONS = [
 ] as const;
 
 export const ONBOARDING_QUESTIONS = [
+  { id: "location", kind: "location", text: "Which city do you live in?", options: [{ value: "Montréal", label: "Montréal, Québec, Canada" }] },
   { id: "course_level", kind: "choice", text: "Which is the furthest Art of Living course you've completed?", options: JOURNEY_LADDER.map(({ value, label }) => ({ value, label })) },
   { id: "practice_following", kind: "choice", text: "How closely are you keeping the home practice for that course?", options: [
     { value: "fully", label: "Fully — every day" }, { value: "mostly", label: "Most days" }, { value: "sometimes", label: "Now and then" }, { value: "not_now", label: "Not practising right now" },
@@ -49,7 +50,7 @@ export function normalizeOnboardingAnswers(input: unknown): OnboardingAnswers {
     const value = raw[q.id];
     if (typeof value !== "string") continue;
     if (q.options.some((o) => o.value === value)) clean[q.id] = value;
-    else if (q.kind === "goal" && value.trim()) clean[q.id] = value.trim().slice(0, 200);
+    else if ((q.kind === "goal" || q.kind === "location") && value.trim()) clean[q.id] = value.trim().slice(0, q.kind === "location" ? 100 : 200);
   }
   return clean;
 }
