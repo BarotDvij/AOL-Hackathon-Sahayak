@@ -16,7 +16,7 @@ interface DemoParticipantValue {
   saveAnswers: (answers: OnboardingAnswers) => void;
   welcomeOpen: boolean;
   closeWelcome: () => void;
-  sahayaakOn: boolean;
+  sahayakOn: boolean;
   setSahayakOn: (on: boolean) => void;
 }
 
@@ -81,7 +81,7 @@ export function DemoParticipantProvider({ children }: { children: ReactNode }) {
     saveAnswers: (next) => setAnswers(normalizeOnboardingAnswers(next)),
     welcomeOpen,
     closeWelcome: () => setWelcomeOpen(false),
-    sahayaakOn,
+    sahayakOn,
     setSahayakOn,
   };
 
