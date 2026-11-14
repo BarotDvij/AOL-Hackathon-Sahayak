@@ -4,6 +4,7 @@ import { comingUpFor, friendlyStage, milestones, participantStage, practiceStrea
 import { buildSampleData } from "@/lib/journey/sample-data";
 import { computeStage, explainReasons } from "@/lib/journey/stages";
 import { buildSuggestion, eligibleSteps, hasEnoughInfo, pickChannel, scoreStep } from "@/lib/journey/suggestions";
+import { canonicalCourseName, PART_1, SAHAJ, type Program } from "@/lib/journey/programs";
 import type { History, NextStep, Participant, PracticeLog, StageId } from "@/lib/journey/types";
 
 /** The single entry point for journey rules used by screens, server functions and MCP tools. */
