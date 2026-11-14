@@ -14,6 +14,7 @@ export const Route = createFileRoute("/participants")({
       { name: "description", content: "Everyone in your centre with their stage, last contact and suggested next step." },
       { property: "og:title", content: "Participants · Journey Companion" },
       { property: "og:description", content: "Everyone in your centre with their stage, last contact and suggested next step." },
+      { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ParticipantsPage,

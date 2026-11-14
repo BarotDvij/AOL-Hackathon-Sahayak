@@ -12,6 +12,7 @@ export const Route = createFileRoute("/activity")({
       { name: "description", content: "A simple history of the follow-ups you approved, edited or skipped, and when." },
       { property: "og:title", content: "Activity log · Journey Companion" },
       { property: "og:description", content: "A simple history of the follow-ups you approved, edited or skipped, and when." },
+      { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ActivityPage,

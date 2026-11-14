@@ -20,6 +20,7 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Who needs a caring next step today, how the stages break down, and what is waiting for your review." },
       { property: "og:title", content: "Dashboard · Journey Companion" },
       { property: "og:description", content: "Who needs a caring next step today, how the stages break down, and what is waiting for your review." },
+      { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
     ],
   }),
   component: DashboardPage,

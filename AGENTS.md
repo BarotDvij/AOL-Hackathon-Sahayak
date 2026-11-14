@@ -29,8 +29,9 @@ use the editor.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
 
-- Journey stage, reason, suggestion and message logic lives as plain functions in `src/lib/journey/` (thresholds in `config.ts`); UI only reads it via the `JourneyProvider` store — so it can move to a database later without touching screens.
-- Phase 1 data is in-memory sample data with dates relative to today; no sending ever happens without a coordinator's Approve.
+- Journey stage, reason and suggestion rules enter through `src/lib/sahayak/core.ts` (thresholds stay in `src/lib/journey/config.ts`); coordinator UI, participant server functions and every MCP tool use that same entry point so their answers agree.
+- Coordinator sample data stays in memory with dates relative to today; participant onboarding, practice, goals, interests, messages and summaries persist in Lovable Cloud behind OAuth and RLS. No sending ever happens without a coordinator's Approve.
 - Coordinator screens are one route per section (dashboard, review, activity) inside `AppShell`; add a section as a new route plus a `NAV` entry, not as a tab inside an existing page, so every section keeps its own URL.
-- Anything a participant could see is read through the participant-scoped slice (`mySlice` / `useMe`); coordinator-wide data stays behind `useJourney`, so one person can never see another's records.
+- Participant screens live under the `_authenticated/me` layout and receive only participant-safe DTOs from `src/lib/participant.functions.ts`; internal stage names, reason codes, drafts and other people's records never enter those DTOs.
+- The participant MCP server uses `defineMcp` at `/mcp`, one tool per file under `src/lib/mcp/tools/`, verified OAuth with a required client claim, caller-scoped database clients and `recordSahayakCall`; never use admin clients or copied app-session tokens there.
 - Sahayak's model call lives in a server function (`src/lib/sahayak.functions.ts`) that the browser reaches only through the RPC, and every screen keeps a locally computed, record-based answer as the fallback so inference is never required for the app to work.
