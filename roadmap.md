@@ -1,5 +1,8 @@
 # Roadmap
 
+## In progress
+- Participant view: move the "Use Sahayak with Muse" toggle into the sidebar so it can be switched without opening Settings, and make turning it on ask for consent to exactly what Muse may access before it switches on.
+
 ## Done
 - Added Impact, session QR check-in and summaries, shared guest/attendance records, message outcome tracking and gentle second drafts, five volunteers with reviewed assignment proposals and capacity limits, and English/French interface controls and message templates. All 74 tests pass; live check-in, guest confirmation, assignment confirmation, French review approval and Impact verified.
 
