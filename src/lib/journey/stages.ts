@@ -49,7 +49,7 @@ export function computeStage(p: Participant, h: History, now = today()): StageRe
 function dominantType(types: string[]) {
   const counts = new Map<string, number>();
   types.forEach((t) => counts.set(t, (counts.get(t) ?? 0) + 1));
-  const [[top]] = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+  const top = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? "event";
   return counts.size === 1 ? top : "event";
 }
 
