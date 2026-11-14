@@ -10,11 +10,11 @@ export function StageBar({ active, onChange }: { active: StageId | "all"; onChan
   const pick = (id: StageId) => onChange(active === id ? "all" : id);
 
   return (
-    <section aria-label="Journey stages" className="rounded-xl border border-border bg-card p-5 shadow-soft">
+    <section aria-label="Journey stages" className="rounded-lg border border-border bg-card p-5 shadow-soft">
       <div className="mb-3 flex items-baseline justify-between gap-3">
-        <h2 className="text-base font-semibold text-foreground">Journey stages</h2>
+        <h2 className="font-heading text-base font-semibold text-primary">Journey stages</h2>
         {active !== "all" && (
-          <button onClick={() => onChange("all")} className="text-xs font-medium text-primary-strong hover:underline">Show all</button>
+          <button onClick={() => onChange("all")} className="text-xs font-medium text-purple hover:underline">Show all</button>
         )}
       </div>
 
@@ -36,7 +36,7 @@ export function StageBar({ active, onChange }: { active: StageId | "all"; onChan
           <li key={s.id}>
             <button onClick={() => pick(s.id)} aria-pressed={active === s.id} className="flex w-full items-center gap-2 text-left">
               <StageDot stage={s.id} />
-              <span className={cn("min-w-0 flex-1 truncate text-xs", active === s.id ? "font-semibold text-foreground" : "text-muted-foreground")}>{s.label}</span>
+              <span className={cn("min-w-0 flex-1 truncate text-xs", active === s.id ? "font-semibold text-purple" : "text-muted-foreground")}>{s.label}</span>
               <span className="text-xs font-semibold tabular-nums text-foreground">{s.count}</span>
             </button>
           </li>

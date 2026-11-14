@@ -7,8 +7,8 @@ export function PriorityList({ onOpen }: { onOpen: (id: string) => void }) {
   const { priority } = useJourney();
 
   return (
-    <section aria-label="Priority follow-ups" className="flex h-full flex-col rounded-xl border border-border bg-card p-5 shadow-soft">
-      <h2 className="text-base font-semibold text-foreground">Priority follow-ups</h2>
+    <section aria-label="Priority follow-ups" className="flex h-full flex-col rounded-lg border border-border bg-card p-5 shadow-soft">
+      <h2 className="font-heading text-base font-semibold text-primary">Priority follow-ups</h2>
       <p className="mt-0.5 text-xs text-muted-foreground">The first five people to reach out to.</p>
       {priority.length === 0 ? (
         <p className="mt-4 rounded-lg bg-muted p-4 text-sm text-muted-foreground">No one needs a follow-up right now.</p>
@@ -22,7 +22,7 @@ export function PriorityList({ onOpen }: { onOpen: (id: string) => void }) {
                 <span className="block truncate text-xs text-muted-foreground">{contactText(v.history)}</span>
               </span>
               <StageBadge stage={v.stage} />
-              <Button size="sm" variant="outline" onClick={() => onOpen(v.participant.id)}>Review</Button>
+              <Button size="sm" variant="accent" onClick={() => onOpen(v.participant.id)}>Review</Button>
             </li>
           ))}
         </ul>

@@ -43,9 +43,9 @@ function DashboardPage() {
   return (
     <AppShell>
       <div className="space-y-4">
-        <header className="mb-2 flex flex-wrap items-end justify-between gap-4">
+        <header className="brand-gradient mb-2 flex flex-wrap items-end justify-between gap-4 rounded-lg border border-border px-5 py-5">
           <div>
-            <h1 className="font-display text-[28px] font-semibold leading-tight tracking-tight text-foreground">{greeting}</h1>
+            <h1 className="font-display text-[32px] font-normal leading-tight text-primary">{greeting}</h1>
             <p className="mt-1 text-sm text-muted-foreground">Here is who needs a caring next step today.</p>
           </div>
           <Button asChild size="lg"><Link to="/review">Review follow-ups ({pending.length})</Link></Button>
