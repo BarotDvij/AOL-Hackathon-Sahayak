@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { SahayakConsentDialog } from "@/components/participant/SahayakConsentDialog";
 import { TEMP_PARTICIPANT_ID } from "@/lib/journey/demo-seed";
 import type { Program } from "@/lib/journey/programs";
 import type { NextStep } from "@/lib/journey/types";
@@ -65,6 +66,7 @@ export function DemoParticipantProvider({ children }: { children: ReactNode }) {
   const [interests, setInterests] = useState<string[]>([]);
   const [welcomeOpen, setWelcomeOpen] = useState(true);
   const [sahayakOn, setSahayakOn] = useState(false);
+  const [consentOpen, setConsentOpen] = useState(false);
   const data = useDemoData(me, answers, goals, interests, catalogList, programCatalog.programs);
 
   if (!data) return <main className="p-8 text-sm text-muted-foreground">Loading the sample journey…</main>;
