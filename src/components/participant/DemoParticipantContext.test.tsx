@@ -48,12 +48,28 @@ describe("No-login participant demo", () => {
 
     expect(result.current.sahayakOn).toBe(false);
 
-    act(() => result.current.setSahayakOn(true));
+    act(() => result.current.requestSahayak(true));
+    expect(result.current.sahayaakConsentOpen).toBe(true);
+    expect(result.current.sahayakOn).toBe(false);
+
+    act(() => result.current.acceptSahayakConsent());
     expect(result.current.sahayakOn).toBe(true);
+    expect(result.current.sahayaakConsentOpen).toBe(false);
 
     unmount();
     const fresh = renderHook(() => useDemoParticipant(), { wrapper });
     expect(fresh.result.current.sahayakOn).toBe(false);
     fresh.unmount();
+  });
+
+  it("leaves Sahayak off when the participant declines the consent prompt", () => {
+    const { result, unmount } = renderHook(() => useDemoParticipant(), { wrapper });
+
+    act(() => result.current.requestSahayak(true));
+    act(() => result.current.declineSahayakConsent());
+
+    expect(result.current.sahayakOn).toBe(false);
+    expect(result.current.sahayaakConsentOpen).toBe(false);
+    unmount();
   });
 });
