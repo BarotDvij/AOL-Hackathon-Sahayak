@@ -1,0 +1,26 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useDemoParticipant } from "@/components/participant/DemoParticipantContext";
+import { OnboardingForm } from "@/components/participant/OnboardingForm";
+import { ParticipantCard } from "@/components/participant/ParticipantShell";
+
+export const Route = createFileRoute("/me/settings")({
+  head: () => ({ meta: [
+    { title: "My settings · Sahayak" },
+    { name: "description", content: "Complete the no-login demo onboarding and review your suggested practice rhythm." },
+    { property: "og:title", content: "My settings · Sahayak" },
+    { property: "og:description", content: "Complete the no-login demo onboarding and review your suggested practice rhythm." },
+    { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
+  ] }),
+  component: ParticipantSettings,
+});
+
+function ParticipantSettings() {
+  const { data, saveAnswers } = useDemoParticipant();
+  return (
+    <div className="space-y-5"><header><h1 className="font-display text-[32px] font-normal text-primary">Settings</h1><p className="mt-1 text-sm text-muted-foreground">Shape the sample practice journey in your own words.</p></header>
+      <ParticipantCard className="bg-secondary"><h2 className="font-heading text-base font-semibold text-primary">No-login demo</h2><p className="mt-1 text-sm text-muted-foreground">You are using Priya's fictional profile. Changes stay in this tab and reset when you reload. Muse connection is paused in demo mode.</p></ParticipantCard>
+      <ParticipantCard><h2 className="font-heading text-base font-semibold text-primary">A little about you</h2><p className="mb-5 mt-1 text-sm text-muted-foreground">Six gentle questions. Skip any of them, review your answers, then confirm before saving.</p><OnboardingForm initialAnswers={data.answers} onSave={saveAnswers} /></ParticipantCard>
+      <ParticipantCard><h2 className="font-heading text-base font-semibold text-primary">Your current rhythm</h2><p className="mt-2 text-sm text-primary">{data.schedule.days.join(", ")} · {data.schedule.time} · {data.schedule.minutes} minutes</p><p className="mt-1 text-sm text-muted-foreground">{data.schedule.note}</p></ParticipantCard>
+    </div>
+  );
+}

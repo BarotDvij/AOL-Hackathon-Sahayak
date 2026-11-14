@@ -14,4 +14,12 @@ describe("App routing", () => {
 
     expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
   });
+
+  it.each(["/me", "/me/journey", "/me/messages", "/me/settings"])("opens the participant demo at %s without an auth gate", (path) => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+
+    const matches = router.matchRoutes(path);
+
+    expect(matches.some((match) => match.routeId.includes("_authenticated"))).toBe(false);
+  });
 });

@@ -3,7 +3,7 @@ import { buildCatalog } from "./catalog";
 import { JOURNEY_CONFIG as C, STAGE_PRIORITY, STAGES } from "./config";
 import { contactText, daysSinceLastContact } from "./contact";
 import { daysSince, daysUntil, isoDaysFrom, parseIso, today } from "./dates";
-import { PICKER_STAGES, demoSeed } from "./demo-seed";
+import { PICKER_STAGES, TEMP_PARTICIPANT_ID, demoSeed } from "./demo-seed";
 import { buildInbox, type InboxMessage } from "./inbox-seed";
 import { draftMessage } from "./messages";
 import { mySlice, type MySlice } from "./participant";
@@ -126,7 +126,7 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
   const [replies, setReplies] = useState<ParticipantReply[]>([]);
   const [activity, setActivity] = useState<ActivityEntry[]>([]);
   const [city, setCity] = useState("all");
-  const [meId, setMeId] = useState<string | null>(null);
+  const [meId, setMeId] = useState<string | null>(TEMP_PARTICIPANT_ID);
   const [sahayak, setSahayak] = useState<SahayakState>(SAHAYAK_DEFAULTS);
   const [inbox, setInbox] = useState<InboxMessage[]>(() => buildInbox());
   const seq = useRef(0);

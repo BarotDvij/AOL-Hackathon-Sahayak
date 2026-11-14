@@ -1,7 +1,6 @@
-import { Link, useNavigate, useRouterState, useRouteContext, type LinkProps } from "@tanstack/react-router";
+import { Link, useRouterState, type LinkProps } from "@tanstack/react-router";
 import { CalendarDays, Home, MessageCircle, Route as JourneyIcon, Settings, Sparkles } from "lucide-react";
 import type { ReactNode } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -12,16 +11,7 @@ const NAV = [
 ] satisfies { to: LinkProps["to"]; label: string; Icon: typeof Home; exact?: boolean }[];
 
 export function ParticipantShell({ children }: { children: ReactNode }) {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const navigate = useNavigate();
-  const { queryClient } = useRouteContext({ from: "__root__" });
-
-  async function signOut() {
-    await queryClient.cancelQueries();
-    queryClient.clear();
-    await supabase.auth.signOut();
-    await navigate({ to: "/auth", replace: true, search: { next: "/me" } });
-  }
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
 
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-0">
@@ -36,8 +26,8 @@ export function ParticipantShell({ children }: { children: ReactNode }) {
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-3">
+            <span className="rounded-full bg-stage-new px-2.5 py-1 text-xs font-medium text-stage-new-foreground">Demo · Priya</span>
             <Link to="/start" className="text-xs font-medium text-purple hover:underline">Switch view</Link>
-            <button type="button" onClick={signOut} className="text-xs font-medium text-muted-foreground hover:text-primary">Sign out</button>
           </div>
         </div>
       </header>

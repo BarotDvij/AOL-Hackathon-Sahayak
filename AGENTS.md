@@ -30,8 +30,8 @@ use the editor.
 <!-- LOVABLE:END -->
 
 - Journey stage, reason and suggestion rules enter through `src/lib/sahayak/core.ts` (thresholds stay in `src/lib/journey/config.ts`); coordinator UI, participant server functions and every MCP tool use that same entry point so their answers agree.
-- Coordinator sample data stays in memory with dates relative to today; participant onboarding, practice, goals, interests, messages and summaries persist in Lovable Cloud behind OAuth and RLS. No sending ever happens without a coordinator's Approve.
+- Coordinator and public participant demo data stay in memory with dates relative to today; account-based participant onboarding, practice, goals, interests, messages and summaries persist in Lovable Cloud behind OAuth and RLS. No sending ever happens without a coordinator's Approve.
 - Coordinator screens are one route per section (dashboard, review, activity) inside `AppShell`; add a section as a new route plus a `NAV` entry, not as a tab inside an existing page, so every section keeps its own URL.
-- Participant screens live under the `_authenticated/me` layout and receive only participant-safe DTOs from `src/lib/participant.functions.ts`; internal stage names, reason codes, drafts and other people's records never enter those DTOs.
+- Public no-login participant screens live under `/me` and use the fixed fictional participant through `DemoParticipantContext`; internal stage names, reason codes, drafts and other people's records never enter those DTOs, and all demo changes reset on reload.
 - The participant MCP server uses `defineMcp` at `/mcp`, one tool per file under `src/lib/mcp/tools/`, verified OAuth with a required client claim, caller-scoped database clients and `recordSahayakCall`; never use admin clients or copied app-session tokens there.
 - Sahayak's model call lives in a server function (`src/lib/sahayak.functions.ts`) that the browser reaches only through the RPC, and every screen keeps a locally computed, record-based answer as the fallback so inference is never required for the app to work.
