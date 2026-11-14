@@ -22,6 +22,13 @@
       "when": 1794683796010,
       "tag": "0002_restrict_participant_message_replies",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794686100752,
+      "tag": "0003_create_program_catalog",
+      "breakpoints": true
     }
   ]
 }
