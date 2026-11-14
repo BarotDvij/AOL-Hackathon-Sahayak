@@ -1,7 +1,7 @@
 # Roadmap
 
-## In progress
-- Impact metrics and trends, message outcomes and second follow-ups, QR session check-in and guest records, reviewed volunteer assignments, and English/French coordinator controls and drafts; keep every surface on shared demo records.
+## Done
+- Added Impact, session QR check-in and summaries, shared guest/attendance records, message outcome tracking and gentle second drafts, five volunteers with reviewed assignment proposals and capacity limits, and English/French interface controls and message templates. All 74 tests pass; live check-in, guest confirmation, assignment confirmation, French review approval and Impact verified.
 
 ## Done
 - Journey dashboard: at-a-glance tiles, stage cards that filter, search, city + channel filters, follow-up list sorted with drifting people first.
@@ -25,6 +25,8 @@
 - Verified: 45 journey/participant tests plus audit tests, clean typecheck and builds, real participant flow after reload, RLS isolation, safe friendly wording, nine database-backed tool handlers with one audit row each, calendar downloads, coordinator summary display and approval persistence. External OAuth handshake remains a post-publish check.
 
 ## Open
+- QR demo check-ins synchronize only between tabs in the same browser; cross-device live attendance needs shared session storage and a secure public check-in service. Demo attendance and assignments reset on reload.
+- French messages use pre-written templates; English reference text does not translate coordinator edits, and record descriptions/catalog text remain in their original language.
 - External MCP client connection needs one final check after publishing; the sandbox's hosted login bridge prevented completing that handshake locally.
 - The floating "Ask Sahayak" button sits over the bottom-right of the participants table while scrolling (the spec asked for bottom right); move or shrink it if it gets in the way.
 - Every CSV Source cell contains an organization or listing name rather than a URL, so program source links remain unavailable until real URLs are supplied.
