@@ -12,6 +12,17 @@ function wrapper({ children }: { children: ReactNode }) {
 }
 
 describe("No-login participant demo", () => {
+  it("keeps weekly, monthly and annual goals under their chosen periods", () => {
+    const { result } = renderHook(() => useDemoParticipant(), { wrapper });
+    act(() => {
+      result.current.saveGoal("week", "Practise three days");
+      result.current.saveGoal("month", "Join a group");
+      result.current.saveGoal("year", "Explore my next course");
+    });
+    expect(result.current.data.goals.filter((goal) => goal.period === "week").map((goal) => goal.text)).toEqual(["Practise three days"]);
+    expect(result.current.data.goals.filter((goal) => goal.period === "month").map((goal) => goal.text)).toEqual(["Join a group"]);
+    expect(result.current.data.goals.filter((goal) => goal.period === "year").map((goal) => goal.text)).toEqual(["Explore my next course"]);
+  });
   it("keeps typed chat replies participant-scoped and rejects blank replies", () => {
     const { result, unmount } = renderHook(() => useDemoParticipant(), { wrapper });
     const message = result.current.data.messages[0];

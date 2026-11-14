@@ -30,6 +30,7 @@ import { Route as MeIndexRouteImport } from './routes/me/index'
 import { Route as MeJourneyRouteImport } from './routes/me/journey'
 import { Route as MeMessagesRouteImport } from './routes/me/messages'
 import { Route as MeSettingsRouteImport } from './routes/me/settings'
+import { Route as MeWeeklyProgressRouteImport } from './routes/me/weekly-progress'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as SessionsSessionIdCheckInRouteImport } from './routes/sessions_.$sessionId.check-in'
 import { Route as ApiPublicCalendarEventIdRouteImport } from './routes/api/public/calendar/$eventId'
@@ -140,6 +141,11 @@ const MeSettingsRoute = MeSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => MeRouteRoute,
 } as any)
+const MeWeeklyProgressRoute = MeWeeklyProgressRouteImport.update({
+  id: '/weekly-progress',
+  path: '/weekly-progress',
+  getParentRoute: () => MeRouteRoute,
+} as any)
 const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   id: '/.lovable/oauth/consent',
   path: '/.lovable/oauth/consent',
@@ -179,6 +185,7 @@ export interface FileRoutesByFullPath {
   '/me/journey': typeof MeJourneyRoute
   '/me/messages': typeof MeMessagesRoute
   '/me/settings': typeof MeSettingsRoute
+  '/me/weekly-progress': typeof MeWeeklyProgressRoute
   '/me/': typeof MeIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/sessions/$sessionId/check-in': typeof SessionsSessionIdCheckInRoute
@@ -204,6 +211,7 @@ export interface FileRoutesByTo {
   '/me/journey': typeof MeJourneyRoute
   '/me/messages': typeof MeMessagesRoute
   '/me/settings': typeof MeSettingsRoute
+  '/me/weekly-progress': typeof MeWeeklyProgressRoute
   '/me': typeof MeIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/sessions/$sessionId/check-in': typeof SessionsSessionIdCheckInRoute
@@ -231,6 +239,7 @@ export interface FileRoutesById {
   '/me/journey': typeof MeJourneyRoute
   '/me/messages': typeof MeMessagesRoute
   '/me/settings': typeof MeSettingsRoute
+  '/me/weekly-progress': typeof MeWeeklyProgressRoute
   '/me/': typeof MeIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/sessions_/$sessionId/check-in': typeof SessionsSessionIdCheckInRoute
@@ -259,6 +268,7 @@ export interface FileRouteTypes {
     | '/me/journey'
     | '/me/messages'
     | '/me/settings'
+    | '/me/weekly-progress'
     | '/me/'
     | '/.lovable/oauth/consent'
     | '/sessions/$sessionId/check-in'
@@ -284,6 +294,7 @@ export interface FileRouteTypes {
     | '/me/journey'
     | '/me/messages'
     | '/me/settings'
+    | '/me/weekly-progress'
     | '/me'
     | '/.lovable/oauth/consent'
     | '/sessions/$sessionId/check-in'
@@ -310,6 +321,7 @@ export interface FileRouteTypes {
     | '/me/journey'
     | '/me/messages'
     | '/me/settings'
+    | '/me/weekly-progress'
     | '/me/'
     | '/.lovable/oauth/consent'
     | '/sessions_/$sessionId/check-in'
@@ -488,6 +500,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MeSettingsRouteImport
       parentRoute: typeof MeRouteRoute
     }
+    '/me/weekly-progress': {
+      id: '/me/weekly-progress'
+      path: '/weekly-progress'
+      fullPath: '/me/weekly-progress'
+      preLoaderRoute: typeof MeWeeklyProgressRouteImport
+      parentRoute: typeof MeRouteRoute
+    }
     '/.lovable/oauth/consent': {
       id: '/.lovable/oauth/consent'
       path: '/.lovable/oauth/consent'
@@ -516,6 +535,7 @@ interface MeRouteRouteChildren {
   MeJourneyRoute: typeof MeJourneyRoute
   MeMessagesRoute: typeof MeMessagesRoute
   MeSettingsRoute: typeof MeSettingsRoute
+  MeWeeklyProgressRoute: typeof MeWeeklyProgressRoute
   MeIndexRoute: typeof MeIndexRoute
 }
 
@@ -523,6 +543,7 @@ const MeRouteRouteChildren: MeRouteRouteChildren = {
   MeJourneyRoute: MeJourneyRoute,
   MeMessagesRoute: MeMessagesRoute,
   MeSettingsRoute: MeSettingsRoute,
+  MeWeeklyProgressRoute: MeWeeklyProgressRoute,
   MeIndexRoute: MeIndexRoute,
 }
 
