@@ -98,7 +98,7 @@ function ParticipantCard({ view, onOpen, catalog }: { view: ParticipantView; onO
         </p>
       ) : null}
       <div className="mt-2 flex items-end justify-between gap-2">
-        <p className="text-xs leading-relaxed text-muted-foreground">{paused ? view.why : s?.why ?? view.why}</p>
+        <p className="text-xs leading-relaxed text-muted-foreground">{paused ? (p.doNotContact ? "" : view.why.replace("Contacted recently ", "Last contact ")) : s?.why ?? view.why}</p>
         {channel && <ChannelIcon channel={channel} className="shrink-0" />}
       </div>
     </article>

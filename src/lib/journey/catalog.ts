@@ -4,14 +4,14 @@ import type { NextStep } from "./types";
 /** Placeholder catalog. Dates are relative to today so the demo stays current. */
 export function buildCatalog(): NextStep[] {
   const sky = "SKY Happiness Program";
-  const fu = (city: string, day: number, weekday: string): NextStep => ({
-    id: `fu-${city.toLowerCase()}`, type: "event", title: `${weekday} follow-up in ${city}`, shortTitle: "Weekly follow-up",
+  const fu = (city: string, day: number): NextStep => ({
+    id: `fu-${city.toLowerCase()}`, type: "event", title: `weekly follow-up in ${city}`, shortTitle: "Weekly follow-up",
     startDate: isoDaysFrom(day), city, language: "English", prerequisite: sky, stageFit: ["new", "building", "quiet"], tags: ["follow-up", "community"],
     link: `https://aol.example/followup/${city.toLowerCase()}`,
   });
   return [
-    fu("Waterloo", 5, "Thursday"), fu("Toronto", 3, "Tuesday"), fu("Kitchener", 4, "Wednesday"), fu("Mississauga", 6, "Friday"),
-    { id: "fu-online", type: "event", title: "Online follow-up", shortTitle: "Online follow-up", startDate: isoDaysFrom(2), city: "Online", language: "English", prerequisite: sky, stageFit: ["new", "building", "quiet"], tags: ["follow-up", "online"], link: "https://aol.example/followup/online" },
+    fu("Waterloo", 5), fu("Toronto", 3), fu("Kitchener", 4), fu("Mississauga", 6),
+    { id: "fu-online", type: "event", title: "online follow-up", shortTitle: "Online follow-up", startDate: isoDaysFrom(2), city: "Online", language: "English", prerequisite: sky, stageFit: ["new", "building", "quiet"], tags: ["follow-up", "online"], link: "https://aol.example/followup/online" },
     { id: "checkin-home", type: "check-in", title: "Home-practice check-in", shortTitle: "Practice check-in", city: "Online", language: "English", stageFit: ["new"], tags: ["practice"], link: "" },
     { id: "sahaj-waterloo", type: "course", title: "Sahaj Samadhi Meditation in Waterloo", shortTitle: "Sahaj Samadhi", startDate: isoDaysFrom(22), city: "Waterloo", language: "English", prerequisite: sky, completesCourse: "Sahaj Samadhi Meditation", stageFit: ["building", "active"], tags: ["meditation"], link: "https://aol.example/sahaj/waterloo" },
     { id: "sahaj-toronto", type: "course", title: "Sahaj Samadhi Meditation in Toronto", shortTitle: "Sahaj Samadhi", startDate: isoDaysFrom(30), city: "Toronto", language: "English", prerequisite: sky, completesCourse: "Sahaj Samadhi Meditation", stageFit: ["building", "active"], tags: ["meditation"], link: "https://aol.example/sahaj/toronto" },

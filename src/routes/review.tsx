@@ -60,10 +60,10 @@ function ReviewItem({ s }: { s: Suggestion }) {
         <StageBadge stage={v.stage} />
         <ChannelIcon channel={s.channel} withLabel className="ml-auto" />
       </div>
-      <p className="mt-3 text-sm font-semibold text-primary-strong">Next step: {step.title}{step.startDate ? ` · ${formatShort(step.startDate)}` : ""}</p>
+      <p className="mt-3 text-sm font-semibold text-primary-strong">Next step: {step.title.charAt(0).toUpperCase() + step.title.slice(1)}{step.startDate ? ` · ${formatShort(step.startDate)}` : ""}</p>
       <p className="text-sm text-muted-foreground">{s.why}</p>
       <label className="mt-4 block text-sm font-medium" htmlFor={`${s.id}-msg`}>Message</label>
-      <Textarea id={`${s.id}-msg`} value={text} onChange={(e) => editMessage(s.id, e.target.value)} rows={s.channel === "email" ? 9 : 5} className="mt-1.5 bg-background leading-relaxed" />
+      <Textarea id={`${s.id}-msg`} value={text} onChange={(e) => editMessage(s.id, e.target.value)} rows={s.channel === "email" ? 12 : 5} className="mt-1.5 bg-background leading-relaxed" />
       <p className={cn("mt-1 text-right text-xs", limit.ok ? "text-muted-foreground" : "text-destructive")}>{limit.label}</p>
 
       {skipping ? (

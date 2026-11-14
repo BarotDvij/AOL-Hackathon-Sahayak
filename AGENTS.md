@@ -28,3 +28,6 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+- Journey stage, reason, suggestion and message logic lives as plain functions in `src/lib/journey/` (thresholds in `config.ts`); UI only reads it via the `JourneyProvider` store — so it can move to a database later without touching screens.
+- Phase 1 data is in-memory sample data with dates relative to today; no sending ever happens without a coordinator's Approve.
