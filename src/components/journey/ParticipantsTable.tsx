@@ -8,6 +8,9 @@ import { STAGES } from "@/lib/journey/config";
 import { formatShort } from "@/lib/journey/dates";
 import { contactText, daysSinceLastContact, useJourney, type ParticipantView } from "@/lib/journey/store";
 import type { Channel, StageId } from "@/lib/journey/types";
+import { VOLUNTEERS } from "@/lib/journey/operations";
+import { useLanguage } from "@/lib/journey/i18n";
+import { VolunteerAvatar } from "./OperationsBits";
 import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 10;
@@ -15,7 +18,8 @@ type SortKey = "name" | "stage" | "contact" | "step";
 
 /** Search, filters, sortable columns and 10 rows a page — the same table on the dashboard and the Participants page. */
 export function ParticipantsTable({ stage, onStage, onOpen, title = "Participants" }: { stage: StageId | "all"; onStage: (s: StageId | "all") => void; onOpen: (id: string) => void; title?: string }) {
-  const { views, catalog } = useJourney();
+  const { views, catalog, assignments, activeVolunteer, setActiveVolunteer, myFollowUps, setMyFollowUps } = useJourney();
+  const {t} = useLanguage();
   const [q, setQ] = useState("");
   const [city, setCity] = useState("all");
   const [channel, setChannel] = useState("all");
@@ -37,6 +41,7 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
     return views
       .filter((v) => {
         const p = v.participant;
+        if (myFollowUps && assignments[p.id] !== activeVolunteer) return false;
         if (needle && !`${p.firstName} ${p.lastName} ${p.city} ${p.email ?? ""} ${p.phone ?? ""}`.toLowerCase().includes(needle)) return false;
         if (stage !== "all" && v.stage !== stage) return false;
         if (city !== "all" && p.city !== city) return false;
@@ -47,7 +52,7 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
         const x = value(a), y = value(b);
         return (x < y ? -1 : x > y ? 1 : 0) * sort.dir;
       });
-  }, [views, q, stage, city, channel, sort, catalog]);
+  }, [views, q, stage, city, channel, sort, catalog, assignments, activeVolunteer, myFollowUps]);
 
   const pages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
   const safePage = Math.min(page, pages);
@@ -58,44 +63,45 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
     <th scope="col" className={cn("px-3 py-2 text-left align-middle text-xs font-medium text-muted-foreground", className)}>
       {sortKey ? (
         <button onClick={() => toggle(sortKey)} className="inline-flex items-center gap-1 transition-colors hover:text-foreground">
-          {label}
+          {t(label)}
           {sort.key === sortKey ? (sort.dir === 1 ? <ChevronUp className="size-3" aria-hidden /> : <ChevronDown className="size-3" aria-hidden />) : null}
         </button>
-      ) : label}
+      ) : t(label)}
     </th>
   );
 
   return (
     <section aria-label={title} className="rounded-lg border border-border bg-card shadow-soft">
       <div className="flex flex-wrap items-center gap-3 border-b border-border p-4">
-        <h2 className="mr-auto font-heading text-base font-semibold text-primary">{title}</h2>
+        <h2 className="mr-auto font-heading text-base font-semibold text-primary">{t(title)}</h2>
         <div className="relative min-w-0 basis-56 flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
-          <Input value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} placeholder="Search name, city or email" aria-label="Search participants" className="bg-card pl-9" />
+          <Input value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} placeholder={t("Search name, city or email")} aria-label="Search participants" className="bg-card pl-9" />
         </div>
         <Select value={stage} onValueChange={(s) => { onStage(s as StageId | "all"); setPage(1); }}>
           <SelectTrigger className={cn("w-40 bg-card", stage !== "all" && "border-purple text-purple")} aria-label="Filter by stage"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All stages</SelectItem>
+            <SelectItem value="all">{t("All stages")}</SelectItem>
             {STAGES.map((s) => <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={city} onValueChange={(c) => { setCity(c); setPage(1); }}>
           <SelectTrigger className={cn("w-36 bg-card", city !== "all" && "border-purple text-purple")} aria-label="Filter by city"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All cities</SelectItem>
+            <SelectItem value="all">{t("All cities")}</SelectItem>
             {cities.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={channel} onValueChange={(c) => { setChannel(c); setPage(1); }}>
           <SelectTrigger className={cn("w-36 bg-card", channel !== "all" && "border-purple text-purple")} aria-label="Filter by channel"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All channels</SelectItem>
+            <SelectItem value="all">{t("All channels")}</SelectItem>
             {(["whatsapp", "email", "sms"] as Channel[]).map((c) => <SelectItem key={c} value={c}>{channelLabel(c)}</SelectItem>)}
           </SelectContent>
         </Select>
       </div>
 
+      <div className="flex flex-wrap items-center gap-3 border-b border-border px-4 py-2"><Button variant={myFollowUps ? "default" : "outline"} size="sm" onClick={() => {setMyFollowUps(!myFollowUps); setPage(1)}} aria-pressed={myFollowUps}>{t("My follow-ups")}</Button>{myFollowUps && <Select value={activeVolunteer} onValueChange={setActiveVolunteer}><SelectTrigger className="w-48" aria-label="Volunteer"><SelectValue/></SelectTrigger><SelectContent>{VOLUNTEERS.map(v => <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>)}</SelectContent></Select>}<span className="text-xs text-muted-foreground">{myFollowUps ? VOLUNTEERS.find(v=>v.id===activeVolunteer)?.name : t("All participants")}</span></div>
       <div className="overflow-x-auto">
         <table className="w-full table-fixed">
           <thead>
@@ -125,7 +131,7 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
                       <Initials name={`${p.firstName} ${p.lastName}`} />
                       <span className="min-w-0">
                         <span className="block truncate text-sm font-medium text-foreground">{p.firstName} {p.lastName}</span>
-                        <span className="block truncate text-xs text-muted-foreground">{p.city}</span>
+                        <span className="flex items-center gap-2 text-xs text-muted-foreground">{p.city}<VolunteerAvatar id={assignments[p.id]}/></span>
                       </span>
                     </span>
                   </td>
@@ -138,13 +144,13 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
                   </td>
                   <td className="px-3">{ch ? <ChannelIcon channel={ch} /> : <span className="text-sm text-muted-foreground">—</span>}</td>
                   <td className="px-3 text-right">
-                    <Button size="sm" variant="accent" className="h-7 px-2" onClick={(e) => { e.stopPropagation(); onOpen(p.id); }}>Review</Button>
+                    <Button size="sm" variant="accent" className="h-7 px-2" onClick={(e) => { e.stopPropagation(); onOpen(p.id); }}>{t("Review")}</Button>
                   </td>
                 </tr>
               );
             })}
             {shown.length === 0 && (
-              <tr><td colSpan={6} className="p-8 text-center text-sm text-muted-foreground">No one matches these filters.</td></tr>
+              <tr><td colSpan={6} className="p-8 text-center text-sm text-muted-foreground">{t("No one matches these filters.")}</td></tr>
             )}
           </tbody>
         </table>
@@ -155,9 +161,9 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
           {rows.length === 0 ? "No people to show" : `Showing ${(safePage - 1) * PAGE_SIZE + 1}–${Math.min(safePage * PAGE_SIZE, rows.length)} of ${rows.length}`}
         </p>
         <div className="flex items-center gap-2">
-          <Button size="sm" variant="outline" disabled={safePage === 1} onClick={() => setPage(safePage - 1)}>Previous</Button>
+          <Button size="sm" variant="outline" disabled={safePage === 1} onClick={() => setPage(safePage - 1)}>{t("Previous")}</Button>
           <span className="text-xs tabular-nums text-muted-foreground">Page {safePage} of {pages}</span>
-          <Button size="sm" variant="outline" disabled={safePage === pages} onClick={() => setPage(safePage + 1)}>Next</Button>
+          <Button size="sm" variant="outline" disabled={safePage === pages} onClick={() => setPage(safePage + 1)}>{t("Next")}</Button>
         </div>
       </div>
     </section>

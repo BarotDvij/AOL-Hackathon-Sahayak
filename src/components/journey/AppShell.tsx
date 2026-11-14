@@ -1,21 +1,25 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Bell, BookOpen, History, Inbox, LayoutDashboard, Mail, Menu, Settings, Sparkles, Users } from "lucide-react";
+import { BarChart3, CalendarDays, UserRound, Bell, BookOpen, History, Inbox, LayoutDashboard, Mail, Menu, Settings, Sparkles, Users } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { needsReply } from "@/lib/journey/inbox-seed";
 import { useJourney } from "@/lib/journey/store";
+import { useLanguage } from "@/lib/journey/i18n";
 import { cn } from "@/lib/utils";
 import { RemindersPanel } from "./RemindersPanel";
 import { SahayakChat } from "./SahayakChat";
 import { SahayakIntro } from "./SahayakIntro";
 
-type To = "/" | "/participants" | "/programs" | "/review" | "/inbox" | "/activity" | "/settings";
+type To = "/" | "/impact" | "/sessions" | "/team" | "/participants" | "/programs" | "/review" | "/inbox" | "/activity" | "/settings";
 type NavItem = { to: To; label: string; Icon: typeof LayoutDashboard; exact?: boolean; alsoActive?: string };
 
 const NAV: NavItem[] = [
   { to: "/", label: "Dashboard", Icon: LayoutDashboard, exact: true },
   { to: "/participants", label: "Participants", Icon: Users },
+  { to: "/impact", label: "Impact", Icon: BarChart3 },
+  { to: "/sessions", label: "Sessions", Icon: CalendarDays },
+  { to: "/team", label: "Team", Icon: UserRound },
   { to: "/programs", label: "Programs", Icon: BookOpen },
   { to: "/review", label: "Review Queue", Icon: Inbox },
   { to: "/inbox", label: "Inbox", Icon: Mail },
@@ -24,6 +28,7 @@ const NAV: NavItem[] = [
 ];
 
 function NavItemLink({ to, label, Icon, exact, alsoActive, waiting, onNavigate }: NavItem & { waiting?: number | undefined; onNavigate?: () => void }) {
+  const {t} = useLanguage();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const highlight = !!alsoActive && pathname.startsWith(alsoActive);
 
@@ -37,7 +42,7 @@ function NavItemLink({ to, label, Icon, exact, alsoActive, waiting, onNavigate }
       activeProps={{ className: "bg-secondary text-primary font-semibold" }}
     >
       <Icon className="size-4 shrink-0" aria-hidden />
-      <span className="flex-1 truncate">{label}</span>
+      <span className="flex-1 truncate">{t(label)}</span>
       {waiting ? <span className="rounded-full bg-sun-orange px-1.5 text-[11px] font-semibold leading-4 tabular-nums text-primary">{waiting}</span> : null}
     </Link>
   );
@@ -85,6 +90,7 @@ function BellButton({ count, onClick, className }: { count: number; onClick: () 
 
 /** The coordinator's frame: a fixed 240px sidebar on wide screens, a slide-out menu on phones. */
 export function AppShell({ children }: { children: ReactNode }) {
+  const {t} = useLanguage();
   const { summary, sahayak, reminders, inbox } = useJourney();
   const [open, setOpen] = useState(false);
   const [remindersOpen, setRemindersOpen] = useState(false);
@@ -139,7 +145,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span className="text-xs text-muted-foreground">Sahayak is off · manual mode</span>
           )}
           <div className="flex items-center gap-3">
-            <Link to="/start" className="text-xs font-medium text-purple hover:underline">Switch view</Link>
+            <Link to="/start" className="text-xs font-medium text-purple hover:underline">{t("Switch view")}</Link>
             {sahayak.on && <BellButton count={reminders.length} onClick={() => setRemindersOpen(true)} />}
           </div>
         </div>

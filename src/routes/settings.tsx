@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useLanguage } from "@/lib/journey/i18n";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AppShell } from "@/components/journey/AppShell";
 import { JOURNEY_CONFIG as C, STAGES, stageLabel } from "@/lib/journey/config";
 
@@ -26,14 +28,16 @@ const RULES: Record<string, string> = {
 };
 
 function SettingsPage() {
+  const {language,setLanguage,t} = useLanguage();
   return (
     <AppShell>
       <div className="max-w-3xl space-y-4">
         <header className="mb-2">
-          <h1 className="font-display text-[32px] font-normal text-primary">Settings</h1>
+          <h1 className="font-display text-[32px] font-normal text-primary">{t("Settings")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">How the app decides who needs a follow-up. Read-only in this version.</p>
         </header>
 
+        <section className="border-y border-border py-5"><label htmlFor="app-language" className="font-heading text-base font-semibold">{t("App language")}</label><Select value={language} onValueChange={v=>setLanguage(v === "French" ? "French" : "English")}><SelectTrigger id="app-language" className="mt-3 w-52"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="English">English</SelectItem><SelectItem value="French">Français</SelectItem></SelectContent></Select></section>
         <section className="rounded-lg border border-border bg-card p-5 shadow-soft">
           <h2 className="font-heading text-base font-semibold text-primary">Journey stages</h2>
           <p className="mt-0.5 text-xs text-muted-foreground">Everyone is placed in the first stage that fits, checked in this order.</p>
