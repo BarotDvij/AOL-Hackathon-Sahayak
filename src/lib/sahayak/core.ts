@@ -72,7 +72,7 @@ export function recommendedSchedule(answers: OnboardingAnswers, stage: StageId, 
   if (!days.length) days = ["Saturday"];
 
   const time = answers.practice_time === "afternoon" ? "3:00 PM" : answers.practice_time === "evening" ? "7:00 PM" : answers.practice_time === "flexible" ? "Whenever your day allows" : "7:00 AM";
-  const requested = answers.course_level === "part1" || answers.course_level === "none" ? 20 : 20;
+  const requested = 20;
   const minutes = stage === "quiet" || stage === "dormant" || rhythm === "paused" ? Math.min(requested, 10) : requested;
   return {
     days,
@@ -125,4 +125,3 @@ export function levelFromHistory(history: Pick<History, "courses"> | undefined):
   if (done.has(PART_1)) return "part1";
   return "none";
 }
-export const prefersOnlineAnswers = (answers: OnboardingAnswers) => prefersOnline(answers);

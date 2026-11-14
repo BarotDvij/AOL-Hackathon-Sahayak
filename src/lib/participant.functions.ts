@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequestUrl } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { friendlyStageFor, milestones, normalizeOnboardingAnswers, participantBundle, participantEvents, practiceDto, recommendedSchedule, sampleParticipantOptions } from "@/lib/sahayak/core";
+import { friendlyStageFor, milestones, normalizeOnboardingAnswers, participantBundle, participantEvents, practiceDto, prefersOnline, recommendedSchedule, sampleParticipantOptions } from "@/lib/sahayak/core";
 import { saveOnboarding } from "@/lib/sahayak/save-onboarding";
 import { fetchProgramCatalog } from "@/lib/program-catalog";
 import { buildCatalog } from "@/lib/journey/catalog";
