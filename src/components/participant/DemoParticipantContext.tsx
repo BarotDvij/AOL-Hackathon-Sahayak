@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { SahayakConsentDialog } from "@/components/participant/SahayakConsentDialog";
 import { TEMP_PARTICIPANT_ID } from "@/lib/journey/demo-seed";
 import type { Program } from "@/lib/journey/programs";
 import type { NextStep } from "@/lib/journey/types";
@@ -16,6 +17,11 @@ interface DemoParticipantValue {
   saveAnswers: (answers: OnboardingAnswers) => void;
   welcomeOpen: boolean;
   closeWelcome: () => void;
+  sahayakOn: boolean;
+  requestSahayak: (on: boolean) => void;
+  sahayakConsentOpen: boolean;
+  acceptSahayakConsent: () => void;
+  declineSahayakConsent: () => void;
 }
 
 const DemoParticipantContext = createContext<DemoParticipantValue | null>(null);
@@ -62,6 +68,8 @@ export function DemoParticipantProvider({ children }: { children: ReactNode }) {
   const [goals, setGoals] = useState<DemoGoal[]>([]);
   const [interests, setInterests] = useState<string[]>([]);
   const [welcomeOpen, setWelcomeOpen] = useState(true);
+  const [sahayakOn, setSahayakOn] = useState(false);
+  const [consentOpen, setConsentOpen] = useState(false);
   const data = useDemoData(me, answers, goals, interests, catalogList, programCatalog.programs);
 
   if (!data) return <main className="p-8 text-sm text-muted-foreground">Loading the sample journey…</main>;
@@ -78,9 +86,19 @@ export function DemoParticipantProvider({ children }: { children: ReactNode }) {
     saveAnswers: (next) => setAnswers(normalizeOnboardingAnswers(next)),
     welcomeOpen,
     closeWelcome: () => setWelcomeOpen(false),
+    sahayakOn,
+    requestSahayak: (on) => { if (on) setConsentOpen(true); else setSahayakOn(false); },
+    sahayakConsentOpen: consentOpen,
+    acceptSahayakConsent: () => { setSahayakOn(true); setConsentOpen(false); },
+    declineSahayakConsent: () => setConsentOpen(false),
   };
 
-  return <DemoParticipantContext.Provider value={value}>{children}</DemoParticipantContext.Provider>;
+  return (
+    <DemoParticipantContext.Provider value={value}>
+      {children}
+      <SahayakConsentDialog open={consentOpen} onAccept={() => { setSahayakOn(true); setConsentOpen(false); }} onDecline={() => setConsentOpen(false)} />
+    </DemoParticipantContext.Provider>
+  );
 }
 
 export function useDemoParticipant() {

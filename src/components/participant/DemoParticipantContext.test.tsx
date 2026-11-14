@@ -42,4 +42,34 @@ describe("No-login participant demo", () => {
     expect(fresh.result.current.data.interests).toEqual([]);
     expect(fresh.result.current.data.answers).toEqual({});
   });
+
+  it("keeps Sahayak with Muse off until it is switched on, and off again in a fresh demo", () => {
+    const { result, unmount } = renderHook(() => useDemoParticipant(), { wrapper });
+
+    expect(result.current.sahayakOn).toBe(false);
+
+    act(() => result.current.requestSahayak(true));
+    expect(result.current.sahayakConsentOpen).toBe(true);
+    expect(result.current.sahayakOn).toBe(false);
+
+    act(() => result.current.acceptSahayakConsent());
+    expect(result.current.sahayakOn).toBe(true);
+    expect(result.current.sahayakConsentOpen).toBe(false);
+
+    unmount();
+    const fresh = renderHook(() => useDemoParticipant(), { wrapper });
+    expect(fresh.result.current.sahayakOn).toBe(false);
+    fresh.unmount();
+  });
+
+  it("leaves Sahayak off when the participant declines the consent prompt", () => {
+    const { result, unmount } = renderHook(() => useDemoParticipant(), { wrapper });
+
+    act(() => result.current.requestSahayak(true));
+    act(() => result.current.declineSahayakConsent());
+
+    expect(result.current.sahayakOn).toBe(false);
+    expect(result.current.sahayakConsentOpen).toBe(false);
+    unmount();
+  });
 });

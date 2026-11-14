@@ -1,6 +1,8 @@
 import { Link, useRouterState, type LinkProps } from "@tanstack/react-router";
 import { CalendarDays, Home, MessageCircle, Route as JourneyIcon, Settings, Sparkles } from "lucide-react";
 import type { ReactNode } from "react";
+import { Switch } from "@/components/ui/switch";
+import { useDemoParticipant } from "@/components/participant/DemoParticipantContext";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -12,6 +14,7 @@ const NAV = [
 
 export function ParticipantShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const { sahayakOn, requestSahayak } = useDemoParticipant();
 
   return (
     <div className="min-h-screen bg-background pb-24 lg:pb-0">
@@ -19,9 +22,13 @@ export function ParticipantShell({ children }: { children: ReactNode }) {
         <div className="brand-gradient border-b border-border px-5 py-5">
           <Link to="/me" className="font-heading text-base font-semibold text-primary">Journey Companion</Link>
         </div>
-        <div className="mx-3 mt-3 flex items-center gap-2 rounded-lg border border-border bg-secondary/60 p-3">
-          <Sparkles className="size-4 text-purple" aria-hidden />
-          <span className="font-heading text-sm font-semibold text-primary">Sahayak</span>
+        <div className="mx-3 mt-3 rounded-lg border border-border bg-secondary/60 p-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="size-4 text-purple" aria-hidden />
+            <span className="font-heading text-sm font-semibold text-primary">Sahayak</span>
+            <Switch className="ml-auto" aria-label="Use Sahayak with Muse" checked={sahayakOn} onCheckedChange={requestSahayak} />
+          </div>
+          <p className="mt-1 text-[11px] leading-snug text-muted-foreground">{sahayakOn ? "Muse assistant is on" : "Muse assistant is off"}</p>
         </div>
         <nav className="mt-2 flex flex-1 flex-col gap-1 px-3" aria-label="Participant sections">
           {NAV.map(({ to, label, Icon, exact }) => (

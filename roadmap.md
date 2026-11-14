@@ -1,6 +1,9 @@
 # Roadmap
 
 ## Done
+- Participant view: the "Use Sahayak with Muse" switch now sits in the sidebar as well as Settings, both driven by one shared state, and switching it on opens a consent prompt listing exactly what Muse may use (practice log, goals and rhythm, upcoming events and calendar links, coordinator-approved messages, a participant-approved summary marked "via Muse") plus what it never does (sends nothing, shows nothing to others, can be turned off any time). Muse stays off until "Yes, allow and turn on"; "Not now" leaves it off, and switching off never asks. Verified in the preview and by 4 participant tests.
+
+## Done
 - Added Impact, session QR check-in and summaries, shared guest/attendance records, message outcome tracking and gentle second drafts, five volunteers with reviewed assignment proposals and capacity limits, and English/French interface controls and message templates. All 74 tests pass; live check-in, guest confirmation, assignment confirmation, French review approval and Impact verified.
 
 ## Done
