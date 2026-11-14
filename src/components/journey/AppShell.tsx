@@ -23,11 +23,11 @@ function NavItemLink({ to, label, Icon, exact, waiting, onNavigate }: NavItem & 
       activeOptions={{ exact: !!exact }}
       onClick={onNavigate}
       className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-      activeProps={{ className: "bg-secondary text-primary-strong" }}
+      activeProps={{ className: "bg-secondary text-primary font-semibold" }}
     >
       <Icon className="size-4 shrink-0" aria-hidden />
       <span className="flex-1 truncate">{label}</span>
-      {waiting ? <span className="rounded-full bg-primary px-1.5 text-[11px] font-semibold leading-4 tabular-nums text-primary-foreground">{waiting}</span> : null}
+      {waiting ? <span className="rounded-full bg-sun-orange px-1.5 text-[11px] font-semibold leading-4 tabular-nums text-primary">{waiting}</span> : null}
     </Link>
   );
 }
@@ -41,8 +41,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-[240px] flex-col border-r border-border bg-card lg:flex">
-        <div className="px-5 py-5">
-          <Link to="/" className="font-display text-base font-semibold tracking-tight text-foreground">Journey Companion</Link>
+        <div className="brand-gradient border-b border-border px-5 py-5">
+          <Link to="/" className="font-heading text-base font-semibold tracking-tight text-primary">Journey Companion</Link>
         </div>
         <nav className="flex flex-1 flex-col gap-1 px-3" aria-label="Sections">
           {NAV.map((n) => <NavItemLink key={n.to} {...n} waiting={n.to === "/review" ? waiting : undefined} />)}
@@ -51,7 +51,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </aside>
 
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-card px-4 py-3 lg:hidden">
-        <Link to="/" className="font-display text-base font-semibold tracking-tight">Journey Companion</Link>
+        <Link to="/" className="font-heading text-base font-semibold tracking-tight text-primary">Journey Companion</Link>
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <button type="button" aria-label="Open menu" className="grid size-9 place-items-center rounded-lg border border-border text-muted-foreground hover:bg-secondary">
@@ -60,7 +60,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </SheetTrigger>
           <SheetContent side="left" className="w-[240px] gap-0 p-0 sm:max-w-[240px]">
             <SheetTitle className="sr-only">Menu</SheetTitle>
-            <div className="px-5 py-5 font-display text-base font-semibold tracking-tight">Journey Companion</div>
+            <div className="brand-gradient border-b border-border px-5 py-5 font-heading text-base font-semibold tracking-tight text-primary">Journey Companion</div>
             <nav className="flex flex-1 flex-col gap-1 px-3" aria-label="Sections">
               {NAV.map((n) => <NavItemLink key={n.to} {...n} waiting={n.to === "/review" ? waiting : undefined} onNavigate={() => setOpen(false)} />)}
             </nav>

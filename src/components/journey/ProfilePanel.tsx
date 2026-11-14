@@ -41,7 +41,7 @@ function Body({ view }: { view: ParticipantView }) {
   return (
     <>
       <div className="border-b border-border px-6 py-5">
-        <SheetTitle className="font-display text-lg font-semibold text-foreground">{p.firstName} {p.lastName}</SheetTitle>
+        <SheetTitle className="font-display text-[22px] font-normal text-primary">{p.firstName} {p.lastName}</SheetTitle>
         <SheetDescription className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
           <StageBadge stage={view.stage} />
           <span>{p.city}</span>
@@ -51,7 +51,7 @@ function Body({ view }: { view: ParticipantView }) {
 
       <div className="flex-1 space-y-6 overflow-y-auto px-6 py-5">
         <section>
-          <h3 className="mb-3 text-sm font-semibold text-foreground">Journey so far</h3>
+          <h3 className="mb-3 font-heading text-sm font-semibold text-primary">Journey so far</h3>
           <ol className="space-y-3 border-l border-border pl-4">
             {items.map((it, i) => (
               <li key={i} className="relative text-sm">
@@ -64,9 +64,9 @@ function Body({ view }: { view: ParticipantView }) {
         </section>
 
         {step && s ? (
-          <section className="rounded-xl border border-border bg-muted/50 p-4">
-            <p className="text-sm font-semibold text-foreground">Suggested next step: {step.shortTitle}{step.startDate ? ` · ${formatShort(step.startDate)}` : ""}</p>
-            {s.lowData && <p className="mt-1 text-xs font-medium text-primary-strong">Not enough info yet — we suggest a gentle check-in.</p>}
+          <section className="rounded-lg border border-border bg-secondary p-4">
+            <p className="font-heading text-sm font-semibold text-primary">Suggested next step: {step.shortTitle}{step.startDate ? ` · ${formatShort(step.startDate)}` : ""}</p>
+            {s.lowData && <p className="mt-1 text-xs font-medium text-sun-orange-deep">Not enough info yet — we suggest a gentle check-in.</p>}
             <p className="mt-1.5 text-sm text-muted-foreground">{s.why}</p>
             {options.length > 1 && (
               <div className="mt-3">
@@ -81,7 +81,7 @@ function Body({ view }: { view: ParticipantView }) {
             )}
           </section>
         ) : (
-          <p className="rounded-xl bg-muted p-4 text-sm text-muted-foreground">{view.why}</p>
+          <p className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">{view.why}</p>
         )}
       </div>
 

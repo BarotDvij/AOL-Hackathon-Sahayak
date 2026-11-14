@@ -66,29 +66,29 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
   );
 
   return (
-    <section aria-label={title} className="rounded-xl border border-border bg-card shadow-soft">
+    <section aria-label={title} className="rounded-lg border border-border bg-card shadow-soft">
       <div className="flex flex-wrap items-center gap-3 border-b border-border p-4">
-        <h2 className="mr-auto text-base font-semibold text-foreground">{title}</h2>
+        <h2 className="mr-auto font-heading text-base font-semibold text-primary">{title}</h2>
         <div className="relative min-w-0 basis-56 flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
           <Input value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} placeholder="Search name, city or email" aria-label="Search participants" className="bg-card pl-9" />
         </div>
         <Select value={stage} onValueChange={(s) => { onStage(s as StageId | "all"); setPage(1); }}>
-          <SelectTrigger className="w-40 bg-card" aria-label="Filter by stage"><SelectValue /></SelectTrigger>
+          <SelectTrigger className={cn("w-40 bg-card", stage !== "all" && "border-purple text-purple")} aria-label="Filter by stage"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All stages</SelectItem>
             {STAGES.map((s) => <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={city} onValueChange={(c) => { setCity(c); setPage(1); }}>
-          <SelectTrigger className="w-36 bg-card" aria-label="Filter by city"><SelectValue /></SelectTrigger>
+          <SelectTrigger className={cn("w-36 bg-card", city !== "all" && "border-purple text-purple")} aria-label="Filter by city"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All cities</SelectItem>
             {cities.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={channel} onValueChange={(c) => { setChannel(c); setPage(1); }}>
-          <SelectTrigger className="w-36 bg-card" aria-label="Filter by channel"><SelectValue /></SelectTrigger>
+          <SelectTrigger className={cn("w-36 bg-card", channel !== "all" && "border-purple text-purple")} aria-label="Filter by channel"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All channels</SelectItem>
             {(["whatsapp", "email", "sms"] as Channel[]).map((c) => <SelectItem key={c} value={c}>{channelLabel(c)}</SelectItem>)}
@@ -118,7 +118,7 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
                 <tr
                   key={p.id}
                   onClick={() => onOpen(p.id)}
-                  className={cn("h-14 cursor-pointer border-b border-border transition-colors last:border-b-0 hover:bg-muted/60", paused && "opacity-60")}
+                  className={cn("h-14 cursor-pointer border-b border-border transition-colors last:border-b-0 hover:bg-secondary/60", paused && "opacity-60")}
                 >
                   <td className="px-3">
                     <span className="flex items-center gap-3">
@@ -138,7 +138,7 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
                   </td>
                   <td className="px-3">{ch ? <ChannelIcon channel={ch} /> : <span className="text-sm text-muted-foreground">—</span>}</td>
                   <td className="px-3 text-right">
-                    <Button size="sm" variant="ghost" className="h-7 px-2 text-primary-strong" onClick={(e) => { e.stopPropagation(); onOpen(p.id); }}>Review</Button>
+                    <Button size="sm" variant="accent" className="h-7 px-2" onClick={(e) => { e.stopPropagation(); onOpen(p.id); }}>Review</Button>
                   </td>
                 </tr>
               );

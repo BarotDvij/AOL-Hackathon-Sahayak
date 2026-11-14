@@ -29,7 +29,7 @@ function ParticipantsPage() {
     <AppShell>
       <div className="space-y-4">
         <header className="mb-2">
-          <h1 className="font-display text-[28px] font-semibold leading-tight tracking-tight text-foreground">Participants</h1>
+          <h1 className="font-display text-[32px] font-normal text-primary">Participants</h1>
           <p className="mt-1 text-sm text-muted-foreground">Everyone in your centre, with their stage and next step.</p>
         </header>
 
