@@ -1,3 +1,4 @@
+import { useLanguage } from "@/lib/journey/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell } from "@/components/journey/AppShell";
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/participants")({
 });
 
 function ParticipantsPage() {
+  const {t} = useLanguage();
   const { views } = useJourney();
   const [stage, setStage] = useState<StageId | "all">("all");
   const [openId, setOpenId] = useState<string | null>(null);
@@ -30,7 +32,7 @@ function ParticipantsPage() {
     <AppShell>
       <div className="space-y-4">
         <header className="mb-2">
-          <h1 className="font-display text-[32px] font-normal text-primary">Participants</h1>
+          <h1 className="font-display text-[32px] font-normal text-primary">{t('Participants')}</h1>
           <p className="mt-1 text-sm text-muted-foreground">Everyone in your centre, with their stage and next step.</p>
         </header>
 

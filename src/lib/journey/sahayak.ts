@@ -287,6 +287,7 @@ function stepFor(message: InboxMessage, p: Participant, catalog: NextStep[]): Ne
 /** A warm reply the coordinator can read, edit and approve. Never sent on its own. */
 export function suggestedReply(message: InboxMessage, p: Participant, catalog: NextStep[]): string {
   const step = stepFor(message, p, catalog);
+  if (p.language === "French") return `Bonjour ${p.firstName}, merci pour votre message. ${step ? `Vous seriez bienvenue à ${step.shortTitle}. ${step.link ? `Voici le lien : ${step.link}` : ""}` : "J’ai bien noté votre demande et je reviendrai vers vous avec les détails."} Sans aucune pression.\n\nChaleureusement, ${C.coordinatorName}`;
   const hello = `Hi ${p.firstName}, thanks for writing.`;
   if (!step) {
     return `${hello} I've made a note and I'll come back to you with the details shortly. If anything changes on your side, just tell me.\n\nWarmly, ${C.coordinatorName}`;

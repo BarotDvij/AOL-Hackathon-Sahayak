@@ -1,3 +1,4 @@
+import { useLanguage } from "@/lib/journey/i18n";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useJourney } from "@/lib/journey/store";
@@ -8,6 +9,7 @@ import { SahayakLink, SahayakTag, useGreeting } from "./bits";
  * and it goes away for the day the moment the coordinator dismisses it.
  */
 export function DailyBrief() {
+  const {t} = useLanguage();
   const { sahayak, brief, dismissBrief } = useJourney();
   const greeting = useGreeting();
 

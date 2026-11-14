@@ -1,3 +1,4 @@
+import { useLanguage } from "@/lib/journey/i18n";
 import { Clock, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -7,13 +8,14 @@ import { SahayakLink, SahayakTag } from "./bits";
 
 /** The bell panel: everything Sahayak thinks might be forgotten, with Do it now / Snooze / Dismiss. */
 export function RemindersPanel({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
+  const {t} = useLanguage();
   const { reminders, snoozeReminder, dismissReminder } = useJourney();
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:w-[420px] sm:max-w-[420px]">
         <div className="border-b border-border px-6 py-5">
-          <SheetTitle className="font-display text-[22px] font-normal text-primary">Sahayak reminders</SheetTitle>
+          <SheetTitle className="font-display text-[22px] font-normal text-primary">{t('Sahayak reminders')}</SheetTitle>
           <SheetDescription className="mt-1 text-sm text-muted-foreground">
             Things you might otherwise forget. Nothing here sends itself.
           </SheetDescription>
@@ -36,7 +38,7 @@ export function RemindersPanel({ open, onOpenChange }: { open: boolean; onOpenCh
                   </SahayakLink>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button size="sm" variant="outline"><Clock className="size-3.5" aria-hidden />Snooze</Button>
+                      <Button size="sm" variant="outline"><Clock className="size-3.5" aria-hidden />{t('Snooze')}</Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => snoozeReminder(r.id, 1)}>1 day</DropdownMenuItem>
