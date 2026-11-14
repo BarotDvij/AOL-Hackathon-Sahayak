@@ -10,15 +10,19 @@
 - Tests: 14 passing (stage thresholds, low-data check-in, follow-up priority, summary counts, skip reason, approved message lands with the right person).
 
 ## In progress
-- Participant Sahayak: shared journey core, participant-scoped MCP tools, hashed keys and audit records, participant app with onboarding, practice, goals, events, approved messages and optional Muse connection.
-- Verify participant data isolation, onboarding parity, key revocation, audit logging and every MCP tool; add rule tests and exercise the main app flow.
+(none)
 
 ## Done
 - Sahayak helper: first-time question, sidebar On/Off plus a settings page (four switches, nudge frequency, reset demo), daily brief on the dashboard, inbox with "waiting N days" flags and editable suggested replies, reminder bell with Do it now / snooze / dismiss, floating Ask Sahayak panel answering from the records, and a purple "Suggested by Sahayak" marker on everything it offers. 29 tests passing.
 - Visual restyle to the hackathon palette (navy / purple / sun orange / sun yellow, brand gradient in the dashboard banner and sidebar logo area only) and typography (Lora titles, Poppins headings and numbers, Inter body). Layout unchanged.
 
+## Done
+- Participant Sahayak: signed-in participant app with Home, My journey, Messages and Settings; shared journey core; six-question onboarding in-app and through MCP; saved practice, interests, goals, approved messages and via Muse summaries; optional OAuth Muse connection.
+- Participant MCP: eleven tools, stateless streamable HTTP at `/mcp`, OAuth client-claim enforcement, caller-scoped RLS, shared audit helper and a reserved hashed-key table for future machine access.
+- Verified: 45 journey/participant tests plus audit tests, clean typecheck and builds, real participant flow after reload, RLS isolation, safe friendly wording, nine database-backed tool handlers with one audit row each, calendar downloads, coordinator summary display and approval persistence. External OAuth handshake remains a post-publish check.
+
 ## Open
+- External MCP client connection needs one final check after publishing; the sandbox's hosted login bridge prevented completing that handshake locally.
 - The floating "Ask Sahayak" button sits over the bottom-right of the participants table while scrolling (the spec asked for bottom right); move or shrink it if it gets in the way.
-- Participant-facing screens (home, my journey, messages) from the earlier request are not in this build — the store already keeps each person's own messages and practice log, so they can be added on top. Waiting on a go-ahead.
 - Catalog dates, course names and centre cities are placeholders; real ones needed before coordinators use it.
-- State resets on a page reload (in-memory Phase 1); persistence is a later phase.
+- Coordinator demo state resets on reload; participant records now persist in Lovable Cloud.
