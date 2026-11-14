@@ -11,8 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ActivityRouteImport } from './routes/activity'
+import { Route as InboxRouteImport } from './routes/inbox'
 import { Route as ParticipantsRouteImport } from './routes/participants'
 import { Route as ReviewRouteImport } from './routes/review'
+import { Route as SahayakRouteImport } from './routes/sahayak'
 import { Route as SettingsRouteImport } from './routes/settings'
 
 const IndexRoute = IndexRouteImport.update({
@@ -25,6 +27,11 @@ const ActivityRoute = ActivityRouteImport.update({
   path: '/activity',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InboxRoute = InboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ParticipantsRoute = ParticipantsRouteImport.update({
   id: '/participants',
   path: '/participants',
@@ -33,6 +40,11 @@ const ParticipantsRoute = ParticipantsRouteImport.update({
 const ReviewRoute = ReviewRouteImport.update({
   id: '/review',
   path: '/review',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SahayakRoute = SahayakRouteImport.update({
+  id: '/sahayak',
+  path: '/sahayak',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -44,38 +56,68 @@ const SettingsRoute = SettingsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/activity': typeof ActivityRoute
+  '/inbox': typeof InboxRoute
   '/participants': typeof ParticipantsRoute
   '/review': typeof ReviewRoute
+  '/sahayak': typeof SahayakRoute
   '/settings': typeof SettingsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/activity': typeof ActivityRoute
+  '/inbox': typeof InboxRoute
   '/participants': typeof ParticipantsRoute
   '/review': typeof ReviewRoute
+  '/sahayak': typeof SahayakRoute
   '/settings': typeof SettingsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/activity': typeof ActivityRoute
+  '/inbox': typeof InboxRoute
   '/participants': typeof ParticipantsRoute
   '/review': typeof ReviewRoute
+  '/sahayak': typeof SahayakRoute
   '/settings': typeof SettingsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/activity' | '/participants' | '/review' | '/settings'
+  fullPaths:
+    | '/'
+    | '/activity'
+    | '/inbox'
+    | '/participants'
+    | '/review'
+    | '/sahayak'
+    | '/settings'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/activity' | '/participants' | '/review' | '/settings'
-  id: '__root__' | '/' | '/activity' | '/participants' | '/review' | '/settings'
+  to:
+    | '/'
+    | '/activity'
+    | '/inbox'
+    | '/participants'
+    | '/review'
+    | '/sahayak'
+    | '/settings'
+  id:
+    | '__root__'
+    | '/'
+    | '/activity'
+    | '/inbox'
+    | '/participants'
+    | '/review'
+    | '/sahayak'
+    | '/settings'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ActivityRoute: typeof ActivityRoute
+  InboxRoute: typeof InboxRoute
   ParticipantsRoute: typeof ParticipantsRoute
   ReviewRoute: typeof ReviewRoute
+  SahayakRoute: typeof SahayakRoute
   SettingsRoute: typeof SettingsRoute
 }
 
@@ -95,6 +137,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ActivityRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/inbox': {
+      id: '/inbox'
+      path: '/inbox'
+      fullPath: '/inbox'
+      preLoaderRoute: typeof InboxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/participants': {
       id: '/participants'
       path: '/participants'
@@ -107,6 +156,13 @@ declare module '@tanstack/react-router' {
       path: '/review'
       fullPath: '/review'
       preLoaderRoute: typeof ReviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sahayak': {
+      id: '/sahayak'
+      path: '/sahayak'
+      fullPath: '/sahayak'
+      preLoaderRoute: typeof SahayakRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -122,8 +178,10 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ActivityRoute: ActivityRoute,
+  InboxRoute: InboxRoute,
   ParticipantsRoute: ParticipantsRoute,
   ReviewRoute: ReviewRoute,
+  SahayakRoute: SahayakRoute,
   SettingsRoute: SettingsRoute,
 }
 export const routeTree = rootRouteImport

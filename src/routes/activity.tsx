@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Check, History, Pencil, X } from "lucide-react";
+import { Check, History, MessageCircleReply, Pencil, X } from "lucide-react";
 import { AppShell } from "@/components/journey/AppShell";
 import { Button } from "@/components/ui/button";
 import { useJourney } from "@/lib/journey/store";
@@ -21,6 +21,7 @@ const KIND: Record<ActivityEntry["kind"], { label: string; Icon: typeof Check; c
   approved: { label: "Approved", Icon: Check, className: "bg-sun-yellow text-primary" },
   edited: { label: "Edited", Icon: Pencil, className: "bg-secondary text-primary" },
   skipped: { label: "Skipped", Icon: X, className: "bg-muted text-muted-foreground" },
+  replied: { label: "Replied", Icon: MessageCircleReply, className: "bg-stage-active text-stage-active-foreground" },
 };
 
 function when(iso: string) {

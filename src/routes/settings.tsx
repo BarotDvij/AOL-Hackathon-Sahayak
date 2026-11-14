@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/journey/AppShell";
 import { JOURNEY_CONFIG as C, STAGES, stageLabel } from "@/lib/journey/config";
 
@@ -44,6 +44,16 @@ function SettingsPage() {
               </div>
             ))}
           </dl>
+        </section>
+
+        <section className="rounded-lg border border-border bg-card p-5 shadow-soft">
+          <h2 className="font-heading text-base font-semibold text-primary">Sahayak</h2>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            Sahayak means helper. It keeps track of follow-ups so no one slips through the cracks.
+          </p>
+          <Link to="/sahayak" className="mt-2 inline-block text-sm font-medium text-purple hover:underline">
+            Sahayak settings
+          </Link>
         </section>
 
         <section className="rounded-lg border border-border bg-card p-5 shadow-soft">

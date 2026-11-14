@@ -13,9 +13,11 @@
 (none)
 
 ## Done
+- Sahayak helper: first-time question, sidebar On/Off plus a settings page (four switches, nudge frequency, reset demo), daily brief on the dashboard, inbox with "waiting N days" flags and editable suggested replies, reminder bell with Do it now / snooze / dismiss, floating Ask Sahayak panel answering from the records, and a purple "Suggested by Sahayak" marker on everything it offers. 29 tests passing.
 - Visual restyle to the hackathon palette (navy / purple / sun orange / sun yellow, brand gradient in the dashboard banner and sidebar logo area only) and typography (Lora titles, Poppins headings and numbers, Inter body). Layout unchanged.
 
 ## Open
+- The floating "Ask Sahayak" button sits over the bottom-right of the participants table while scrolling (the spec asked for bottom right); move or shrink it if it gets in the way.
 - Participant-facing screens (home, my journey, messages) from the earlier request are not in this build — the store already keeps each person's own messages and practice log, so they can be added on top. Waiting on a go-ahead.
 - Catalog dates, course names and centre cities are placeholders; real ones needed before coordinators use it.
 - State resets on a page reload (in-memory Phase 1); persistence is a later phase.

@@ -1,6 +1,9 @@
-import { Mail, MessageCircle, MessageSquareText } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Mail, MessageCircle, MessageSquareText, Sparkles } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { stageLabel } from "@/lib/journey/config";
+import type { SahayakLinkTo } from "@/lib/journey/sahayak";
 import type { Channel, StageId } from "@/lib/journey/types";
 
 /** One soft, muted colour per stage. The same classes are used in badges, the stage bar and the legend. */
@@ -46,4 +49,39 @@ export function ChannelIcon({ channel, withLabel, className }: { channel: Channe
       {withLabel ? <span className="text-sm">{label}</span> : <span className="sr-only">{label}</span>}
     </span>
   );
+}
+
+/** The one marker for anything Sahayak wrote. Purple sparkle, never a button of its own. */
+export function SahayakTag({ className }: { className?: string }) {
+  return (
+    <span className={cn("inline-flex items-center gap-1 text-[11px] font-medium text-purple", className)}>
+      <Sparkles className="size-3 shrink-0" aria-hidden />
+      Suggested by Sahayak
+    </span>
+  );
+}
+
+/**
+ * Typed navigation for whatever page a Sahayak suggestion points at.
+ * TanStack needs a literal `to`, so each allowed page gets its own branch.
+ */
+export function SahayakLink({ to, className, children }: { to: SahayakLinkTo; className?: string; children: ReactNode }) {
+  switch (to) {
+    case "/inbox": return <Link to="/inbox" className={className}>{children}</Link>;
+    case "/review": return <Link to="/review" className={className}>{children}</Link>;
+    case "/participants": return <Link to="/participants" className={className}>{children}</Link>;
+    case "/activity": return <Link to="/activity" className={className}>{children}</Link>;
+    case "/sahayak": return <Link to="/sahayak" className={className}>{children}</Link>;
+    default: return <Link to="/" className={className}>{children}</Link>;
+  }
+}
+
+/** Set after mount so the server and the first client render say the same thing. */
+export function useGreeting() {
+  const [g, setG] = useState<string | null>(null);
+  useEffect(() => {
+    const h = new Date().getHours();
+    setG(h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening");
+  }, []);
+  return g ?? "Hello";
 }
