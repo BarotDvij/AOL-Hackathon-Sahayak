@@ -39,7 +39,7 @@ export interface NextStep {
   tags: string[];
   link: string;
 }
-export interface Reason { code: string; days?: number; count?: number; text?: string }
+export interface Reason { code: string; days?: number | undefined; count?: number | undefined; text?: string | undefined }
 export interface StageResult { stage: StageId; reasons: Reason[] }
 export interface Suggestion {
   id: string;
