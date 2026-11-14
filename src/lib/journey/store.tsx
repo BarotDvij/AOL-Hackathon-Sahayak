@@ -18,6 +18,9 @@ import type { ActivityEntry, Channel, Contact, History, Message, NextStep, Parti
 
 export { contactText, daysSinceLastContact };
 
+/** Where the coordinator's one-time Sahayak answer is remembered. */
+const SAHAYAK_CHOICE_KEY = "journey-sahayak-choice";
+
 export interface ParticipantView {
   participant: Participant;
   history: History;
@@ -301,7 +304,10 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
     setSahayakFeature: (key, on) => setSahayak((s) => ({ ...s, features: { ...s.features, [key]: on } })),
     setNudge: (n) => setSahayak((s) => ({ ...s, nudge: n })),
     decideSahayak: (on) => setSahayak((s) => ({ ...s, on, decided: true })),
-    resetSahayakDemo: () => setSahayak({ ...SAHAYAK_DEFAULTS, features: { ...SAHAYAK_DEFAULTS.features }, snoozed: {}, dismissed: [] }),
+    resetSahayakDemo: () => {
+      try { localStorage.removeItem(SAHAYAK_CHOICE_KEY); } catch { /* storage unavailable */ }
+      setSahayak({ ...SAHAYAK_DEFAULTS, features: { ...SAHAYAK_DEFAULTS.features }, snoozed: {}, dismissed: [] });
+    },
     dismissBrief: () => setSahayak((s) => ({ ...s, briefDismissedOn: isoDaysFrom(0) })),
     snoozeReminder: (id, days) => setSahayak((s) => ({ ...s, snoozed: { ...s.snoozed, [id]: isoDaysFrom(days) } })),
     dismissReminder: (id) => setSahayak((s) => ({ ...s, dismissed: [...s.dismissed, id] })),
