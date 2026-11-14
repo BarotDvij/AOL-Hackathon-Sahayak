@@ -1,6 +1,9 @@
 # Roadmap
 
 ## Done
+- Participant Home: an "Upcoming events" card lists the person's own fitting events in date order — dated ones show a date chip and an "Add to calendar" link that downloads a real .ics, undated catalog options show a clock chip and their suggested timing, and anything needing local confirmation says "Confirm with your centre". Long lists collapse behind "Show all". Verified in the preview; 10 participant tests pass.
+
+## Done
 - Participant view: the "Use Sahayak with Muse" switch sits in the sidebar and Settings on one shared state. Switching it on opens a consent prompt headed "Your Sahayak lives in your Muse and can only use what you tick here", where each of the five access items has its own tick box and "Allow all" ticks every one; nothing turns on until at least one item is ticked, and the button says how many are allowed. While on, Settings lists what Muse may use with "Change what Muse may use" to re-tick, and switching off clears the list. Verified in the preview and by 10 participant tests.
 
 ## Done
