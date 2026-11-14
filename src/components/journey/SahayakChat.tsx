@@ -122,12 +122,12 @@ function Answer({ item }: { item: ChatItem }) {
         )}
 
         {item.answer.action && (
-          <SahayakLink to={item.answer.action.to} className="mt-2.5 inline-block text-xs font-semibold text-purple hover:underline">
+          <SahayakLink to={item.answer.action.to} className="mt-2.5 block w-fit text-xs font-semibold text-purple hover:underline">
             {item.answer.action.label}
           </SahayakLink>
         )}
 
-        <SahayakTag className="mt-2.5" />
+        <SahayakTag className="mt-2 block w-fit" />
       </div>
     </div>
   );

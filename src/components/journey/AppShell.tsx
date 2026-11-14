@@ -1,5 +1,5 @@
-import { Link } from "@tanstack/react-router";
-import { Bell, History, Inbox, LayoutDashboard, Menu, Settings, Sparkles, Users } from "lucide-react";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { Bell, History, Inbox, LayoutDashboard, Mail, Menu, Settings, Sparkles, Users } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
@@ -11,24 +11,28 @@ import { SahayakChat } from "./SahayakChat";
 import { SahayakIntro } from "./SahayakIntro";
 
 type To = "/" | "/participants" | "/review" | "/inbox" | "/activity" | "/settings";
-type NavItem = { to: To; label: string; Icon: typeof LayoutDashboard; exact?: boolean };
+type NavItem = { to: To; label: string; Icon: typeof LayoutDashboard; exact?: boolean; alsoActive?: string };
 
 const NAV: NavItem[] = [
   { to: "/", label: "Dashboard", Icon: LayoutDashboard, exact: true },
   { to: "/participants", label: "Participants", Icon: Users },
   { to: "/review", label: "Review Queue", Icon: Inbox },
-  { to: "/inbox", label: "Inbox", Icon: Inbox },
+  { to: "/inbox", label: "Inbox", Icon: Mail },
   { to: "/activity", label: "Activity Log", Icon: History },
-  { to: "/settings", label: "Settings", Icon: Settings },
+  { to: "/settings", label: "Settings", Icon: Settings, alsoActive: "/sahayak" },
 ];
 
-function NavItemLink({ to, label, Icon, exact, waiting, onNavigate }: NavItem & { waiting?: number | undefined; onNavigate?: () => void }) {
+function NavItemLink({ to, label, Icon, exact, alsoActive, waiting, onNavigate }: NavItem & { waiting?: number | undefined; onNavigate?: () => void }) {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const highlight = !!alsoActive && pathname.startsWith(alsoActive);
+
   return (
     <Link
       to={to}
       activeOptions={{ exact: !!exact }}
       onClick={onNavigate}
-      className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+      className={cn("flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
+        highlight && "bg-secondary font-semibold text-primary")}
       activeProps={{ className: "bg-secondary text-primary font-semibold" }}
     >
       <Icon className="size-4 shrink-0" aria-hidden />
@@ -135,7 +139,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           )}
           {sahayak.on && <BellButton count={reminders.length} onClick={() => setRemindersOpen(true)} />}
         </div>
-        <div className="mx-auto w-full max-w-[1280px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</div>
+        <div className="mx-auto w-full max-w-[1280px] px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pb-24 lg:pt-8">{children}</div>
       </main>
 
       <SahayakIntro />
