@@ -1,52 +1,82 @@
 import { Link } from "@tanstack/react-router";
-import { History, Inbox, LayoutDashboard } from "lucide-react";
-import type { ReactNode } from "react";
+import { History, Inbox, LayoutDashboard, Menu, Settings, Users } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useJourney } from "@/lib/journey/store";
 import { cn } from "@/lib/utils";
 
-type To = "/" | "/review" | "/activity";
-type NavItem = { to: To; label: string; short: string; Icon: typeof LayoutDashboard; exact?: boolean };
+type To = "/" | "/participants" | "/review" | "/activity" | "/settings";
+type NavItem = { to: To; label: string; Icon: typeof LayoutDashboard; exact?: boolean };
 
 const NAV: NavItem[] = [
-  { to: "/", label: "Dashboard", short: "Dashboard", Icon: LayoutDashboard, exact: true },
-  { to: "/review", label: "Review queue", short: "Review", Icon: Inbox },
-  { to: "/activity", label: "Activity", short: "Activity", Icon: History },
+  { to: "/", label: "Dashboard", Icon: LayoutDashboard, exact: true },
+  { to: "/participants", label: "Participants", Icon: Users },
+  { to: "/review", label: "Review Queue", Icon: Inbox },
+  { to: "/activity", label: "Activity Log", Icon: History },
+  { to: "/settings", label: "Settings", Icon: Settings },
 ];
 
-function NavLink({ to, label, short, Icon, exact, mobile, waiting }: NavItem & { mobile?: boolean | undefined; waiting?: number | undefined }) {
+function NavItemLink({ to, label, Icon, exact, waiting, onNavigate }: NavItem & { waiting?: number | undefined; onNavigate?: () => void }) {
   return (
     <Link
       to={to}
       activeOptions={{ exact: !!exact }}
-      className={cn(
-        "relative flex flex-1 flex-col items-center gap-1 px-2 py-2.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground md:flex-none md:flex-row md:gap-2 md:rounded-full md:px-4 md:py-1.5 md:text-sm",
-      )}
-      activeProps={{ className: "bg-secondary text-primary-strong md:bg-secondary" }}
+      onClick={onNavigate}
+      className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+      activeProps={{ className: "bg-secondary text-primary-strong" }}
     >
-      <Icon className="size-4 md:hidden" aria-hidden />
-      <span>{mobile ? short : label}</span>
-      {waiting ? <span className="absolute right-1 top-1 rounded-full bg-primary px-1.5 text-[10px] font-semibold leading-4 text-primary-foreground md:static md:ml-1">{waiting}</span> : null}
+      <Icon className="size-4 shrink-0" aria-hidden />
+      <span className="flex-1 truncate">{label}</span>
+      {waiting ? <span className="rounded-full bg-primary px-1.5 text-[11px] font-semibold leading-4 tabular-nums text-primary-foreground">{waiting}</span> : null}
     </Link>
   );
 }
 
-/** The coordinator's frame: wordmark, section links on top, a thumb-friendly bar on phones. */
+/** The coordinator's frame: a fixed 240px sidebar on wide screens, a slide-out menu on phones. */
 export function AppShell({ children }: { children: ReactNode }) {
   const { summary } = useJourney();
+  const [open, setOpen] = useState(false);
+  const waiting = summary.waiting;
+
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-20 border-b border-border bg-background/92 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3.5">
-          <Link to="/" className="font-display text-lg font-semibold tracking-tight text-foreground">Journey Companion</Link>
-          <nav className="hidden items-center gap-1 md:flex" aria-label="Sections">
-            {NAV.map((n) => <NavLink key={n.to} {...n} waiting={n.to === "/review" ? summary.waiting : undefined} />)}
-          </nav>
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[240px] flex-col border-r border-border bg-card lg:flex">
+        <div className="px-5 py-5">
+          <Link to="/" className="font-display text-base font-semibold tracking-tight text-foreground">Journey Companion</Link>
         </div>
+        <nav className="flex flex-1 flex-col gap-1 px-3" aria-label="Sections">
+          {NAV.map((n) => <NavItemLink key={n.to} {...n} waiting={n.to === "/review" ? waiting : undefined} />)}
+        </nav>
+        <p className="px-5 py-4 text-xs leading-relaxed text-muted-foreground">Nothing is ever sent without you approving it.</p>
+      </aside>
+
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-card px-4 py-3 lg:hidden">
+        <Link to="/" className="font-display text-base font-semibold tracking-tight">Journey Companion</Link>
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <button type="button" aria-label="Open menu" className="grid size-9 place-items-center rounded-lg border border-border text-muted-foreground hover:bg-secondary">
+              <Menu className="size-4" aria-hidden />
+            </button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-[240px] gap-0 p-0 sm:max-w-[240px]">
+            <SheetTitle className="sr-only">Menu</SheetTitle>
+            <div className="px-5 py-5 font-display text-base font-semibold tracking-tight">Journey Companion</div>
+            <nav className="flex flex-1 flex-col gap-1 px-3" aria-label="Sections">
+              {NAV.map((n) => <NavItemLink key={n.to} {...n} waiting={n.to === "/review" ? waiting : undefined} onNavigate={() => setOpen(false)} />)}
+            </nav>
+            <p className="px-5 py-4 text-xs leading-relaxed text-muted-foreground">Nothing is ever sent without you approving it.</p>
+          </SheetContent>
+        </Sheet>
       </header>
-      <main className="mx-auto max-w-6xl px-5 pb-28 pt-6 md:pb-12">{children}</main>
-      <nav className="fixed inset-x-0 bottom-0 z-20 flex border-t border-border bg-card/95 backdrop-blur md:hidden" aria-label="Sections">
-        {NAV.map((n) => <NavLink key={n.to} {...n} mobile waiting={n.to === "/review" ? summary.waiting : undefined} />)}
-      </nav>
+
+      <main className="lg:pl-[240px]">
+        <div className="mx-auto w-full max-w-[1280px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</div>
+      </main>
     </div>
   );
+}
+
+/** Keeps the sheet's close button from being the only way out on wide screens. */
+export function PanelClose({ children }: { children: ReactNode }) {
+  return <SheetClose asChild>{children}</SheetClose>;
 }
