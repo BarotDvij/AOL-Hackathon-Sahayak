@@ -14,16 +14,307 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      participant_accounts: {
+        Row: {
+          created_at: string
+          participant_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          participant_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          participant_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participant_accounts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      participant_goals: {
+        Row: {
+          created_at: string
+          id: string
+          period: string
+          text: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          period: string
+          text: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          period?: string
+          text?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participant_goals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      participant_messages: {
+        Row: {
+          coordinator_name: string
+          id: string
+          participant_id: string
+          reply: string | null
+          sent_at: string
+          suggestion_id: string | null
+          text: string
+        }
+        Insert: {
+          coordinator_name: string
+          id?: string
+          participant_id: string
+          reply?: string | null
+          sent_at?: string
+          suggestion_id?: string | null
+          text: string
+        }
+        Update: {
+          coordinator_name?: string
+          id?: string
+          participant_id?: string
+          reply?: string | null
+          sent_at?: string
+          suggestion_id?: string | null
+          text?: string
+        }
+        Relationships: []
+      }
+      participant_onboarding: {
+        Row: {
+          answers: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          answers?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participant_onboarding_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      participant_summaries: {
+        Row: {
+          created_at: string
+          id: string
+          participant_id: string
+          source: string
+          text: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          participant_id: string
+          source?: string
+          text: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          participant_id?: string
+          source?: string
+          text?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participant_summaries_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      practice_logs: {
+        Row: {
+          created_at: string
+          id: string
+          minutes: number | null
+          practiced_on: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          minutes?: number | null
+          practiced_on?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          minutes?: number | null
+          practiced_on?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "practice_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      sahayak_audit: {
+        Row: {
+          created_at: string
+          id: string
+          key_id: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          tool: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key_id?: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          tool: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key_id?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          tool?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sahayak_audit_key_id_fkey"
+            columns: ["key_id"]
+            isOneToOne: false
+            referencedRelation: "sahayak_keys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sahayak_audit_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sahayak_keys: {
+        Row: {
+          created_at: string
+          id: string
+          key_hash: string
+          revoked_at: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          scope: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key_hash: string
+          revoked_at?: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          scope: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key_hash?: string
+          revoked_at?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          scope?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "participant" | "coordinator"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +441,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["participant", "coordinator"],
+    },
   },
 } as const
