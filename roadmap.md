@@ -1,5 +1,8 @@
 # Roadmap
 
+## In progress
+- Turn the participant message box into clickable sender previews and conversation threads with typed replies; verify local reply readback and phone layout.
+
 ## Done
 - Replaced participant Messages navigation with a bottom-left openable message box, keeping replies and the direct URL. Verified open/close, reply readback, page navigation, and desktop/phone layouts; five participant tests pass.
 
