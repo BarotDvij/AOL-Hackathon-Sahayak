@@ -3,7 +3,7 @@ import { JOURNEY_CONFIG } from './config';
 import type { Channel, History, Message, Participant, StageId } from './types';
 
 export type Outcome = 'Waiting' | 'Replied' | 'Attended' | 'No response after 14 days';
-export interface SentRecord extends Message { channel: Channel; stageBefore: StageId; attendedAt?: string; attendedSession?: string; volunteerId?: string }
+export interface SentRecord extends Message { channel: Channel; stageBefore: StageId; attendedAt?: string; attendedSession?: string; volunteerId?: string | undefined }
 export interface Volunteer { id: string; name: string; city: string; languages: string[]; capacity: number }
 export interface Session { id: string; name: string; city: string; date: string; eventType: History['events'][number]['eventType']; courseName?: string; ended: boolean }
 export interface CheckIn { sessionId: string; participantId: string; at: string; firstTimer: boolean; stageBefore: StageId }
@@ -30,7 +30,10 @@ export const broughtBack = (m: SentRecord) => !!m.attendedAt && (m.stageBefore =
 export const differentChannel = (channel: Channel, p: Participant): Channel => channel !== 'email' && p.email ? 'email' : channel !== 'sms' && p.phone ? 'sms' : 'whatsapp';
 export function seedOutcomes(participants: Participant[], histories: (id: string) => History, stages: (id: string) => StageId): SentRecord[] {
   // Twenty approved demo messages: eight replies and five subsequent visits.
-  return participants.filter(p => !p.doNotContact).slice(0, 20).map((p, i) => {
+  const candidates = participants.filter(p => !p.doNotContact);
+  const attendees = candidates.filter(p => histories(p.id).events.length > 0).slice(0, 5);
+  const ordered = [...attendees, ...candidates.filter(p => !attendees.some(a => a.id === p.id))].slice(0,20);
+  return ordered.map((p, i) => {
     const h = histories(p.id);
     const visit = [...h.events].sort((a,b) => b.date.localeCompare(a.date))[0];
     const sentDate = i < 5 && visit ? isoDaysFrom(-3, parseIso(visit.date)) : isoDaysFrom(i >= 13 && i < 16 ? -3 : -22);

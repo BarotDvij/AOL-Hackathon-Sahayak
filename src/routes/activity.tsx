@@ -19,6 +19,7 @@ export const Route = createFileRoute("/activity")({
 });
 
 const KIND: Record<ActivityEntry["kind"], { label: string; Icon: typeof Check; className: string }> = {
+  attended: { label: "Attended", Icon: Check, className: "bg-stage-new text-stage-new-foreground" },
   approved: { label: "Approved", Icon: Check, className: "bg-sun-yellow text-primary" },
   edited: { label: "Edited", Icon: Pencil, className: "bg-secondary text-primary" },
   skipped: { label: "Skipped", Icon: X, className: "bg-muted text-muted-foreground" },
