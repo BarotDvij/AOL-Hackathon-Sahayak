@@ -23,7 +23,7 @@ export const JOURNEY_CONFIG = {
 /** Follow-up priority: people drifting away first, then everyone else. Paused people are never listed. */
 export const STAGE_PRIORITY: StageId[] = ["quiet", "dormant", "new", "building", "active", "serving"];
 
-export const SCORE_WEIGHTS = { stageFit: 3, statedInterest: 2, startsSoon: 1.5, nearby: 1, alreadyDeclined: -2 } as const;
+export const SCORE_WEIGHTS = { stageFit: 3, statedInterest: 2, startsSoon: 1.5, nearby: 1, onlineYes: 4, onlineSomeRegions: 1, alreadyDeclined: -2 } as const;
 
 /** Display order, used by the stage bar, the legend and the stage chips. */
 export const STAGES: { id: StageId; label: string }[] = [

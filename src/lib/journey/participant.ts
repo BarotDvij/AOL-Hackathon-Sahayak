@@ -21,11 +21,12 @@ export function friendlyStage(stage: StageId): { name: string | null; line: stri
   return FRIENDLY[stage] ?? WELCOME_BACK;
 }
 
-export function comingUpFor(p: Participant, h: History, catalog: NextStep[], max = 3, now = today()) {
+export function comingUpFor(p: Participant, h: History, catalog: NextStep[], max = 3, now = today(), options: { prefersOnline?: boolean } = {}) {
   const stage = participantStage(p, h);
-  return eligibleSteps(p, h, stage, catalog, now)
+  const preferences = { ...p, prefersOnline: options.prefersOnline ?? p.prefersOnline };
+  return eligibleSteps(preferences, h, stage, catalog, now)
     .filter((s) => s.type !== "check-in")
-    .map((s) => ({ s, score: scoreStep(s, p, h, stage, now) }))
+    .map((s) => ({ s, score: scoreStep(s, preferences, h, stage, now) }))
     .sort((a, b) => b.score - a.score)
     .slice(0, max)
     .map((x) => x.s);

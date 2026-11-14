@@ -36,3 +36,4 @@ use the editor.
 - ParticipantShell mirrors the coordinator desktop sidebar and shared design-system controls while retaining bottom navigation on smaller screens, so both views stay visually consistent without coupling their data.
 - The participant MCP server uses `defineMcp` at `/mcp`, one tool per file under `src/lib/mcp/tools/`, verified OAuth with a required client claim, caller-scoped database clients and `recordSahayakCall`; never use admin clients or copied app-session tokens there.
 - Sahayak's model call lives in a server function (`src/lib/sahayak.functions.ts`) that the browser reaches only through the RPC, and every screen keeps a locally computed, record-based answer as the fallback so inference is never required for the app to work.
+- Course and program recommendations come only from the read-only Cloud program catalog; shared pure rules interpret its exact text, prerequisites, ages and timing, while dated local non-course events remain demo data.

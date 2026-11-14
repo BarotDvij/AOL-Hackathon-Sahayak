@@ -7,10 +7,9 @@
 - Review queue: "x of y reviewed" progress and an "All caught up!" empty state.
 - Activity log: what was approved, edited or skipped, and when.
 - Low-data rule: one course and nothing else → gentle check-in instead of a confident recommendation.
-- Tests: 14 passing (stage thresholds, low-data check-in, follow-up priority, summary counts, skip reason, approved message lands with the right person).
-
-## In progress
-(none)
+- Program catalog: 17 courses and 18 prerequisite links imported into Lovable Cloud; course suggestions check prerequisites, age, suggested timing and online preference, with local-confirmation notes and catalog-based practice reminders.
+- Coordinator Programs list: all 17 imported courses, levels, online options, original prerequisite text, local-confirmation badges and source availability.
+- Tests: 62 passing, including stage thresholds, program prerequisites and alternatives, age separation, timing, online ranking, reminders, participant demo and coordinator flows.
 
 ## Done
 - Sahayak helper: first-time question, sidebar On/Off plus a settings page (four switches, nudge frequency, reset demo), daily brief on the dashboard, inbox with "waiting N days" flags and editable suggested replies, reminder bell with Do it now / snooze / dismiss, floating Ask Sahayak panel answering from the records, and a purple "Suggested by Sahayak" marker on everything it offers. 29 tests passing.
@@ -25,5 +24,5 @@
 ## Open
 - External MCP client connection needs one final check after publishing; the sandbox's hosted login bridge prevented completing that handshake locally.
 - The floating "Ask Sahayak" button sits over the bottom-right of the participants table while scrolling (the spec asked for bottom right); move or shrink it if it gets in the way.
-- Catalog dates, course names and centre cities are placeholders; real ones needed before coordinators use it.
+- Every CSV Source cell contains an organization or listing name rather than a URL, so program source links remain unavailable until real URLs are supplied.
 - Coordinator and no-login participant demo state reset on reload; authenticated participant/MCP records remain protected in Lovable Cloud for later account-based use.

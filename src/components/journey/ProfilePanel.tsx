@@ -71,6 +71,8 @@ function Body({ view }: { view: ParticipantView }) {
             <p className="font-heading text-sm font-semibold text-primary">Suggested next step: {step.shortTitle}{step.startDate ? ` · ${formatShort(step.startDate)}` : ""}</p>
             {s.lowData && <p className="mt-1 text-xs font-medium text-sun-orange-deep">Not enough info yet — we suggest a gentle check-in.</p>}
             <p className="mt-1.5 text-sm text-muted-foreground">{s.why}</p>
+            {step.program?.suggested_timing && <p className="mt-2 text-xs text-muted-foreground">Suggested timing: {step.program.suggested_timing}</p>}
+            {step.program?.needs_local_check && <p className="mt-2 inline-flex rounded-full bg-sun-orange px-2.5 py-1 text-xs font-semibold text-primary">Confirm with your centre</p>}
             {options.length > 1 && (
               <div className="mt-3">
                 <label className="mb-1 block text-xs font-medium text-muted-foreground" htmlFor={`step-${p.id}`}>Choose a different step</label>

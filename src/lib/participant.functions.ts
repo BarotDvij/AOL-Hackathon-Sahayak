@@ -4,6 +4,8 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { friendlyStageFor, milestones, normalizeOnboardingAnswers, participantBundle, participantEvents, practiceDto, recommendedSchedule, sampleParticipantOptions } from "@/lib/sahayak/core";
 import { saveOnboarding } from "@/lib/sahayak/save-onboarding";
+import { fetchProgramCatalog } from "@/lib/program-catalog";
+import { buildCatalog } from "@/lib/journey/catalog";
 
 const participantIdSchema = z.string().regex(/^p\d{2}$/);
 
@@ -17,6 +19,8 @@ export const getMyJourney = createServerFn({ method: "GET" })
 
     const bundle = participantBundle(account.participant_id);
     if (!bundle) throw new Error("Your participant record is unavailable.");
+    const programCatalog = await fetchProgramCatalog(supabase);
+    const catalog = buildCatalog(programCatalog.programs, programCatalog.prerequisites);
     const [onboardingResult, practiceResult, goalsResult, messagesResult, interestsResult] = await Promise.all([
       supabase.from("participant_onboarding").select("answers").eq("user_id", userId).maybeSingle(),
       supabase.from("practice_logs").select("id, practiced_on, minutes").eq("user_id", userId).order("practiced_on", { ascending: false }).limit(120),
@@ -40,11 +44,11 @@ export const getMyJourney = createServerFn({ method: "GET" })
       participant: { id: bundle.participant.id, firstName: bundle.participant.firstName, lastName: bundle.participant.lastName, city: bundle.participant.city },
       stage: friendly,
       answers,
-      schedule: recommendedSchedule(answers, bundle.stage),
+      schedule: recommendedSchedule(answers, bundle.stage, bundle.history, programCatalog.programs),
       practice,
       goals: (goalsResult.data ?? []).map((g) => ({ id: g.id, period: g.period, text: g.text, createdAt: g.created_at })),
       messages: (messagesResult.data ?? []).map((m) => ({ id: m.id, coordinatorName: m.coordinator_name, text: m.text, sentAt: m.sent_at, reply: m.reply })),
-      upcoming: participantEvents(account.participant_id, getRequestUrl().origin),
+      upcoming: participantEvents(account.participant_id, getRequestUrl().origin, 20, catalog, { prefersOnline: answers.support === "online" }),
       interests: (interestsResult.data ?? []).map((i) => i.event_id),
       milestones: milestones(bundle.participant, bundle.history, logs),
       timeline,
@@ -98,7 +102,15 @@ export const markMyInterest = createServerFn({ method: "POST" })
   .inputValidator((input) => z.object({ eventId: z.string().trim().min(1).max(120) }).parse(input))
   .handler(async ({ data, context }) => {
     const { data: account } = await context.supabase.from("participant_accounts").select("participant_id").eq("user_id", context.userId).single();
-    if (!account || !participantEvents(account.participant_id, "https://events.invalid", 50).some((e) => e.id === data.eventId)) throw new Error("That event is not in your upcoming list.");
+    if (!account) throw new Error("Choose your sample participant first.");
+    const [programCatalog, onboarding] = await Promise.all([
+      fetchProgramCatalog(context.supabase),
+      context.supabase.from("participant_onboarding").select("answers").eq("user_id", context.userId).maybeSingle(),
+    ]);
+    if (onboarding.error) throw new Error("Your preferences could not be loaded.");
+    const answers = normalizeOnboardingAnswers(onboarding.data?.answers ?? {});
+    const catalog = buildCatalog(programCatalog.programs, programCatalog.prerequisites);
+    if (!participantEvents(account.participant_id, "https://events.invalid", 50, catalog, { prefersOnline: answers.support === "online" }).some((e) => e.id === data.eventId)) throw new Error("That event is not in your upcoming list.");
     const { error } = await context.supabase.from("participant_interests").upsert({ user_id: context.userId, event_id: data.eventId }, { onConflict: "user_id,event_id" });
     if (error) throw new Error("Your interest could not be saved.");
     return { ok: true };

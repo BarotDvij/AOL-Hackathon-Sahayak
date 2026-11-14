@@ -86,6 +86,8 @@ function ReviewPage() {
         <div className="mt-4 rounded-lg bg-secondary p-4">
           <p className="font-heading text-sm font-semibold text-primary">Suggested next step: {step.shortTitle}{step.startDate ? ` · ${formatShort(step.startDate)}` : ""}</p>
           <p className="mt-1 text-sm text-muted-foreground">{s.why}</p>
+          {step.program?.suggested_timing && <p className="mt-2 text-xs text-muted-foreground">Suggested timing: {step.program.suggested_timing}</p>}
+          {step.program?.needs_local_check && <p className="mt-2 inline-flex rounded-full bg-sun-orange px-2.5 py-1 text-xs font-semibold text-primary">Confirm with your centre</p>}
           {alt && (
             <button onClick={() => { useAlternate(s.id); done(); }} className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-purple underline-offset-4 hover:underline">
               <Undo2 className="size-3.5" aria-hidden />Try {alt.shortTitle} instead

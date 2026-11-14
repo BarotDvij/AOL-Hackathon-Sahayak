@@ -242,6 +242,102 @@ export type Database = {
         }
         Relationships: []
       }
+      program_prerequisites: {
+        Row: {
+          min_count: number
+          notes: string | null
+          program_id: string
+          requires_program_id: string
+        }
+        Insert: {
+          min_count?: number
+          notes?: string | null
+          program_id: string
+          requires_program_id: string
+        }
+        Update: {
+          min_count?: number
+          notes?: string | null
+          program_id?: string
+          requires_program_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "program_prerequisites_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "program_prerequisites_requires_program_id_fkey"
+            columns: ["requires_program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      programs: {
+        Row: {
+          ages: string
+          format: string
+          home_practice: string
+          id: string
+          journey_milestone: string
+          level: string
+          main_practices: string
+          min_age: number
+          name: string
+          needs_local_check: boolean
+          online_option: string
+          prerequisite_text: string
+          source_url: string | null
+          suggested_timing: string
+          unlocks_next_text: string
+          varies_by_country: string
+          where_offered_na: string
+        }
+        Insert: {
+          ages: string
+          format: string
+          home_practice: string
+          id?: string
+          journey_milestone: string
+          level: string
+          main_practices: string
+          min_age: number
+          name: string
+          needs_local_check?: boolean
+          online_option: string
+          prerequisite_text: string
+          source_url?: string | null
+          suggested_timing: string
+          unlocks_next_text: string
+          varies_by_country: string
+          where_offered_na: string
+        }
+        Update: {
+          ages?: string
+          format?: string
+          home_practice?: string
+          id?: string
+          journey_milestone?: string
+          level?: string
+          main_practices?: string
+          min_age?: number
+          name?: string
+          needs_local_check?: boolean
+          online_option?: string
+          prerequisite_text?: string
+          source_url?: string | null
+          suggested_timing?: string
+          unlocks_next_text?: string
+          varies_by_country?: string
+          where_offered_na?: string
+        }
+        Relationships: []
+      }
       sahayak_audit: {
         Row: {
           created_at: string
