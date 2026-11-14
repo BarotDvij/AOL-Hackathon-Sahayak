@@ -20,9 +20,11 @@ describe("Sahayak consent dialog", () => {
   });
 
   it("will not turn anything on until at least one item is ticked", () => {
-    openDialog();
-    expect(screen.getByRole("button", { name: /turn on/i })).toBeDisabled?.() ??
-      expect(screen.getByRole("button", { name: /turn on/i }).hasAttribute("disabled")).toBe(true);
+    const { onAccept } = openDialog();
+    const turnOn = screen.getByRole("button", { name: /turn on/i });
+    expect(turnOn.hasAttribute("disabled")).toBe(true);
+    fireEvent.click(turnOn);
+    expect(onAccept).not.toHaveBeenCalled();
   });
 
   it("ticks every item when Allow all is chosen and hands back all of them", () => {
