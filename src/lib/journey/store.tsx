@@ -3,7 +3,7 @@ import { buildCatalog } from "./catalog";
 import { JOURNEY_CONFIG as C, STAGE_PRIORITY, STAGES } from "./config";
 import { contactText, daysSinceLastContact } from "./contact";
 import { daysSince, daysUntil, isoDaysFrom, parseIso, today } from "./dates";
-import { PICKER_STAGES, demoSeed } from "./demo-seed";
+import { PICKER_STAGES, TEMP_PARTICIPANT_ID, demoSeed } from "./demo-seed";
 import { buildInbox, type InboxMessage } from "./inbox-seed";
 import { draftMessage } from "./messages";
 import { mySlice, type MySlice } from "./participant";
