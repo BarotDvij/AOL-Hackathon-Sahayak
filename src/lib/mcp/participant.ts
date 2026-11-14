@@ -1,4 +1,4 @@
-import { ToolError, type ToolContext, type ToolHandlerResult } from "@lovable.dev/mcp-js";
+import { ToolError, type JsonValue, type ToolContext, type ToolHandlerResult } from "@lovable.dev/mcp-js";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { participantBundle, type ParticipantBundle } from "@/lib/sahayak/core";
@@ -12,7 +12,7 @@ export interface ParticipantToolContext extends ParticipantBundle {
 }
 
 /** Resolves identity only from verified OAuth, then audits success or failure. */
-export async function withParticipant(tool: string, ctx: ToolContext, work: (input: ParticipantToolContext) => Promise<Record<string, unknown>>): Promise<ToolHandlerResult> {
+export async function withParticipant(tool: string, ctx: ToolContext, work: (input: ParticipantToolContext) => Promise<Record<string, JsonValue>>): Promise<ToolHandlerResult> {
   const userId = ctx.getUserId();
   if (!userId || !ctx.isAuthenticated()) throw new ToolError("Please connect with participant OAuth.");
   const supabase = supabaseForUser(ctx);

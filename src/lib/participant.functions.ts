@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequestUrl } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { friendlyStageFor, milestones, normalizeOnboardingAnswers, participantBundle, participantEvents, practiceDto, recommendedSchedule, sampleParticipantOptions } from "@/lib/sahayak/core";
@@ -42,7 +43,7 @@ export const getMyJourney = createServerFn({ method: "GET" })
       practice,
       goals: (goalsResult.data ?? []).map((g) => ({ id: g.id, period: g.period, text: g.text, createdAt: g.created_at })),
       messages: (messagesResult.data ?? []).map((m) => ({ id: m.id, coordinatorName: m.coordinator_name, text: m.text, sentAt: m.sent_at, reply: m.reply })),
-      upcoming: participantEvents(account.participant_id, "http://localhost"),
+      upcoming: participantEvents(account.participant_id, getRequestUrl().origin),
       milestones: milestones(bundle.participant, bundle.history, logs),
       timeline,
     };
