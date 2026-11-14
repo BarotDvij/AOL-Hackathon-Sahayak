@@ -33,3 +33,4 @@ use the editor.
 - Phase 1 data is in-memory sample data with dates relative to today; no sending ever happens without a coordinator's Approve.
 - Coordinator screens are one route per section (dashboard, review, activity) inside `AppShell`; add a section as a new route plus a `NAV` entry, not as a tab inside an existing page, so every section keeps its own URL.
 - Anything a participant could see is read through the participant-scoped slice (`mySlice` / `useMe`); coordinator-wide data stays behind `useJourney`, so one person can never see another's records.
+- Sahayak's model call lives in a server function (`src/lib/sahayak.functions.ts`) that the browser reaches only through the RPC, and every screen keeps a locally computed, record-based answer as the fallback so inference is never required for the app to work.
