@@ -1,14 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Initials, StageBadge } from "@/components/journey/bits";
-import { daysSinceLastContact, useJourney } from "@/lib/journey/store";
-
-function contactText(v: { history: Parameters<typeof daysSinceLastContact>[0] }) {
-  const d = daysSinceLastContact(v.history);
-  if (d === null) return "never contacted";
-  if (d === 0) return "contacted today";
-  if (d === 1) return "contacted yesterday";
-  return `last contact ${d} days ago`;
-}
+import { contactText, useJourney } from "@/lib/journey/store";
 
 /** The first five people to reach out to, drifting people first. */
 export function PriorityList({ onOpen }: { onOpen: (id: string) => void }) {
@@ -27,7 +19,7 @@ export function PriorityList({ onOpen }: { onOpen: (id: string) => void }) {
               <Initials name={`${v.participant.firstName} ${v.participant.lastName}`} />
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-medium text-foreground">{v.participant.firstName} {v.participant.lastName}</span>
-                <span className="block truncate text-xs text-muted-foreground">{contactText(v)}</span>
+                <span className="block truncate text-xs text-muted-foreground">{contactText(v.history)}</span>
               </span>
               <StageBadge stage={v.stage} />
               <Button size="sm" variant="outline" onClick={() => onOpen(v.participant.id)}>Review</Button>

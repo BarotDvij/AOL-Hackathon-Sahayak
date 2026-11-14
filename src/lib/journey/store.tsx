@@ -73,6 +73,14 @@ export function daysSinceLastContact(h: History): number | null {
   const last = [...h.contacts].sort((a, b) => b.date.localeCompare(a.date))[0];
   return last ? daysSince(last.date) : null;
 }
+/** Plain words for how long it has been since we last wrote to someone. */
+export function contactText(h: History): string {
+  const d = daysSinceLastContact(h);
+  if (d === null) return "never contacted";
+  if (d === 0) return "contacted today";
+  if (d === 1) return "contacted yesterday";
+  return `last contact ${d} days ago`;
+}
 /** People we never wrote to wait at the front of the queue. */
 const daysSinceContact = (v: ParticipantView) => daysSinceLastContact(v.history) ?? 9999;
 const priorityRank = (stage: StageId) => {
