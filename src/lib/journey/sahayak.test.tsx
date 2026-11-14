@@ -1,5 +1,5 @@
 import { act, render } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
 import { daysAgoIso } from "./dates";
 import { needsReply } from "./inbox-seed";
@@ -27,6 +27,8 @@ function openOn() {
 }
 
 describe("Sahayak", () => {
+  beforeEach(() => { localStorage.clear(); });
+
   it("starts off and undecided, and shows nothing until it is turned on", () => {
     const get = open();
     expect(get().sahayak.decided).toBe(false);
@@ -158,5 +160,20 @@ describe("Sahayak", () => {
 
     act(() => get().setSahayakOn(true));
     expect(get().reminders.length).toBeGreaterThan(0);
+  });
+
+  it("remembers the answer so the first-time popup is not asked again after a reload", () => {
+    const get = open();
+    act(() => get().decideSahayak(true));
+    expect(localStorage.getItem("journey-sahayak-choice")).toBe("on");
+
+    // A fresh mount is what a reload does: it comes back already answered.
+    const again = open();
+    expect(again().sahayak.decided).toBe(true);
+    expect(again().sahayak.on).toBe(true);
+
+    act(() => again().resetSahayakDemo());
+    expect(localStorage.getItem("journey-sahayak-choice")).toBeNull();
+    expect(again().sahayak.decided).toBe(false);
   });
 });
