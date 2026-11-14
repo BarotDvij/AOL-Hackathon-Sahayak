@@ -110,6 +110,15 @@ const weekTrend = (delta: number) => (delta === 0 ? "no change from last week" :
 function initial(programCatalog: ProgramCatalog) {
   const data = buildSampleData();
   for (const id of ["p23", "p24", "p28"]) { const p = data.participants.find(p=>p.id===id); if (p) data.events.push({participantId:id,eventType:"follow-up",date:isoDaysFrom(id === "p23" ? -2 : id === "p24" ? -4 : -6),city:p.city,online:false}); }
+  // Fictional six-month cohorts make the demo's Sahayak activation trend reproducible.
+  const cohortIds = ['p01','p03','p10','p11','p12','p13','p14','p15','p16','p17','p18','p19'];
+  cohortIds.forEach((id,index) => {
+    const month = Math.floor(index / 2); const date = new Date(today().getFullYear(), today().getMonth() - 5 + month, 2);
+    const completion = isoDaysFrom(0,date); const course = data.courses.find(c=>c.participantId===id && c.courseName===C.skyCourseName);
+    if (course) course.completedOn = completion;
+    data.events = data.events.filter(e=>e.participantId!==id || e.eventType!== 'follow-up' || !(e.date>=completion && daysSince(completion,parseIso(e.date))<=30));
+    if (month >= 4 || (month >= 2 && index % 2 === 0)) { const p=data.participants.find(p=>p.id===id); if(p) data.events.push({participantId:id,eventType:'follow-up',date:isoDaysFrom(3,date),city:p.city,online:p.city==='Online'}); }
+  });
   const catalogList = buildCatalog(programCatalog.programs, programCatalog.prerequisites);
   const suggestions: Suggestion[] = [];
   const pickerIds: string[] = [];
@@ -266,6 +275,7 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
       const latest = [...sentMessages].filter(m => m.participantId === id && !m.attendedAt && m.sentAt.slice(0,10) <= at).sort((a,b) => b.sentAt.localeCompare(a.sentAt))[0];
       if (latest) setSentMessages(all => all.map(m => m.id === latest.id ? {...m, attendedAt: at, attendedSession: session.name} : m));
       setSahayak(s => ({...s, dismissed: [...s.dismissed, ...reminders.filter(r => r.participantId === id).map(r => r.id)]}));
+      setSuggestions(all=>all.map(s=>s.participantId===id && s.status=== "pending" ? {...s,status:"skipped",skipReason:"Attended a session; reminder resolved",reviewedAt:new Date().toISOString()} : s));
       log("attended", id, `Checked in to ${session.name}`);
       return {ok: true, name: person.firstName};
     },
