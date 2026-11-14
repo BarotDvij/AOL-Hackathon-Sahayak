@@ -19,12 +19,29 @@ function open() {
   render(<JourneyProvider><Probe /></JourneyProvider>);
   return () => latest!;
 }
+/** Same, but with Sahayak switched on the way the first-time question would. */
+function openOn() {
+  const get = open();
+  act(() => get().setSahayakOn(true));
+  return get;
+}
 
 describe("Sahayak", () => {
-  it("shows nothing on the dashboard the moment it is switched off, but keeps the inbox readable", () => {
+  it("starts off and undecided, and shows nothing until it is turned on", () => {
     const get = open();
+    expect(get().sahayak.decided).toBe(false);
+    expect(get().sahayak.on).toBe(false);
+    expect(get().brief).toEqual([]);
+    expect(get().reminders).toEqual([]);
+
+    act(() => get().setSahayakOn(true));
     expect(get().brief.length).toBeGreaterThan(0);
     expect(get().reminders.length).toBeGreaterThan(0);
+  });
+
+  it("shows nothing on the dashboard the moment it is switched off, but keeps the inbox readable", () => {
+    const get = openOn();
+    expect(get().brief.length).toBeGreaterThan(0);
 
     act(() => get().setSahayakOn(false));
     expect(get().brief).toEqual([]);
@@ -35,7 +52,7 @@ describe("Sahayak", () => {
   });
 
   it("keeps each switch independent: a dismissed brief does not silence reminders", () => {
-    const get = open();
+    const get = openOn();
     act(() => get().dismissBrief());
     expect(get().brief).toEqual([]);
     expect(get().reminders.length).toBeGreaterThan(0);
@@ -46,8 +63,9 @@ describe("Sahayak", () => {
   });
 
   it("snoozing or dismissing takes away exactly the one reminder it was told to", () => {
-    const get = open();
+    const get = openOn();
     const before = get().reminders.map((r) => r.id);
+    expect(before.length).toBeGreaterThanOrEqual(2);
     const [snoozed, dropped, ...rest] = before;
 
     act(() => { get().snoozeReminder(snoozed, 3); get().dismissReminder(dropped); });
@@ -60,7 +78,7 @@ describe("Sahayak", () => {
   });
 
   it("brings at most three things at once on Gentle and never more than the chosen frequency allows", () => {
-    const get = open();
+    const get = openOn();
     act(() => get().setNudge("gentle"));
     const gentle = get().reminders.length;
     expect(gentle).toBeLessThanOrEqual(NUDGE_LIMIT.gentle);
@@ -74,7 +92,7 @@ describe("Sahayak", () => {
   });
 
   it("never sends a reply until the coordinator approves it", () => {
-    const get = open();
+    const get = openOn();
     const target = get().inbox.find((m) => needsReply(m))!;
     const person = get().views.find((v) => v.participant.id === target.participantId)!;
     const before = get().summary.sentThisWeek;
@@ -120,14 +138,17 @@ describe("Sahayak", () => {
   });
 
   it("resetting the demo asks the first-time question again", () => {
-    const get = open();
+    const get = openOn();
     act(() => get().decideSahayak(false));
     expect(get().sahayak.decided).toBe(true);
     expect(get().sahayak.on).toBe(false);
 
     act(() => get().resetSahayakDemo());
     expect(get().sahayak.decided).toBe(false);
-    expect(get().sahayak.on).toBe(true);
+    expect(get().sahayak.snoozed).toEqual({});
+    expect(get().sahayak.dismissed).toEqual([]);
+
+    act(() => get().setSahayakOn(true));
     expect(get().reminders.length).toBeGreaterThan(0);
   });
 });
