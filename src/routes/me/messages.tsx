@@ -15,7 +15,7 @@ export const Route = createFileRoute("/me/messages")({
 function MessagesPage() {
   return (
     <div className="space-y-5"><header><h1 className="font-display text-[32px] font-normal text-primary">Messages</h1><p className="mt-1 text-sm text-muted-foreground">Only messages approved by your coordinator appear here.</p></header>
-      <ParticipantMessages />
+      <div className="flex h-[min(640px,70dvh)] flex-col overflow-hidden rounded-lg border border-border bg-card"><ParticipantMessages /></div>
     </div>
   );
 }

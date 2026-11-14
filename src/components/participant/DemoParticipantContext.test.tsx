@@ -12,6 +12,23 @@ function wrapper({ children }: { children: ReactNode }) {
 }
 
 describe("No-login participant demo", () => {
+  it("keeps typed chat replies participant-scoped and rejects blank replies", () => {
+    const { result, unmount } = renderHook(() => useDemoParticipant(), { wrapper });
+    const message = result.current.data.messages[0];
+    if (!message) throw new Error("Expected Priya's approved demo message");
+    act(() => {
+      expect(result.current.sendChatReply("another-persons-message", "Hello")).toBe(false);
+      expect(result.current.sendChatReply(message.id, "  ")).toBe(false);
+      expect(result.current.sendChatReply(message.id, "  Can I join on Wednesday?  ")).toBe(true);
+    });
+    expect(result.current.chatReplies).toHaveLength(1);
+    expect(result.current.chatReplies[0]?.text).toBe("Can I join on Wednesday?");
+    expect(result.current.chatReplies[0]?.messageId).toBe(message.id);
+    unmount();
+    const fresh = renderHook(() => useDemoParticipant(), { wrapper });
+    expect(fresh.result.current.chatReplies).toEqual([]);
+    fresh.unmount();
+  });
   it("uses only Priya's fictional records and friendly journey wording", () => {
     const { result } = renderHook(() => useDemoParticipant(), { wrapper });
 

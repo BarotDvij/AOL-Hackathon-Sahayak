@@ -7,6 +7,7 @@ import { useJourney } from "@/lib/journey/store";
 import { friendlyStageFor, journeyPosition, levelFromHistory, prefersOnline, weeklyPlan, JOURNEY_LADDER, milestones, normalizeOnboardingAnswers, participantEvents, practiceDto, recommendedSchedule, type OnboardingAnswers } from "@/lib/sahayak/core";
 
 interface DemoGoal { id: string; period: "month" | "quarter" | "year"; text: string; createdAt: string }
+export interface DemoChatReply { id: string; messageId: string; text: string; sentAt: string }
 
 interface DemoParticipantValue {
   data: NonNullable<ReturnType<typeof useDemoData>>;
@@ -14,6 +15,8 @@ interface DemoParticipantValue {
   showInterest: (eventId: string) => void;
   saveGoal: (period: "month" | "quarter" | "year", text: string) => void;
   respond: (messageId: string, reply: "join" | "not now") => void;
+  chatReplies: DemoChatReply[];
+  sendChatReply: (messageId: string, text: string) => boolean;
   saveAnswers: (answers: OnboardingAnswers) => void;
   welcomeOpen: boolean;
   closeWelcome: () => void;
@@ -76,6 +79,7 @@ export function DemoParticipantProvider({ children }: { children: ReactNode }) {
   const [sahayakOn, setSahayakOn] = useState(false);
   const [sahayakAccess, setSahayakAccess] = useState<SahayakAccessId[]>([]);
   const [consentOpen, setConsentOpen] = useState(false);
+  const [chatReplies, setChatReplies] = useState<DemoChatReply[]>([]);
   const data = useDemoData(me, answers, goals, interests, catalogList, programCatalog.programs);
 
   if (!data) return <main className="p-8 text-sm text-muted-foreground">Loading the sample journey…</main>;
@@ -103,6 +107,13 @@ export function DemoParticipantProvider({ children }: { children: ReactNode }) {
     },
     saveGoal: (period, text) => setGoals((current) => [{ id: `goal-${Date.now()}`, period, text, createdAt: new Date().toISOString() }, ...current]),
     respond: replyToMessage,
+    chatReplies,
+    sendChatReply: (messageId, text) => {
+      const clean = text.trim();
+      if (!clean || clean.length > 2000 || !data.messages.some((message) => message.id === messageId)) return false;
+      setChatReplies((current) => [...current, { id: crypto.randomUUID(), messageId, text: clean, sentAt: new Date().toISOString() }]);
+      return true;
+    },
     saveAnswers: (next) => setAnswers(normalizeOnboardingAnswers(next)),
     welcomeOpen,
     closeWelcome: () => setWelcomeOpen(false),

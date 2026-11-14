@@ -1,6 +1,9 @@
 # Roadmap
 
 ## Done
+- Participant message box now shows clickable sender initials/name/latest-message previews and chronological chat bubbles with a typed reply composer. Verified reply readback, updated previews, page navigation, Enter-to-send and phone layout; six participant tests pass. Typed replies remain local demo state and reset on reload.
+
+## Done
 - Replaced participant Messages navigation with a bottom-left openable message box, keeping replies and the direct URL. Verified open/close, reply readback, page navigation, and desktop/phone layouts; five participant tests pass.
 
 ## Done
