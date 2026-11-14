@@ -1,6 +1,9 @@
 # Roadmap
 
 ## Done
+- Participant view: the "Use Sahayak with Muse" switch sits in the sidebar and Settings on one shared state. Switching it on opens a consent prompt headed "Your Sahayak lives in your Muse and can only use what you tick here", where each of the five access items has its own tick box and "Allow all" ticks every one; nothing turns on until at least one item is ticked, and the button says how many are allowed. While on, Settings lists what Muse may use with "Change what Muse may use" to re-tick, and switching off clears the list. Verified in the preview and by 10 participant tests.
+
+## Done
 - Participant view: the "Use Sahayak with Muse" switch now sits in the sidebar as well as Settings, both driven by one shared state, and switching it on opens a consent prompt listing exactly what Muse may use (practice log, goals and rhythm, upcoming events and calendar links, coordinator-approved messages, a participant-approved summary marked "via Muse") plus what it never does (sends nothing, shows nothing to others, can be turned off any time). Muse stays off until "Yes, allow and turn on"; "Not now" leaves it off, and switching off never asks. Verified in the preview and by 4 participant tests.
 
 ## Done
