@@ -10,7 +10,10 @@
 - Tests: 14 passing (stage thresholds, low-data check-in, follow-up priority, summary counts, skip reason, approved message lands with the right person).
 
 ## In progress
-- Visual restyle to the hackathon palette (navy / purple / sun orange / sun yellow, brand gradient in the header banner and sidebar logo area) and typography (Lora titles, Poppins headings and numbers, Inter body). Layout stays exactly as it is.
+(none)
+
+## Done
+- Visual restyle to the hackathon palette (navy / purple / sun orange / sun yellow, brand gradient in the dashboard banner and sidebar logo area only) and typography (Lora titles, Poppins headings and numbers, Inter body). Layout unchanged.
 
 ## Open
 - Participant-facing screens (home, my journey, messages) from the earlier request are not in this build — the store already keeps each person's own messages and practice log, so they can be added on top. Waiting on a go-ahead.
