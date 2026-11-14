@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Check, Clock3, Plus } from "lucide-react";
 import { toast } from "sonner";
+import { formatShort } from "@/lib/journey/dates";
 import { useDemoParticipant } from "@/components/participant/DemoParticipantContext";
 import { ParticipantCard, EmptyParticipantNote } from "@/components/participant/ParticipantShell";
 import { Button } from "@/components/ui/button";
@@ -55,7 +57,44 @@ function ParticipantHome() {
           <p className="mt-3 text-xs text-muted-foreground">{data.schedule.note} {data.schedule.safetyNote}</p>
         </ParticipantCard>
       </div>
+      <UpcomingEventsCard events={data.upcoming} />
       {data.messages.length === 0 && <EmptyParticipantNote>No coordinator messages yet. When one is approved, it will appear in Messages.</EmptyParticipantNote>}
     </div>
+  );
+}
+
+const EVENT_PREVIEW_COUNT = 4;
+
+type UpcomingEvent = ReturnType<typeof useDemoParticipant>["data"]["upcoming"][number];
+
+function UpcomingEventsCard({ events }: { events: UpcomingEvent[] }) {
+  const [showAll, setShowAll] = useState(false);
+  const shown = showAll ? events : events.slice(0, EVENT_PREVIEW_COUNT);
+
+  return (
+    <ParticipantCard>
+      <div className="flex items-baseline justify-between gap-3">
+        <h2 className="font-heading text-base font-semibold text-primary">Upcoming events</h2>
+        {events.length > 0 && <p className="text-xs text-muted-foreground">{events.length} coming up</p>}
+      </div>
+      {events.length === 0 ? (
+        <p className="mt-3 rounded-lg bg-muted p-4 text-sm text-muted-foreground">Nothing on the calendar right now. Check back soon.</p>
+      ) : (
+        <ul className="mt-2 divide-y divide-border">
+          {shown.map((event) => (
+            <li key={event.id} className="flex items-center gap-3 py-3">
+              <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-secondary text-[11px] font-semibold text-primary">{event.startDate ? formatShort(event.startDate) : <Clock3 className="size-4 text-purple" aria-hidden />}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-medium text-foreground">{event.title}</span>
+                <span className="mt-0.5 block truncate text-xs text-muted-foreground">{event.city}{event.suggestedTiming ? ` · ${event.suggestedTiming}` : ""}</span>
+                {event.needsLocalCheck && <span className="mt-1 block text-[11px] text-muted-foreground">Confirm with your centre</span>}
+              </span>
+              {event.calendarUrl && <a href={event.calendarUrl} className="shrink-0 font-heading text-xs font-semibold text-purple hover:underline">Add to calendar</a>}
+            </li>
+          ))}
+        </ul>
+      )}
+      {events.length > EVENT_PREVIEW_COUNT && <Button variant="accent" size="sm" className="mt-2" onClick={() => setShowAll((current) => !current)}>{showAll ? "Show fewer" : `Show all ${events.length}`}</Button>}
+    </ParticipantCard>
   );
 }
