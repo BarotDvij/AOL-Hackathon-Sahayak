@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
-import { SahayakConsentDialog } from "@/components/participant/SahayakConsentDialog";
+import { ALL_SAHAYAK_ACCESS_IDS, SahayakConsentDialog, type SahayakAccessId } from "@/components/participant/SahayakConsentDialog";
 import { TEMP_PARTICIPANT_ID } from "@/lib/journey/demo-seed";
 import type { Program } from "@/lib/journey/programs";
 import type { NextStep } from "@/lib/journey/types";
@@ -18,10 +18,12 @@ interface DemoParticipantValue {
   welcomeOpen: boolean;
   closeWelcome: () => void;
   sahayakOn: boolean;
+  sahayakAccess: SahayakAccessId[];
   requestSahayak: (on: boolean) => void;
   sahayakConsentOpen: boolean;
-  acceptSahayakConsent: () => void;
+  acceptSahayakConsent: (ids: SahayakAccessId[]) => void;
   declineSahayakConsent: () => void;
+  openSahayakConsent: () => void;
 }
 
 const DemoParticipantContext = createContext<DemoParticipantValue | null>(null);
@@ -69,6 +71,7 @@ export function DemoParticipantProvider({ children }: { children: ReactNode }) {
   const [interests, setInterests] = useState<string[]>([]);
   const [welcomeOpen, setWelcomeOpen] = useState(true);
   const [sahayakOn, setSahayakOn] = useState(false);
+  const [sahayakAccess, setSahayakAccess] = useState<SahayakAccessId[]>([]);
   const [consentOpen, setConsentOpen] = useState(false);
   const data = useDemoData(me, answers, goals, interests, catalogList, programCatalog.programs);
 
@@ -87,16 +90,27 @@ export function DemoParticipantProvider({ children }: { children: ReactNode }) {
     welcomeOpen,
     closeWelcome: () => setWelcomeOpen(false),
     sahayakOn,
-    requestSahayak: (on) => { if (on) setConsentOpen(true); else setSahayakOn(false); },
+    sahayakAccess,
+    requestSahayak: (on) => {
+      if (on) setConsentOpen(true);
+      else { setSahayakOn(false); setSahayakAccess([]); }
+    },
     sahayakConsentOpen: consentOpen,
-    acceptSahayakConsent: () => { setSahayakOn(true); setConsentOpen(false); },
+    acceptSahayakConsent: (ids) => {
+      const granted = ids.filter((id) => ALL_SAHAYAK_ACCESS_IDS.includes(id));
+      if (granted.length === 0) return;
+      setSahayakAccess(granted);
+      setSahayakOn(true);
+      setConsentOpen(false);
+    },
     declineSahayakConsent: () => setConsentOpen(false),
+    openSahayakConsent: () => setConsentOpen(true),
   };
 
   return (
     <DemoParticipantContext.Provider value={value}>
       {children}
-      <SahayakConsentDialog open={consentOpen} onAccept={() => { setSahayakOn(true); setConsentOpen(false); }} onDecline={() => setConsentOpen(false)} />
+      <SahayakConsentDialog open={consentOpen} selected={sahayakAccess} onAccept={acceptSahayakConsent} onDecline={() => setConsentOpen(false)} />
     </DemoParticipantContext.Provider>
   );
 }
