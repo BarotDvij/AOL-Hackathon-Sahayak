@@ -40,11 +40,11 @@ function JourneyPage() {
   return (
     <div className="space-y-5">
       <header><h1 className="font-display text-[32px] font-normal text-primary">My journey</h1><p className="mt-1 text-sm text-muted-foreground">Where you are, where you'd like to go, and a gentle week to get there.</p></header>
-      <div className="grid gap-5 lg:grid-cols-2">
+      <div className="grid gap-5 pt-14 lg:grid-cols-2">
         <div><GoalsOverview /></div>
-        <div className="space-y-5">
+        <div className="relative mt-14 lg:mt-0">
           <Dialog open={goalsOpen} onOpenChange={setGoalsOpen}>
-            <DialogTrigger asChild><Button variant="outline" size="icon" aria-label="Open your goals" title="Your goals"><Plus className="size-4" aria-hidden /></Button></DialogTrigger>
+            <DialogTrigger asChild><Button variant="outline" size="icon" className="absolute -top-14 right-0" aria-label="Open your goals" title="Your goals"><Plus className="size-4" aria-hidden /></Button></DialogTrigger>
             <DialogContent className="max-h-[85dvh] w-[calc(100%-2rem)] overflow-y-auto rounded-lg">
               <DialogHeader><DialogTitle>Your goals</DialogTitle><DialogDescription>What would you like to work towards?</DialogDescription></DialogHeader>
               {intakeGoals.length === 0 && data.goals.length === 0 && <p className="text-sm text-muted-foreground">No goals yet — add one below, or answer the questions in Settings.</p>}
