@@ -31,7 +31,7 @@ export function StageBar({ active, onChange }: { active: StageId | "all"; onChan
         ))}
       </div>
 
-      <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-4 lg:grid-cols-7">
+      <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-3 lg:grid-cols-4">
         {stageCounts.map((s) => (
           <li key={s.id}>
             <button onClick={() => pick(s.id)} aria-pressed={active === s.id} className="flex w-full items-center gap-2 text-left">
