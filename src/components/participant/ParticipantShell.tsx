@@ -14,7 +14,7 @@ const NAV = [
 
 export function ParticipantShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
-  const { sahayaakOn, setSahayakOn } = useDemoParticipant();
+  const { sahayakOn, setSahayakOn } = useDemoParticipant();
 
   return (
     <div className="min-h-screen bg-background pb-24 lg:pb-0">
@@ -26,9 +26,9 @@ export function ParticipantShell({ children }: { children: ReactNode }) {
           <div className="flex items-center gap-2">
             <Sparkles className="size-4 text-purple" aria-hidden />
             <span className="font-heading text-sm font-semibold text-primary">Sahayak</span>
-            <Switch className="ml-auto" aria-label="Use Sahayak with Muse" checked={sahayaakOn} onCheckedChange={setSahayakOn} />
+            <Switch className="ml-auto" aria-label="Use Sahayak with Muse" checked={sahayakOn} onCheckedChange={setSahayakOn} />
           </div>
-          <p className="mt-1 text-[11px] leading-snug text-muted-foreground">{sahayaakOn ? "Muse assistant is on" : "Muse assistant is off"}</p>
+          <p className="mt-1 text-[11px] leading-snug text-muted-foreground">{sahayakOn ? "Muse assistant is on" : "Muse assistant is off"}</p>
         </div>
         <nav className="mt-2 flex flex-1 flex-col gap-1 px-3" aria-label="Participant sections">
           {NAV.map(({ to, label, Icon, exact }) => (

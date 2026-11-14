@@ -42,4 +42,18 @@ describe("No-login participant demo", () => {
     expect(fresh.result.current.data.interests).toEqual([]);
     expect(fresh.result.current.data.answers).toEqual({});
   });
+
+  it("keeps Sahayak with Muse off until it is switched on, and off again in a fresh demo", () => {
+    const { result, unmount } = renderHook(() => useDemoParticipant(), { wrapper });
+
+    expect(result.current.sahayakOn).toBe(false);
+
+    act(() => result.current.setSahayakOn(true));
+    expect(result.current.sahayakOn).toBe(true);
+
+    unmount();
+    const fresh = renderHook(() => useDemoParticipant(), { wrapper });
+    expect(fresh.result.current.sahayakOn).toBe(false);
+    fresh.unmount();
+  });
 });
