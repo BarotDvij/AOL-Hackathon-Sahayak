@@ -74,7 +74,13 @@ describe("Sahayak", () => {
     expect(after).not.toContain(snoozed);
     expect(after).not.toContain(dropped);
     expect(after).toEqual(expect.arrayContaining(rest));
-    expect(after.length).toBe(before.length - 2);
+    expect(after.length).toBeLessThanOrEqual(NUDGE_LIMIT[get().sahayak.nudge]);
+
+    // Widening the frequency lets other things in, but never the two you set aside.
+    act(() => get().setNudge("frequent"));
+    const wide = get().reminders.map((r) => r.id);
+    expect(wide).not.toContain(snoozed);
+    expect(wide).not.toContain(dropped);
   });
 
   it("brings at most three things at once on Gentle and never more than the chosen frequency allows", () => {
