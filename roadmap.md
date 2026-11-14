@@ -1,5 +1,8 @@
 # Roadmap
 
+## In progress
+- Move weekly plan to Weekly progress; add weekly/monthly/annual goals card left of the existing path and goals.
+
 ## Done
 - Removed Practice, play controls and all activity guides. My journey now offers one Mark as done per day with weekly progress; verified independent days, navigation readback, phone layout and 12 tests. Demo marks reset on reload.
 

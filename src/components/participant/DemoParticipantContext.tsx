@@ -7,7 +7,7 @@ import { useJourney } from "@/lib/journey/store";
 import { completionKey, markDayDone } from "@/lib/sahayak/practice-plan";
 import { friendlyStageFor, journeyPosition, levelFromHistory, prefersOnline, weeklyPlan, JOURNEY_LADDER, milestones, normalizeOnboardingAnswers, participantEvents, practiceDto, recommendedSchedule, type OnboardingAnswers } from "@/lib/sahayak/core";
 
-interface DemoGoal { id: string; period: "month" | "quarter" | "year"; text: string; createdAt: string }
+interface DemoGoal { id: string; period: "week" | "month" | "quarter" | "year"; text: string; createdAt: string }
 export interface DemoChatReply { id: string; messageId: string; text: string; sentAt: string }
 
 interface DemoParticipantValue {
@@ -16,7 +16,7 @@ interface DemoParticipantValue {
   isDayDone: (day: string) => boolean;
   completeDay: (day: string) => void;
   showInterest: (eventId: string) => void;
-  saveGoal: (period: "month" | "quarter" | "year", text: string) => void;
+  saveGoal: (period: "week" | "month" | "quarter" | "year", text: string) => void;
   respond: (messageId: string, reply: "join" | "not now") => void;
   chatReplies: DemoChatReply[];
   sendChatReply: (messageId: string, text: string) => boolean;
