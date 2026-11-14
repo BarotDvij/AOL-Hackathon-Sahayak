@@ -157,6 +157,21 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
   const [meId, setMeId] = useState<string | null>(TEMP_PARTICIPANT_ID);
   const [sahayak, setSahayak] = useState<SahayakState>(SAHAYAK_DEFAULTS);
   const [inbox, setInbox] = useState<InboxMessage[]>(() => buildInbox());
+
+  // The first-time question is asked once per browser: the answer is remembered,
+  // so reloading the app never brings the popup back.
+  useEffect(() => {
+    let stored: string | null = null;
+    try { stored = localStorage.getItem(SAHAYAK_CHOICE_KEY); } catch { stored = null; }
+    if (stored === "on" || stored === "off") {
+      setSahayak((s) => ({ ...s, decided: true, on: stored === "on" }));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!sahayak.decided) return;
+    try { localStorage.setItem(SAHAYAK_CHOICE_KEY, sahayak.on ? "on" : "off"); } catch { /* storage unavailable: the question just comes back */ }
+  }, [sahayak.decided, sahayak.on]);
   const seq = useRef(0);
   const catalog = useMemo(() => new Map(catalogList.map((s) => [s.id, s])), [catalogList]);
 
