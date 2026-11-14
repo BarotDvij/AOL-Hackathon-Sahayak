@@ -60,3 +60,6 @@ export interface History {
   events: EventAttendance[];
   contacts: Contact[];
 }
+export interface PracticeLog { participantId: string; date: string; minutes: number | null }
+export interface Message { id: string; participantId: string; suggestionId: string | null; coordinatorName: string; text: string; sentAt: string; reply: "join" | "not now" | null }
+export interface ParticipantReply { id: string; participantId: string; kind: "interested" | "join" | "not now"; about: string; at: string }
