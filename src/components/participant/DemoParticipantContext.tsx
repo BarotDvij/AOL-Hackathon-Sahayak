@@ -16,6 +16,8 @@ interface DemoParticipantValue {
   saveAnswers: (answers: OnboardingAnswers) => void;
   welcomeOpen: boolean;
   closeWelcome: () => void;
+  sahayaakOn: boolean;
+  setSahayakOn: (on: boolean) => void;
 }
 
 const DemoParticipantContext = createContext<DemoParticipantValue | null>(null);
@@ -62,6 +64,7 @@ export function DemoParticipantProvider({ children }: { children: ReactNode }) {
   const [goals, setGoals] = useState<DemoGoal[]>([]);
   const [interests, setInterests] = useState<string[]>([]);
   const [welcomeOpen, setWelcomeOpen] = useState(true);
+  const [sahayakOn, setSahayakOn] = useState(false);
   const data = useDemoData(me, answers, goals, interests, catalogList, programCatalog.programs);
 
   if (!data) return <main className="p-8 text-sm text-muted-foreground">Loading the sample journey…</main>;
@@ -78,6 +81,8 @@ export function DemoParticipantProvider({ children }: { children: ReactNode }) {
     saveAnswers: (next) => setAnswers(normalizeOnboardingAnswers(next)),
     welcomeOpen,
     closeWelcome: () => setWelcomeOpen(false),
+    sahayaakOn: sahayaakOnValue(),
+    setSahayakOn,
   };
 
   return <DemoParticipantContext.Provider value={value}>{children}</DemoParticipantContext.Provider>;
