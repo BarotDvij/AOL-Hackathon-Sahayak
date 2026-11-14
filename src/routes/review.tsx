@@ -112,7 +112,7 @@ function ReviewPage() {
             </div>
           </div>
         ) : mode === "skip" ? (
-          <div className="mt-3 rounded-xl border border-border p-4">
+          <div className="mt-3 rounded-lg border border-border p-4">
             <p className="text-sm font-medium">Why are you skipping this one?</p>
             <p className="text-xs text-muted-foreground">Optional — it helps us suggest better next time.</p>
             <div className="mt-3 flex flex-wrap gap-2">
