@@ -19,6 +19,8 @@ export const getMyJourney = createServerFn({ method: "GET" })
 
     const bundle = participantBundle(account.participant_id);
     if (!bundle) throw new Error("Your participant record is unavailable.");
+    const programCatalog = await fetchProgramCatalog(supabase);
+    const catalog = buildCatalog(programCatalog.programs, programCatalog.prerequisites);
     const [onboardingResult, practiceResult, goalsResult, messagesResult, interestsResult] = await Promise.all([
       supabase.from("participant_onboarding").select("answers").eq("user_id", userId).maybeSingle(),
       supabase.from("practice_logs").select("id, practiced_on, minutes").eq("user_id", userId).order("practiced_on", { ascending: false }).limit(120),
@@ -42,11 +44,11 @@ export const getMyJourney = createServerFn({ method: "GET" })
       participant: { id: bundle.participant.id, firstName: bundle.participant.firstName, lastName: bundle.participant.lastName, city: bundle.participant.city },
       stage: friendly,
       answers,
-      schedule: recommendedSchedule(answers, bundle.stage),
+      schedule: recommendedSchedule(answers, bundle.stage, bundle.history, programCatalog.programs),
       practice,
       goals: (goalsResult.data ?? []).map((g) => ({ id: g.id, period: g.period, text: g.text, createdAt: g.created_at })),
       messages: (messagesResult.data ?? []).map((m) => ({ id: m.id, coordinatorName: m.coordinator_name, text: m.text, sentAt: m.sent_at, reply: m.reply })),
-      upcoming: participantEvents(account.participant_id, getRequestUrl().origin),
+      upcoming: participantEvents(account.participant_id, getRequestUrl().origin, 20, catalog, { prefersOnline: answers.support === "online" }),
       interests: (interestsResult.data ?? []).map((i) => i.event_id),
       milestones: milestones(bundle.participant, bundle.history, logs),
       timeline,
