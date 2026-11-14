@@ -1,7 +1,7 @@
 # Roadmap
 
-## In progress
-- Move Messages right; add Practice guides and shared weekly completion marks.
+## Done
+- Messages moved to bottom right; Practice has day-by-day play controls and step-by-step preparation guides. Marking an activity done updates both Practice and My journey immediately. Verified completion readback, desktop/phone layout and 12 tests. Demo progress resets on reload; guides do not teach course techniques and no verified instructional videos are available.
 
 ## Done
 - Participant message box now shows clickable sender initials/name/latest-message previews and chronological chat bubbles with a typed reply composer. Verified reply readback, updated previews, page navigation, Enter-to-send and phone layout; six participant tests pass. Typed replies remain local demo state and reset on reload.

@@ -7,7 +7,7 @@ export function WeeklyPracticePlan() {
   const { data, isActivityDone } = useDemoParticipant();
   const total = data.plan.reduce((count, day) => count + day.items.length, 0);
   const done = data.plan.reduce((count, day) => count + day.items.filter((item) => isActivityDone(day.day, item)).length, 0);
-  return <div>
+  return <div className="pr-12 lg:pr-0">
     <div className="flex items-center justify-between gap-3"><h2 className="font-heading text-base font-semibold text-primary">Your weekly plan</h2><span className="shrink-0 text-xs text-muted-foreground">{done} / {total} done</span></div>
     <ul className="mt-4 divide-y divide-border" aria-label="Weekly plan">
       {data.plan.map((day) => <li key={day.day} className="py-4">
