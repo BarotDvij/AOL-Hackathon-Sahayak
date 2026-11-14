@@ -9,6 +9,7 @@ export const Route = createFileRoute("/settings")({
       { name: "description", content: "How Journey Companion decides who needs a follow-up, and what it never does on its own." },
       { property: "og:title", content: "Settings · Journey Companion" },
       { property: "og:description", content: "How Journey Companion decides who needs a follow-up, and what it never does on its own." },
+      { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
     ],
   }),
   component: SettingsPage,
