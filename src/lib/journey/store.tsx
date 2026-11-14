@@ -58,11 +58,13 @@ const Ctx = createContext<Store | null>(null);
 const historyFor = (id: string, courses: History["courses"], events: History["events"], contacts: Contact[]): History =>
   ({ courses: courses.filter((c) => c.participantId === id), events: events.filter((e) => e.participantId === id), contacts: contacts.filter((c) => c.participantId === id) });
 
-/** Days since the last message out; people we never wrote to wait at the front of the queue. */
-const daysSinceContact = (v: ParticipantView) => {
-  const last = [...v.history.contacts].sort((a, b) => b.date.localeCompare(a.date))[0];
-  return last ? daysSince(last.date) : 9999;
-};
+/** Days since the last message out to this person; null if we never wrote to them. */
+export function daysSinceLastContact(h: History): number | null {
+  const last = [...h.contacts].sort((a, b) => b.date.localeCompare(a.date))[0];
+  return last ? daysSince(last.date) : null;
+}
+/** People we never wrote to wait at the front of the queue. */
+const daysSinceContact = (v: ParticipantView) => daysSinceLastContact(v.history) ?? 9999;
 const priorityRank = (stage: StageId) => {
   const i = STAGE_PRIORITY.indexOf(stage);
   return i === -1 ? STAGE_PRIORITY.length : i;
