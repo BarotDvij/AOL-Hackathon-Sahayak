@@ -8,6 +8,13 @@
       "when": 1794683083529,
       "tag": "0000_create_participant_sahayak",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794683393375,
+      "tag": "0001_add_participant_interests",
+      "breakpoints": true
     }
   ]
 }

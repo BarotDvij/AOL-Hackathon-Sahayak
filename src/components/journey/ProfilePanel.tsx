@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { formatFull, formatShort } from "@/lib/journey/dates";
 import { useJourney, type ParticipantView } from "@/lib/journey/store";
-import { eligibleSteps } from "@/lib/journey/suggestions";
+import { eligibleSteps } from "@/lib/sahayak/core";
 import type { NextStep } from "@/lib/journey/types";
 import { ChannelIcon, StageBadge } from "./bits";
 import { CoordinatorSummaries } from "./CoordinatorSummaries";
