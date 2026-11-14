@@ -9,7 +9,7 @@ import { ParticipantMessageBox } from "./ParticipantMessageBox";
 const NAV = [
   { to: "/me", label: "Home", Icon: Home, exact: true },
   { to: "/me/journey", label: "My journey", Icon: JourneyIcon },
-  { to: "/me/weekly-progress", label: "Weekly progress", Icon: ChartNoAxesColumnIncreasing },
+  { to: "/me/weekly-progress", label: "My Progress", Icon: ChartNoAxesColumnIncreasing },
   { to: "/me/settings", label: "Settings", Icon: Settings },
 ] satisfies { to: LinkProps["to"]; label: string; Icon: typeof Home; exact?: boolean }[];
 
