@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AppShell } from "@/components/journey/AppShell";
+import { DailyBrief } from "@/components/journey/DailyBrief";
 import { PriorityList } from "@/components/journey/PriorityList";
 import { ProfilePanel } from "@/components/journey/ProfilePanel";
 import { StageBar } from "@/components/journey/StageBar";
 import { SummaryCards } from "@/components/journey/SummaryCards";
 import { UpcomingList } from "@/components/journey/UpcomingList";
 import { ParticipantsTable } from "@/components/journey/ParticipantsTable";
+import { useGreeting } from "@/components/journey/bits";
 import { Button } from "@/components/ui/button";
 import { useJourney } from "@/lib/journey/store";
 import type { StageId } from "@/lib/journey/types";
@@ -24,15 +26,6 @@ export const Route = createFileRoute("/")({
 });
 
 /** Set after mount so the server and the first client render say the same thing. */
-function useGreeting() {
-  const [g, setG] = useState<string | null>(null);
-  useEffect(() => {
-    const h = new Date().getHours();
-    setG(h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening");
-  }, []);
-  return g ?? "Hello";
-}
-
 function DashboardPage() {
   const { views, pending } = useJourney();
   const greeting = useGreeting();
@@ -50,6 +43,8 @@ function DashboardPage() {
           </div>
           <Button asChild size="lg"><Link to="/review">Review follow-ups ({pending.length})</Link></Button>
         </header>
+
+        <DailyBrief />
 
         <SummaryCards />
         <StageBar active={stage} onChange={setStage} />
