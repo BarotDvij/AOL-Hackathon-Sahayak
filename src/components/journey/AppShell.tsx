@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Bell, History, Inbox, LayoutDashboard, Mail, Menu, Settings, Sparkles, Users } from "lucide-react";
+import { Bell, BookOpen, History, Inbox, LayoutDashboard, Mail, Menu, Settings, Sparkles, Users } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
@@ -10,7 +10,7 @@ import { RemindersPanel } from "./RemindersPanel";
 import { SahayakChat } from "./SahayakChat";
 import { SahayakIntro } from "./SahayakIntro";
 
-type To = "/" | "/participants" | "/review" | "/inbox" | "/activity" | "/settings";
+type To = "/" | "/participants" | "/programs" | "/review" | "/inbox" | "/activity" | "/settings";
 type NavItem = { to: To; label: string; Icon: typeof LayoutDashboard; exact?: boolean; alsoActive?: string };
 
 const NAV: NavItem[] = [

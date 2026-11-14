@@ -100,9 +100,9 @@ const priorityRank = (stage: StageId) => {
 /** "+3 from last week", "−2 from last week" or "no change from last week". */
 const weekTrend = (delta: number) => (delta === 0 ? "no change from last week" : `${delta > 0 ? "+" : "−"}${Math.abs(delta)} from last week`);
 
-function initial() {
+function initial(programCatalog: ProgramCatalog) {
   const data = buildSampleData();
-  const catalogList = buildCatalog();
+  const catalogList = buildCatalog(programCatalog.programs, programCatalog.prerequisites);
   const suggestions: Suggestion[] = [];
   const pickerIds: string[] = [];
   for (const p of data.participants) {
@@ -119,8 +119,8 @@ function initial() {
   return { data, catalogList, suggestions, pickerIds, seed };
 }
 
-export function JourneyProvider({ children }: { children: ReactNode }) {
-  const [{ data, catalogList, suggestions: s0, pickerIds, seed }] = useState(initial);
+export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATALOG }: { children: ReactNode; programCatalog?: ProgramCatalog }) {
+  const [{ data, catalogList, suggestions: s0, pickerIds, seed }] = useState(() => initial(programCatalog));
   const [suggestions, setSuggestions] = useState(s0);
   const [contacts, setContacts] = useState(data.contacts);
   const [practice, setPractice] = useState(seed.practice);
@@ -211,7 +211,7 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
   };
 
   const store: Store = {
-    views, catalog, catalogList, practice, replies, pickerIds, city, setCity, meId, setMeId, me,
+    views, programCatalog, catalog, catalogList, practice, replies, pickerIds, city, setCity, meId, setMeId, me,
     summary, stageCounts, priority, needsFollowUp, upcoming, activity,
     pending: suggestions.filter((s) => s.status === "pending"),
     sahayak, brief, reminders, inbox,
