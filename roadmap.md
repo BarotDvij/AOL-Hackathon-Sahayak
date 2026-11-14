@@ -1,6 +1,9 @@
 # Roadmap
 
 ## Done
+- Removed Practice, play controls and all activity guides. My journey now offers one Mark as done per day with weekly progress; verified independent days, navigation readback, phone layout and 12 tests. Demo marks reset on reload.
+
+## Done
 - Messages moved to bottom right; Practice has day-by-day play controls and step-by-step preparation guides. Marking an activity done updates both Practice and My journey immediately. Verified completion readback, desktop/phone layout and 12 tests. Demo progress resets on reload; guides do not teach course techniques and no verified instructional videos are available.
 
 ## Done
