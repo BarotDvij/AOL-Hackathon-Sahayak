@@ -181,7 +181,22 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
     .slice(0, 6),
   [catalogList, suggestions]);
 
+  /** The morning brief: nothing at all while Sahayak is off, or once it has been dismissed for today. */
+  const brief = useMemo<BriefItem[]>(
+    () => (sahayak.on && sahayak.features.dailyBrief && sahayak.briefDismissedOn !== isoDaysFrom(0)
+      ? briefItems({ views, upcoming, inbox })
+      : []),
+    [sahayak, views, upcoming, inbox],
+  );
+
+  /** Live reminders, already trimmed to the chosen nudge frequency. */
+  const reminders = useMemo<Reminder[]>(
+    () => buildReminders({ views, upcoming, inbox, state: sahayak }),
+    [sahayak, views, upcoming, inbox],
+  );
+
   const update = useCallback((id: string, fn: (s: Suggestion) => Suggestion) => setSuggestions((all) => all.map((s) => (s.id === id ? fn(s) : s))), []);
+  const nameOf = (participantId: string) => data.participants.find((x) => x.id === participantId)?.firstName ?? "participant";
   const log = useCallback((kind: ActivityEntry["kind"], participantId: string, detail: string) => {
     seq.current += 1;
     setActivity((a) => [{ id: `a${seq.current}`, at: new Date().toISOString(), kind, participantId, detail }, ...a]);
@@ -196,6 +211,22 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
     views, catalog, catalogList, practice, replies, pickerIds, city, setCity, meId, setMeId, me,
     summary, stageCounts, priority, needsFollowUp, upcoming, activity,
     pending: suggestions.filter((s) => s.status === "pending"),
+    sahayak, brief, reminders, inbox,
+    setSahayakOn: (on) => setSahayak((s) => ({ ...s, on, decided: true })),
+    setSahayakFeature: (key, on) => setSahayak((s) => ({ ...s, features: { ...s.features, [key]: on } })),
+    setNudge: (n) => setSahayak((s) => ({ ...s, nudge: n })),
+    decideSahayak: (on) => setSahayak((s) => ({ ...s, on, decided: true })),
+    resetSahayakDemo: () => setSahayak({ ...SAHAYAK_DEFAULTS, features: { ...SAHAYAK_DEFAULTS.features }, snoozed: {}, dismissed: [] }),
+    dismissBrief: () => setSahayak((s) => ({ ...s, briefDismissedOn: isoDaysFrom(0) })),
+    snoozeReminder: (id, days) => setSahayak((s) => ({ ...s, snoozed: { ...s.snoozed, [id]: isoDaysFrom(days) } })),
+    dismissReminder: (id) => setSahayak((s) => ({ ...s, dismissed: [...s.dismissed, id] })),
+    replyInbox: (id, text) => {
+      const m = inbox.find((x) => x.id === id);
+      if (!m || m.status === "replied") return;
+      setInbox((all) => all.map((x): InboxMessage => (x.id === id ? { ...x, status: "replied", replyText: text } : x)));
+      setContacts((c) => [...c, { participantId: m.participantId, channel: m.channel, direction: "out", date: isoDaysFrom(0), outcome: "no reply" }]);
+      log("replied", m.participantId, `Replied to ${m.from} on ${m.channel}`);
+    },
     editMessage: (id, message) => {
       const s = suggestions.find((x) => x.id === id);
       if (!s) return;
