@@ -15,7 +15,7 @@ export interface Participant {
   email: string | null;
   phone: string | null;
   preferredChannel: Channel | null;
-  prefersOnline?: boolean;
+  prefersOnline?: boolean | undefined;
   doNotContact: boolean;
   sevaRole: string | null;
   interests: string[];
