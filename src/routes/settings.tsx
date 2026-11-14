@@ -29,12 +29,12 @@ function SettingsPage() {
     <AppShell>
       <div className="max-w-3xl space-y-4">
         <header className="mb-2">
-          <h1 className="font-display text-[28px] font-semibold leading-tight tracking-tight text-foreground">Settings</h1>
+          <h1 className="font-display text-[32px] font-normal text-primary">Settings</h1>
           <p className="mt-1 text-sm text-muted-foreground">How the app decides who needs a follow-up. Read-only in this version.</p>
         </header>
 
-        <section className="rounded-xl border border-border bg-card p-5 shadow-soft">
-          <h2 className="text-base font-semibold text-foreground">Journey stages</h2>
+        <section className="rounded-lg border border-border bg-card p-5 shadow-soft">
+          <h2 className="font-heading text-base font-semibold text-primary">Journey stages</h2>
           <p className="mt-0.5 text-xs text-muted-foreground">Everyone is placed in the first stage that fits, checked in this order.</p>
           <dl className="mt-4 divide-y divide-border">
             {STAGES.map((s) => (
@@ -46,8 +46,8 @@ function SettingsPage() {
           </dl>
         </section>
 
-        <section className="rounded-xl border border-border bg-card p-5 shadow-soft">
-          <h2 className="text-base font-semibold text-foreground">This centre</h2>
+        <section className="rounded-lg border border-border bg-card p-5 shadow-soft">
+          <h2 className="font-heading text-base font-semibold text-primary">This centre</h2>
           <dl className="mt-3 divide-y divide-border">
             <div className="flex items-baseline justify-between gap-4 py-2.5">
               <dt className="text-sm font-medium text-foreground">Coordinator</dt>
