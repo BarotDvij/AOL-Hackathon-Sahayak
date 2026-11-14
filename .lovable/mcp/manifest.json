@@ -20,7 +20,7 @@
       {
         "name": "get_onboarding_questions",
         "title": "Get onboarding questions",
-        "description": "Return the six participant onboarding questions, fixed options and facilitation instructions.",
+        "description": "Return the intake questions: furthest course completed, how closely they keep that course's home practice, practice time, group format, and goals for the month, quarter and year. Includes options and facilitation instructions.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
