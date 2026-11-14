@@ -12,10 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ActivityRouteImport } from './routes/activity'
 import { Route as InboxRouteImport } from './routes/inbox'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as ParticipantsRouteImport } from './routes/participants'
 import { Route as ReviewRouteImport } from './routes/review'
 import { Route as SahayakRouteImport } from './routes/sahayak'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as ApiPublicCalendarEventIdRouteImport } from './routes/api/public/calendar/$eventId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -30,6 +33,11 @@ const ActivityRoute = ActivityRouteImport.update({
 const InboxRoute = InboxRouteImport.update({
   id: '/inbox',
   path: '/inbox',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ParticipantsRoute = ParticipantsRouteImport.update({
@@ -52,34 +60,55 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicCalendarEventIdRoute =
+  ApiPublicCalendarEventIdRouteImport.update({
+    id: '/api/public/calendar/$eventId',
+    path: '/api/public/calendar/$eventId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/activity': typeof ActivityRoute
   '/inbox': typeof InboxRoute
+  '/mcp': typeof McpRoute
   '/participants': typeof ParticipantsRoute
   '/review': typeof ReviewRoute
   '/sahayak': typeof SahayakRoute
   '/settings': typeof SettingsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/api/public/calendar/$eventId': typeof ApiPublicCalendarEventIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/activity': typeof ActivityRoute
   '/inbox': typeof InboxRoute
+  '/mcp': typeof McpRoute
   '/participants': typeof ParticipantsRoute
   '/review': typeof ReviewRoute
   '/sahayak': typeof SahayakRoute
   '/settings': typeof SettingsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/api/public/calendar/$eventId': typeof ApiPublicCalendarEventIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/activity': typeof ActivityRoute
   '/inbox': typeof InboxRoute
+  '/mcp': typeof McpRoute
   '/participants': typeof ParticipantsRoute
   '/review': typeof ReviewRoute
   '/sahayak': typeof SahayakRoute
   '/settings': typeof SettingsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/api/public/calendar/$eventId': typeof ApiPublicCalendarEventIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -87,38 +116,50 @@ export interface FileRouteTypes {
     | '/'
     | '/activity'
     | '/inbox'
+    | '/mcp'
     | '/participants'
     | '/review'
     | '/sahayak'
     | '/settings'
+    | '/.well-known/oauth-protected-resource'
+    | '/api/public/calendar/$eventId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/activity'
     | '/inbox'
+    | '/mcp'
     | '/participants'
     | '/review'
     | '/sahayak'
     | '/settings'
+    | '/.well-known/oauth-protected-resource'
+    | '/api/public/calendar/$eventId'
   id:
     | '__root__'
     | '/'
     | '/activity'
     | '/inbox'
+    | '/mcp'
     | '/participants'
     | '/review'
     | '/sahayak'
     | '/settings'
+    | '/.well-known/oauth-protected-resource'
+    | '/api/public/calendar/$eventId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ActivityRoute: typeof ActivityRoute
   InboxRoute: typeof InboxRoute
+  McpRoute: typeof McpRoute
   ParticipantsRoute: typeof ParticipantsRoute
   ReviewRoute: typeof ReviewRoute
   SahayakRoute: typeof SahayakRoute
   SettingsRoute: typeof SettingsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  ApiPublicCalendarEventIdRoute: typeof ApiPublicCalendarEventIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -142,6 +183,13 @@ declare module '@tanstack/react-router' {
       path: '/inbox'
       fullPath: '/inbox'
       preLoaderRoute: typeof InboxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/participants': {
@@ -172,6 +220,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/calendar/$eventId': {
+      id: '/api/public/calendar/$eventId'
+      path: '/api/public/calendar/$eventId'
+      fullPath: '/api/public/calendar/$eventId'
+      preLoaderRoute: typeof ApiPublicCalendarEventIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -179,10 +241,14 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ActivityRoute: ActivityRoute,
   InboxRoute: InboxRoute,
+  McpRoute: McpRoute,
   ParticipantsRoute: ParticipantsRoute,
   ReviewRoute: ReviewRoute,
   SahayakRoute: SahayakRoute,
   SettingsRoute: SettingsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  ApiPublicCalendarEventIdRoute: ApiPublicCalendarEventIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
