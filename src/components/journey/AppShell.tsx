@@ -13,11 +13,11 @@ const NAV: NavItem[] = [
   { to: "/activity", label: "Activity", short: "Activity", Icon: History },
 ];
 
-function NavLink({ to, label, short, Icon, exact, mobile, waiting }: NavItem & { mobile?: boolean; waiting?: number }) {
+function NavLink({ to, label, short, Icon, exact, mobile, waiting }: NavItem & { mobile?: boolean | undefined; waiting?: number | undefined }) {
   return (
     <Link
       to={to}
-      activeOptions={exact ? { exact: true } : undefined}
+      activeOptions={{ exact: !!exact }}
       className={cn(
         "relative flex flex-1 flex-col items-center gap-1 px-2 py-2.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground md:flex-none md:flex-row md:gap-2 md:rounded-full md:px-4 md:py-1.5 md:text-sm",
       )}

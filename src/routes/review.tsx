@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Check, Pencil, Undo2 } from "lucide-react";
 import { useState } from "react";
 import { AppShell } from "@/components/journey/AppShell";
-import { ChannelIcon, StageBadge } from "@/components/journey/bits";
+import { ChannelIcon, channelLabel, StageBadge } from "@/components/journey/bits";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -96,7 +96,7 @@ function ReviewPage() {
           <Select value={s.channel} onValueChange={(c) => setChannel(s.id, c as Channel)}>
             <SelectTrigger className="w-40 bg-card" aria-label="Change channel"><SelectValue /></SelectTrigger>
             <SelectContent>
-              {(["whatsapp", "email", "sms"] as Channel[]).map((c) => <SelectItem key={c} value={c}>{c === "sms" ? "SMS" : c[0].toUpperCase() + c.slice(1)}</SelectItem>)}
+              {(["whatsapp", "email", "sms"] as Channel[]).map((c) => <SelectItem key={c} value={c}>{channelLabel(c)}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>

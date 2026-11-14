@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/journey/AppShell";
-import { ChannelIcon, StageBadge } from "@/components/journey/bits";
+import { ChannelIcon, channelLabel, StageBadge } from "@/components/journey/bits";
 import { ProfileDialog } from "@/components/journey/ProfileDialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -106,7 +106,7 @@ function DashboardPage() {
           <SelectTrigger className="w-36 bg-card" aria-label="Filter by channel"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All channels</SelectItem>
-            {(["whatsapp", "email", "sms"] as Channel[]).map((c) => <SelectItem key={c} value={c}>{c === "sms" ? "SMS" : c[0].toUpperCase() + c.slice(1)}</SelectItem>)}
+            {(["whatsapp", "email", "sms"] as Channel[]).map((c) => <SelectItem key={c} value={c}>{channelLabel(c)}</SelectItem>)}
           </SelectContent>
         </Select>
       </section>
