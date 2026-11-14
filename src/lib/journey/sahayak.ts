@@ -71,7 +71,10 @@ export interface SahayakPerson {
 }
 export interface UpcomingItem { step: NextStep; suggestedFor: number }
 
-export interface BriefItem { id: string; text: string; why: string; to: string; actionLabel: string }
+/** Every page Sahayak is allowed to point the coordinator at. */
+export type SahayakLinkTo = "/" | "/inbox" | "/review" | "/participants" | "/activity" | "/sahayak";
+
+export interface BriefItem { id: string; text: string; why: string; to: SahayakLinkTo; actionLabel: string }
 
 export type ReminderKind = "unanswered" | "new-sky" | "going-quiet" | "upcoming-event";
 export interface Reminder {
@@ -79,13 +82,13 @@ export interface Reminder {
   kind: ReminderKind;
   title: string;
   why: string;
-  to: string;
+  to: SahayakLinkTo;
   actionLabel: string;
   participantId?: string | undefined;
 }
 
-export interface SahayakRow { name: string; detail: string; to?: string | undefined }
-export interface SahayakAnswer { text: string; rows: SahayakRow[]; action?: { label: string; to: string } | undefined }
+export interface SahayakRow { name: string; detail: string; to?: SahayakLinkTo | undefined }
+export interface SahayakAnswer { text: string; rows: SahayakRow[]; action?: { label: string; to: SahayakLinkTo } | undefined }
 
 /** Compact, plain-language picture of the whole centre, handed to the model. */
 export interface SahayakSnapshotRow { name: string; city: string; stage: string; lastContact: string; nextStep: string }
