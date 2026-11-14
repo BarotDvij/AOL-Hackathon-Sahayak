@@ -1,0 +1,19 @@
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+export type AppLanguage = 'English' | 'French';
+const FRENCH: Record<string,string> = {
+  'Dashboard':'Tableau de bord','Participants':'Participants','Programs':'Programmes','Impact':'Impact','Sessions':'Séances','Team':'Équipe','Review Queue':'File de révision','Review queue':'File de révision','Inbox':'Boîte de réception','Activity Log':'Journal d’activité','Activity log':'Journal d’activité','Settings':'Paramètres','Switch view':'Changer de vue',
+  'Approve and send':'Approuver et envoyer','Edit':'Modifier','Skip for now':'Passer pour le moment','Save changes':'Enregistrer','Cancel':'Annuler','Back':'Retour','Review':'Réviser','Previous':'Précédent','Next':'Suivant','Search participants':'Rechercher des participants','Search name, city or email':'Rechercher un nom, une ville ou un courriel',
+  'All cities':'Toutes les villes','All stages':'Toutes les étapes','All channels':'Tous les canaux','Last contact':'Dernier contact','Suggested next step':'Prochaine étape suggérée','Participant':'Participant','Stage':'Étape','Channel':'Canal',
+  'Start check-in':'Ouvrir l’accueil','Simulate check-in':'Simuler une arrivée','Check in':'Confirmer ma présence','End session':'Terminer la séance','Auto-assign':'Proposer les attributions','Confirm assignments':'Confirmer les attributions','My follow-ups':'Mes suivis','All participants':'Tous les participants','Preferred language':'Langue préférée','App language':'Langue de l’application',
+  'Waiting':'En attente','Replied':'Réponse reçue','Attended':'Présence confirmée','No response after 14 days':'Sans réponse après 14 jours','Brought back':'De retour','Recent wins':'Retours récents','Messages that led to a visit':'Messages ayant mené à une visite','Last 30 days':'30 derniers jours','3 months':'3 mois','6 months':'6 mois',
+  'Came to a follow-up within 30 days of SKY':'Suivi dans les 30 jours après SKY','Regular follow-up attendees':'Participants réguliers aux suivis','People brought back this month':'Personnes revenues ce mois-ci','Moved to a deeper program or seva':'Programme approfondi ou seva','Journey funnel':'Parcours de participation','Monthly follow-up rate':'Taux de suivi mensuel','By city':'Par ville','Finished SKY':'SKY terminé','First follow-up':'Premier suivi','Regular attendee (3+ follow-ups)':'Participation régulière (3+ suivis)','Deeper program or seva':'Programme approfondi ou seva',
+  'Upcoming':'À venir','Past':'Passées','Returning people':'Personnes déjà venues','First-timers':'Premières visites','Total attendees':'Présences totales','Follow-ups completed':'Suivis effectués','Assigned participants':'Participants attribués','No one matches these filters.':'Aucun participant ne correspond à ces filtres.','Journey so far':'Votre parcours','On':'Activé','Off':'Désactivé','Sahayak settings':'Paramètres de Sahayak','Nothing is ever sent without you approving it.':'Aucun message n’est envoyé sans votre approbation.',
+};
+const Context = createContext({ language: 'English' as AppLanguage, setLanguage: (_: AppLanguage) => {}, t: (text: string) => text });
+export function LanguageProvider({children}: {children: ReactNode}) {
+  const [language, setLanguage] = useState<AppLanguage>('English');
+  useEffect(() => { const stored = localStorage.getItem('journey-language'); if (stored === 'French') setLanguage(stored); }, []);
+  useEffect(() => { localStorage.setItem('journey-language', language); document.documentElement.lang = language === 'French' ? 'fr' : 'en'; }, [language]);
+  return <Context.Provider value={{language, setLanguage, t: text => language === 'French' ? FRENCH[text] ?? text : text}}>{children}</Context.Provider>;
+}
+export const useLanguage = () => useContext(Context);
