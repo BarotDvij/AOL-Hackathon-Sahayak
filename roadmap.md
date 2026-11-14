@@ -1,5 +1,8 @@
 # Roadmap
 
+## In progress
+- Impact metrics and trends, message outcomes and second follow-ups, QR session check-in and guest records, reviewed volunteer assignments, and English/French coordinator controls and drafts; keep every surface on shared demo records.
+
 ## Done
 - Journey dashboard: at-a-glance tiles, stage cards that filter, search, city + channel filters, follow-up list sorted with drifting people first.
 - Participant profile sheet: journey timeline, suggested next step, plain-language reasons, "choose a different step", link into the review queue.
