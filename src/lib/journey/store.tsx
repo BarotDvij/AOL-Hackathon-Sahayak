@@ -239,7 +239,14 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
       if (v) setSuggestions(all => all.map(s => { const step = catalog.get(s.nextStepId); return s.participantId === id && step ? {...s, editedMessage: null, draftMessage: draftMessage({...v.participant, language}, v.stage, step, s.channel)} : s; }));
     },
     setMessageLanguage: (id, language) => { const s = suggestions.find(s => s.id === id); const v = views.find(v => v.participant.id === s?.participantId); const step = s ? catalog.get(s.nextStepId) : undefined; if (s && v && step) update(id, x => ({...x, messageLanguage: language, editedMessage: null, draftMessage: draftMessage({...v.participant, language}, v.stage, step, x.channel)})); },
-    secondFollowUp: messageId => { const m = sentMessages.find(m => m.id === messageId); const v = views.find(v => v.participant.id === m?.participantId); if (!m || !v || v.participant.doNotContact || messageOutcome(m) !== "No response after 14 days") return; const step = catalogList.find(s => s.type === "check-in"); if (!step) return; const channel = differentChannel(m.channel, v.participant); const next = buildSuggestion(v.participant, v.history, v.stage === "paused" ? "quiet" : v.stage, "A gentle second follow-up through a different channel after 14 days without a reply.", [step]); if (next) { const replacement = {...next, id: `second-${m.id}`, channel, draftMessage: draftMessage({...v.participant, language: x.messageLanguage ?? v.participant.language}, v.stage, step, channel), why: "No response after 14 days. Try a gentle note through a different channel."}; setSuggestions(all => [...all.filter(s => s.participantId !== m.participantId), replacement]); } },
+    secondFollowUp: messageId => {
+      const m = sentMessages.find(m => m.id === messageId); const v = views.find(v => v.participant.id === m?.participantId);
+      if (!m || !v || v.participant.doNotContact || messageOutcome(m) !== "No response after 14 days") return;
+      const step = catalogList.find(s => s.id === "gentle-checkin"); if (!step) return;
+      const channel = differentChannel(m.channel, v.participant);
+      const replacement: Suggestion = {id: `second-${m.id}`, participantId: m.participantId, nextStepId: step.id, alternateNextStepId: null, channel, why: "No response after 14 days. Try a gentle note through a different channel.", draftMessage: draftMessage(v.participant, v.stage, step, channel), editedMessage: null, status: "pending", skipReason: null, reviewedBy: null, reviewedAt: null, lowData: false};
+      setSuggestions(all => [...all.filter(s => s.participantId !== m.participantId), replacement]);
+    },
     checkIn: (sessionId, identity) => {
       const session = sessions.find(s => s.id === sessionId);
       if (!session || session.ended || !identity.trim()) return {ok: false, name: "", message: "This check-in is closed or the name is missing."};
