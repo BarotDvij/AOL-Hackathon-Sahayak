@@ -1,7 +1,7 @@
 # Roadmap
 
-## In progress
-- Rename My Progress, add month calendar left of weekly plan, and move goal editor to a plus-triggered overlay above Your path.
+## Done
+- Renamed the page My Progress, added a full month calendar left of the weekly plan with completed-day highlights and month navigation, and moved Your goals into a plus-triggered overlay above Your path. Verified overlay save/readback, calendar completion, desktop/phone layout; the existing URL and demo reset behavior remain unchanged.
 
 ## Done
 - Weekly progress now owns the weekly plan and daily completion controls. My journey shows weekly/monthly/annual goals left of Your path and Your goals, with weekly goals available in the goal selector and existing quarterly goals preserved. Verified saved goal readback, completion across navigation, desktop/phone layouts and 10 tests; demo state resets on reload.
