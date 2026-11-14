@@ -1,5 +1,8 @@
 # Roadmap
 
+## In progress
+- Move Messages right; add Practice guides and shared weekly completion marks.
+
 ## Done
 - Participant message box now shows clickable sender initials/name/latest-message previews and chronological chat bubbles with a typed reply composer. Verified reply readback, updated previews, page navigation, Enter-to-send and phone layout; six participant tests pass. Typed replies remain local demo state and reset on reload.
 
