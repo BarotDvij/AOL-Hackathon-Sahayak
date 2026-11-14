@@ -1,10 +1,11 @@
 import { createFileRoute, getRouteApi, useRouter } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { CalendarPlus, Check, Clock3, Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ParticipantCard, EmptyParticipantNote } from "@/components/participant/ParticipantShell";
 import { Button } from "@/components/ui/button";
-import { logMyPractice } from "@/lib/participant.functions";
+import { logMyPractice, markMyInterest } from "@/lib/participant.functions";
 import { cn } from "@/lib/utils";
 
 const parent = getRouteApi("/_authenticated/me");
@@ -24,7 +25,8 @@ function ParticipantHome() {
   const data = parent.useLoaderData();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
-  const [interested, setInterested] = useState<string[]>([]);
+  const [interestBusy, setInterestBusy] = useState<string | null>(null);
+  const markInterest = useServerFn(markMyInterest);
   if (!data.linked) return null;
   const today = new Date().toISOString().slice(0, 10);
   const practisedToday = data.practice.entries.some((e) => e.date === today);
@@ -34,6 +36,13 @@ function ParticipantHome() {
     try { await logMyPractice({ data: {} }); await router.invalidate(); toast.success("Today's practice is logged. Well done."); }
     catch (e) { toast.error(e instanceof Error ? e.message : "Please try again."); }
     finally { setBusy(false); }
+  }
+
+  async function showInterest(eventId: string) {
+    setInterestBusy(eventId);
+    try { await markInterest({ data: { eventId } }); await router.invalidate(); toast.success("Your interest is saved."); }
+    catch (e) { toast.error(e instanceof Error ? e.message : "Please try again."); }
+    finally { setInterestBusy(null); }
   }
 
   return (
@@ -56,7 +65,7 @@ function ParticipantHome() {
       </div>
       <ParticipantCard>
         <h2 className="font-heading text-base font-semibold text-primary">Coming up for you</h2>
-        {data.upcoming.length === 0 ? <p className="mt-3 text-sm text-muted-foreground">Nothing scheduled just now. Your practice is still here for you.</p> : <div className="mt-4 grid gap-3 md:grid-cols-3">{data.upcoming.slice(0, 3).map((event) => <article key={event.id} className="rounded-lg border border-border p-4"><h3 className="font-heading text-sm font-semibold text-primary">{event.title}</h3><p className="mt-1 text-xs text-muted-foreground">{event.startDate} · {event.city}</p><div className="mt-4 flex flex-wrap gap-2"><Button size="sm" variant={interested.includes(event.id) ? "secondary" : "outline"} onClick={() => { setInterested((all) => [...all, event.id]); toast.success("Interest noted for this visit."); }}>{interested.includes(event.id) ? "Interested" : "I'm interested"}</Button>{event.calendarUrl && <Button asChild size="sm" variant="accent"><a href={event.calendarUrl}><CalendarPlus className="size-4" aria-hidden />Calendar</a></Button>}</div></article>)}</div>}
+        {data.upcoming.length === 0 ? <p className="mt-3 text-sm text-muted-foreground">Nothing scheduled just now. Your practice is still here for you.</p> : <div className="mt-4 grid gap-3 md:grid-cols-3">{data.upcoming.slice(0, 3).map((event) => <article key={event.id} className="rounded-lg border border-border p-4"><h3 className="font-heading text-sm font-semibold text-primary">{event.title}</h3><p className="mt-1 text-xs text-muted-foreground">{event.startDate} · {event.city}</p><div className="mt-4 flex flex-wrap gap-2"><Button size="sm" disabled={interestBusy === event.id || data.interests.includes(event.id)} variant={data.interests.includes(event.id) ? "secondary" : "outline"} onClick={() => showInterest(event.id)}>{data.interests.includes(event.id) ? "Interested" : interestBusy === event.id ? "Saving…" : "I'm interested"}</Button>{event.calendarUrl && <Button asChild size="sm" variant="accent"><a href={event.calendarUrl}><CalendarPlus className="size-4" aria-hidden />Calendar</a></Button>}</div></article>)}</div>}
       </ParticipantCard>
       {data.messages.length === 0 && <EmptyParticipantNote>No coordinator messages yet. When one is approved, it will appear in Messages.</EmptyParticipantNote>}
     </div>

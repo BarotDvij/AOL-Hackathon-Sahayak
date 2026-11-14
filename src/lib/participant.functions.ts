@@ -17,13 +17,14 @@ export const getMyJourney = createServerFn({ method: "GET" })
 
     const bundle = participantBundle(account.participant_id);
     if (!bundle) throw new Error("Your participant record is unavailable.");
-    const [onboardingResult, practiceResult, goalsResult, messagesResult] = await Promise.all([
+    const [onboardingResult, practiceResult, goalsResult, messagesResult, interestsResult] = await Promise.all([
       supabase.from("participant_onboarding").select("answers").eq("user_id", userId).maybeSingle(),
       supabase.from("practice_logs").select("id, practiced_on, minutes").eq("user_id", userId).order("practiced_on", { ascending: false }).limit(120),
       supabase.from("participant_goals").select("id, period, text, created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(30),
       supabase.from("participant_messages").select("id, coordinator_name, text, sent_at, reply").eq("participant_id", account.participant_id).order("sent_at", { ascending: false }).limit(50),
+      supabase.from("participant_interests").select("event_id").eq("user_id", userId).limit(50),
     ]);
-    for (const result of [onboardingResult, practiceResult, goalsResult, messagesResult]) if (result.error) throw new Error("Some of your journey data could not be loaded.");
+    for (const result of [onboardingResult, practiceResult, goalsResult, messagesResult, interestsResult]) if (result.error) throw new Error("Some of your journey data could not be loaded.");
 
     const answers = normalizeOnboardingAnswers(onboardingResult.data?.answers ?? {});
     const friendly = friendlyStageFor(bundle);
@@ -44,6 +45,7 @@ export const getMyJourney = createServerFn({ method: "GET" })
       goals: (goalsResult.data ?? []).map((g) => ({ id: g.id, period: g.period, text: g.text, createdAt: g.created_at })),
       messages: (messagesResult.data ?? []).map((m) => ({ id: m.id, coordinatorName: m.coordinator_name, text: m.text, sentAt: m.sent_at, reply: m.reply })),
       upcoming: participantEvents(account.participant_id, getRequestUrl().origin),
+      interests: (interestsResult.data ?? []).map((i) => i.event_id),
       milestones: milestones(bundle.participant, bundle.history, logs),
       timeline,
     };
@@ -88,6 +90,17 @@ export const setMyGoal = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase.from("participant_goals").insert({ user_id: context.userId, period: data.period, text: data.text });
     if (error) throw new Error("Your goal could not be saved.");
+    return { ok: true };
+  });
+
+export const markMyInterest = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ eventId: z.string().trim().min(1).max(120) }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { data: account } = await context.supabase.from("participant_accounts").select("participant_id").eq("user_id", context.userId).single();
+    if (!account || !participantEvents(account.participant_id, "https://events.invalid", 50).some((e) => e.id === data.eventId)) throw new Error("That event is not in your upcoming list.");
+    const { error } = await context.supabase.from("participant_interests").upsert({ user_id: context.userId, event_id: data.eventId }, { onConflict: "user_id,event_id" });
+    if (error) throw new Error("Your interest could not be saved.");
     return { ok: true };
   });
 
