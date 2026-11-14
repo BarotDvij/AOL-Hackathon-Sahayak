@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react";
+import { createContext, useEffect, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react";
 import { buildSessions, seedOutcomes, messageOutcome, broughtBack, differentChannel, VOLUNTEERS, type SentRecord, type Session, type CheckIn, type AssignmentProposal } from "./operations";
 import { buildCatalog } from "./catalog";
 import { JOURNEY_CONFIG as C, STAGE_PRIORITY, STAGES } from "./config";
@@ -140,7 +140,7 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
   const [suggestions, setSuggestions] = useState(s0);
   const [contacts, setContacts] = useState(data.contacts);
   const [practice, setPractice] = useState(seed.practice);
-  const [messages, setMessages] = useState<Message[]>(seed.messages);
+  const [messages, setMessages] = useState<Message[]>(() => [...seed.messages, ...sentMessages]);
   const [replies, setReplies] = useState<ParticipantReply[]>([]);
   const [activity, setActivity] = useState<ActivityEntry[]>([]);
   const [city, setCity] = useState("all");
@@ -239,7 +239,7 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
       if (v) setSuggestions(all => all.map(s => { const step = catalog.get(s.nextStepId); return s.participantId === id && step ? {...s, editedMessage: null, draftMessage: draftMessage({...v.participant, language}, v.stage, step, s.channel)} : s; }));
     },
     setMessageLanguage: (id, language) => { const s = suggestions.find(s => s.id === id); const v = views.find(v => v.participant.id === s?.participantId); const step = s ? catalog.get(s.nextStepId) : undefined; if (s && v && step) update(id, x => ({...x, messageLanguage: language, editedMessage: null, draftMessage: draftMessage({...v.participant, language}, v.stage, step, x.channel)})); },
-    secondFollowUp: messageId => { const m = sentMessages.find(m => m.id === messageId); const v = views.find(v => v.participant.id === m?.participantId); if (!m || !v || v.participant.doNotContact || messageOutcome(m) !== "No response after 14 days") return; const step = catalogList.find(s => s.type === "check-in"); if (!step) return; const channel = differentChannel(m.channel, v.participant); const next = buildSuggestion(v.participant, v.history, v.stage === "paused" ? "quiet" : v.stage, "A gentle second follow-up through a different channel after 14 days without a reply.", [step]); if (next) { const replacement = {...next, id: `second-${m.id}`, channel, draftMessage: draftMessage(v.participant, v.stage, step, channel), why: "No response after 14 days. Try a gentle note through a different channel."}; setSuggestions(all => [...all.filter(s => s.participantId !== m.participantId), replacement]); } },
+    secondFollowUp: messageId => { const m = sentMessages.find(m => m.id === messageId); const v = views.find(v => v.participant.id === m?.participantId); if (!m || !v || v.participant.doNotContact || messageOutcome(m) !== "No response after 14 days") return; const step = catalogList.find(s => s.type === "check-in"); if (!step) return; const channel = differentChannel(m.channel, v.participant); const next = buildSuggestion(v.participant, v.history, v.stage === "paused" ? "quiet" : v.stage, "A gentle second follow-up through a different channel after 14 days without a reply.", [step]); if (next) { const replacement = {...next, id: `second-${m.id}`, channel, draftMessage: draftMessage({...v.participant, language: x.messageLanguage ?? v.participant.language}, v.stage, step, channel), why: "No response after 14 days. Try a gentle note through a different channel."}; setSuggestions(all => [...all.filter(s => s.participantId !== m.participantId), replacement]); } },
     checkIn: (sessionId, identity) => {
       const session = sessions.find(s => s.id === sessionId);
       if (!session || session.ended || !identity.trim()) return {ok: false, name: "", message: "This check-in is closed or the name is missing."};
@@ -275,6 +275,7 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
       if (!m || m.status === "replied") return;
       setInbox((all) => all.map((x): InboxMessage => (x.id === id ? { ...x, status: "replied", replyText: text } : x)));
       setContacts((c) => [...c, { participantId: m.participantId, channel: m.channel, direction: "out", date: isoDaysFrom(0), outcome: "no reply" }]);
+      setSentMessages(all => [...all, {id: `inbox-reply-${m.id}`, participantId: m.participantId, suggestionId: null, coordinatorName: C.coordinatorName, text, sentAt: new Date().toISOString(), reply: null, channel: m.channel, stageBefore: views.find(v=>v.participant.id===m.participantId)?.stage ?? "new", volunteerId: assignments[m.participantId]}]);
       log("replied", m.participantId, `Replied to ${m.from} on ${m.channel}`);
     },
     editMessage: (id, message) => {
@@ -320,7 +321,7 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
       update(id, (x) => {
         const step = catalog.get(x.nextStepId);
         if (!v || !step) return { ...x, channel };
-        return { ...x, channel, draftMessage: draftMessage(v.participant, v.stage, step, channel) };
+        return { ...x, channel, draftMessage: draftMessage({...v.participant, language: x.messageLanguage ?? v.participant.language}, v.stage, step, channel) };
       });
     },
     chooseStep: (participantId, stepId) => {
@@ -346,6 +347,11 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
       incoming(m.participantId, reply, "your message");
     },
   };
+  useEffect(() => {
+    const channel = new BroadcastChannel('journey-check-in');
+    channel.onmessage = event => { const value = event.data; if (typeof value?.sessionId === 'string' && typeof value?.identity === 'string') store.checkIn(value.sessionId, value.identity); };
+    return () => channel.close();
+  }, [sessions, checkIns, participants, events, sentMessages]);
   return <Ctx.Provider value={store}>{children}</Ctx.Provider>;
 }
 
