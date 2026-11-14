@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { OnboardingForm } from "@/components/participant/OnboardingForm";
 import { cn } from "@/lib/utils";
+import { isMontreal, MONTREAL_CALENDAR } from "@/lib/sahayak/montreal-events";
 
 export const Route = createFileRoute("/me/")({
   head: () => ({ meta: [
@@ -57,7 +58,7 @@ function ParticipantHome() {
           <p className="mt-3 text-xs text-muted-foreground">{data.schedule.note} {data.schedule.safetyNote}</p>
         </ParticipantCard>
       </div>
-      <UpcomingEventsCard events={data.upcoming} />
+      <UpcomingEventsCard events={data.upcoming} location={data.participant.city} />
       {data.messages.length === 0 && <EmptyParticipantNote>No coordinator messages yet. When one is approved, it will appear in Messages.</EmptyParticipantNote>}
     </div>
   );
@@ -67,7 +68,7 @@ const EVENT_PREVIEW_COUNT = 4;
 
 type UpcomingEvent = ReturnType<typeof useDemoParticipant>["data"]["upcoming"][number];
 
-function UpcomingEventsCard({ events }: { events: UpcomingEvent[] }) {
+function UpcomingEventsCard({ events, location }: { events: UpcomingEvent[]; location: string }) {
   const [showAll, setShowAll] = useState(false);
   const shown = showAll ? events : events.slice(0, EVENT_PREVIEW_COUNT);
 
@@ -77,6 +78,7 @@ function UpcomingEventsCard({ events }: { events: UpcomingEvent[] }) {
         <h2 className="font-heading text-base font-semibold text-primary">Upcoming events</h2>
         {events.length > 0 && <p className="text-xs text-muted-foreground">{events.length} coming up</p>}
       </div>
+      {isMontreal(location) && <p className="mt-2 text-xs text-muted-foreground">Montréal · official listings checked November 14, 2026. Dates may change. <a className="font-semibold text-purple hover:underline" href={MONTREAL_CALENDAR} target="_blank" rel="noopener noreferrer">View the centre’s current calendar</a></p>}
       {events.length === 0 ? (
         <p className="mt-3 rounded-lg bg-muted p-4 text-sm text-muted-foreground">Nothing on the calendar right now. Check back soon.</p>
       ) : (
@@ -86,10 +88,12 @@ function UpcomingEventsCard({ events }: { events: UpcomingEvent[] }) {
               <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-secondary text-[11px] font-semibold text-primary">{event.startDate ? formatShort(event.startDate) : <Clock3 className="size-4 text-purple" aria-hidden />}</span>
               <span className="min-w-0 flex-1">
                 <span className="block text-sm font-medium text-foreground">{event.title}</span>
-                <span className="mt-0.5 block truncate text-xs text-muted-foreground">{event.city}{event.suggestedTiming ? ` · ${event.suggestedTiming}` : ""}</span>
+                <span className="mt-0.5 block text-xs text-muted-foreground">{event.city}{event.suggestedTiming ? ` · ${event.suggestedTiming}` : ""}</span>
+                {event.scheduleLabel && <span className="mt-1 block text-xs text-muted-foreground">{event.scheduleLabel}</span>}
+                {event.sourceCheckedOn && event.link && <a className="mt-1 block text-xs font-semibold text-purple hover:underline" href={event.link} target="_blank" rel="noopener noreferrer">Official event details</a>}
                 {event.needsLocalCheck && <span className="mt-1 block text-[11px] text-muted-foreground">Confirm with your centre</span>}
               </span>
-              {event.calendarUrl && <a href={event.calendarUrl} className="shrink-0 font-heading text-xs font-semibold text-purple hover:underline">Add to calendar</a>}
+              {event.calendarUrl && <a href={event.calendarUrl} download={event.calendarUrl.startsWith("data:") ? `${event.id}.ics` : undefined} className="shrink-0 font-heading text-xs font-semibold text-purple hover:underline">Add to calendar</a>}
             </li>
           ))}
         </ul>

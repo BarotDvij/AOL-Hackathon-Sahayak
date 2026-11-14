@@ -3,7 +3,7 @@ import { friendlyStageFor, normalizeOnboardingAnswers, ONBOARDING_INSTRUCTIONS, 
 
 describe("shared Sahayak core", () => {
   it("asks course level, practice adherence and month/quarter/year goals", () => {
-    expect(ONBOARDING_QUESTIONS.map((q) => q.id)).toEqual(["course_level", "practice_following", "practice_time", "join_format", "goal_month", "goal_quarter", "goal_year"]);
+    expect(ONBOARDING_QUESTIONS.map((q) => q.id)).toEqual(["location", "course_level", "practice_following", "practice_time", "join_format", "goal_month", "goal_quarter", "goal_year"]);
     expect(ONBOARDING_INSTRUCTIONS).toContain("one question at a time");
     expect(ONBOARDING_INSTRUCTIONS).toContain("skippable");
     expect(ONBOARDING_INSTRUCTIONS).toContain("confirmation before saving");
@@ -11,6 +11,10 @@ describe("shared Sahayak core", () => {
 
   it("accepts only declared choices but lets goals be the person's own words", () => {
     expect(normalizeOnboardingAnswers({ course_level: "sahaj", practice_time: "invented", goal_year: "  Teach a yoga class  ", unknown: "x" })).toEqual({ course_level: "sahaj", goal_year: "Teach a yoga class" });
+  });
+
+  it("keeps a trimmed, editable city answer", () => {
+    expect(normalizeOnboardingAnswers({ location: "  Montréal, Québec, Canada  " })).toEqual({ location: "Montréal, Québec, Canada" });
   });
 
   it("places the person on the ladder and points the goal at their next course", () => {
