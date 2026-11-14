@@ -50,7 +50,7 @@ function ReviewPage() {
     return (
       <AppShell>
         <div className="mx-auto max-w-md rounded-2xl border border-border bg-card p-8 text-center shadow-soft">
-          <p className="font-display text-2xl font-semibold">All caught up!</p>
+          <h1 className="font-display text-[28px] font-semibold text-foreground">All caught up!</h1>
           <p className="mt-2 text-sm text-muted-foreground">Every drafted message has been reviewed. New suggestions appear here as people drift.</p>
           <Button asChild className="mt-5">
             <Link to="/">Back to dashboard</Link>

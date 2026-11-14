@@ -39,7 +39,7 @@ function ActivityPage() {
       <AppShell>
         <div className="mx-auto max-w-md rounded-2xl border border-border bg-card p-8 text-center shadow-soft">
           <History className="mx-auto size-6 text-muted-foreground" aria-hidden />
-          <p className="mt-3 font-display text-xl font-semibold">Nothing reviewed yet</p>
+          <h1 className="mt-3 font-display text-[28px] font-semibold text-foreground">Nothing reviewed yet</h1>
           <p className="mt-2 text-sm text-muted-foreground">As soon as you approve, edit or skip a message, it shows up here with the time.</p>
           <Button asChild className="mt-5"><Link to="/review">Go to review queue</Link></Button>
         </div>
