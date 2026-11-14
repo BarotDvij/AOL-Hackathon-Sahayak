@@ -25,14 +25,15 @@ export const STAGE_PRIORITY: StageId[] = ["quiet", "dormant", "new", "building",
 
 export const SCORE_WEIGHTS = { stageFit: 3, statedInterest: 2, startsSoon: 1.5, nearby: 1, alreadyDeclined: -2 } as const;
 
+/** Display order, used by the stage bar, the legend and the stage chips. */
 export const STAGES: { id: StageId; label: string }[] = [
-  { id: "paused", label: "Paused" },
   { id: "new", label: "New after SKY" },
   { id: "building", label: "Building practice" },
   { id: "active", label: "Actively engaged" },
   { id: "serving", label: "Serving" },
   { id: "quiet", label: "Going quiet" },
   { id: "dormant", label: "Dormant" },
+  { id: "paused", label: "Paused" },
 ];
 export const stageLabel = (id: StageId) => STAGES.find((s) => s.id === id)!.label;
 
