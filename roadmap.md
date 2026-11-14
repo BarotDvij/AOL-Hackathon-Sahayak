@@ -1,6 +1,9 @@
 # Roadmap
 
 ## Done
+- Added editable location intake and Montréal official-source event listings checked November 14, 2026; graduate-only follow-ups respect intake, dated occurrences expire, and official calendar/details links stay available. This is a verified snapshot, not automatic live synchronization. Verified intake save → My journey → Home, calendar download and phone layout; 19 relevant tests pass.
+
+## Done
 - Participant Home: an "Upcoming events" card lists the person's own fitting events in date order — dated ones show a date chip and an "Add to calendar" link that downloads a real .ics, undated catalog options show a clock chip and their suggested timing, and anything needing local confirmation says "Confirm with your centre". Long lists collapse behind "Show all". Verified in the preview; 10 participant tests pass.
 
 ## Done

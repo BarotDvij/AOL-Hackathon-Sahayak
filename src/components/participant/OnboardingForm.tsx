@@ -50,6 +50,7 @@ export function OnboardingForm({ initialAnswers, onSave }: { initialAnswers: Onb
         ))}
       </RadioGroup>
       {question.kind === "goal" && <Input className="mt-3" maxLength={200} aria-label="Or in your own words" placeholder="Or in your own words…" value={question.options.some((o) => o.value === answers[question.id]) ? "" : answers[question.id] ?? ""} onChange={(e) => setAnswers((current) => ({ ...current, [question.id]: e.target.value }))} />}
+      {question.kind === "location" && <Input className="mt-3" maxLength={100} aria-label="City, province or region, country" placeholder="Or enter city, province / region, country" autoComplete="address-level2" value={question.options.some((o) => o.value === answers.location) ? "" : answers.location ?? ""} onChange={(e) => setAnswers((current) => ({ ...current, location: e.target.value }))} />}
       <div className="mt-4 flex flex-wrap items-center gap-2">
         {index > 0 && <Button variant="outline" onClick={() => setIndex((current) => current - 1)}>Back</Button>}
         <Button onClick={() => index === ONBOARDING_QUESTIONS.length - 1 ? setReview(true) : setIndex((current) => current + 1)}>{index === ONBOARDING_QUESTIONS.length - 1 ? "Review answers" : "Continue"}</Button>

@@ -40,12 +40,12 @@ function useDemoData(
     if (!me) return null;
     const history = { ...me.history, contacts: [] };
     const rows = me.practice.map((entry) => ({ id: `${entry.participantId}-${entry.date}`, practiced_on: entry.date, minutes: entry.minutes }));
-    const upcoming = participantEvents(TEMP_PARTICIPANT_ID, "https://demo.invalid", 20, catalogList, { prefersOnline: prefersOnline(answers) }).map((event) => ({
+    const upcoming = participantEvents(TEMP_PARTICIPANT_ID, "https://demo.invalid", 20, catalogList, { prefersOnline: prefersOnline(answers), location: answers.location, courseLevel: answers.course_level }).map((event) => ({
       ...event,
-      calendarUrl: event.calendarUrl ? new URL(event.calendarUrl).pathname : null,
+      calendarUrl: event.calendarUrl?.startsWith("data:") ? event.calendarUrl : event.calendarUrl ? new URL(event.calendarUrl).pathname : null,
     }));
     return {
-      participant: { id: me.participant.id, firstName: me.participant.firstName, lastName: me.participant.lastName, city: me.participant.city },
+      participant: { id: me.participant.id, firstName: me.participant.firstName, lastName: me.participant.lastName, city: answers.location || me.participant.city },
       stage: friendlyStageFor({ participant: me.participant, history, stage: me.stage }),
       answers,
       position: journeyPosition(answers, levelFromHistory(history)),

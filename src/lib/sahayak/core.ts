@@ -12,6 +12,7 @@ export { computeStage, explainReasons, buildSuggestion, eligibleSteps, hasEnough
 
 export * from "./intake";
 import { prefersOnline, type CourseLevel, type OnboardingAnswers } from "./intake";
+import { isMontreal, montrealEvents } from "./montreal-events";
 
 export interface ParticipantBundle {
   participant: Participant;
@@ -84,9 +85,15 @@ export function recommendedSchedule(answers: OnboardingAnswers, stage: StageId, 
   };
 }
 
-export function participantEvents(participantId: string, origin: string, max = 3, catalog = buildCatalog(), options: { prefersOnline?: boolean } = {}) {
+export function participantEvents(participantId: string, origin: string, max = 3, catalog = buildCatalog(), options: { prefersOnline?: boolean; location?: string | undefined; courseLevel?: string | undefined } = {}) {
   const bundle = participantBundle(participantId);
   if (!bundle) return [];
+  const location = options.location?.trim() || bundle.participant.city;
+  if (isMontreal(location)) {
+    const hasSky = options.courseLevel ? options.courseLevel !== "none" : levelFromHistory(bundle.history) !== "none";
+    return montrealEvents(hasSky, today().toISOString().slice(0, 10)).sort((a, b) => (a.startDate ?? "9999").localeCompare(b.startDate ?? "9999")).slice(0, max);
+  }
+  bundle.participant = { ...bundle.participant, city: location };
   return comingUpFor(bundle.participant, bundle.history, catalog, max, today(), options).map((step) => eventDto(step, origin));
 }
 
@@ -104,6 +111,8 @@ export function eventDto(step: NextStep, origin: string) {
     online,
     link: step.link || null,
     calendarUrl: step.startDate ? new URL(`/api/public/calendar/${encodeURIComponent(step.id)}`, origin).toString() : null,
+    scheduleLabel: null as string | null,
+    sourceCheckedOn: null as string | null,
   };
 }
 
