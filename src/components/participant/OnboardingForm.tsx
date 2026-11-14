@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ONBOARDING_QUESTIONS, type OnboardingAnswers } from "@/lib/sahayak/core";
 import { cn } from "@/lib/utils";
 
@@ -9,7 +10,7 @@ export function OnboardingForm({ initialAnswers, onSave }: { initialAnswers: Onb
   const [review, setReview] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const question = ONBOARDING_QUESTIONS[index]!;
+  const question = ONBOARDING_QUESTIONS[index];
 
   async function save() {
     setBusy(true); setError(null);
@@ -36,15 +37,17 @@ export function OnboardingForm({ initialAnswers, onSave }: { initialAnswers: Onb
     );
   }
 
+  if (!question) return null;
+
   return (
     <div>
       <p className="text-xs font-medium text-muted-foreground">Question {index + 1} of {ONBOARDING_QUESTIONS.length} · optional</p>
       <h3 className="mt-2 font-heading text-base font-semibold text-primary">{question.text}</h3>
-      <div className="mt-4 grid gap-2">
+      <RadioGroup aria-label={question.text} value={answers[question.id] ?? ""} onValueChange={(value) => setAnswers((current) => ({ ...current, [question.id]: value })) className="mt-4 divide-y divide-border gap-0">
         {question.options.map((option) => (
-          <button key={option.value} type="button" aria-pressed={answers[question.id] === option.value} onClick={() => setAnswers((current) => ({ ...current, [question.id]: option.value }))} className={cn("rounded-lg border px-4 py-3 text-left text-sm", answers[question.id] === option.value ? "border-purple bg-secondary font-medium text-purple" : "border-border bg-card text-foreground")}>{option.label}</button>
+          <label key={option.value} className={cn("flex cursor-pointer items-center gap-3 px-2 py-3 text-sm transition-colors hover:bg-secondary/50", answers[question.id] === option.value ? "bg-secondary font-medium text-purple" : "text-foreground")}><RadioGroupItem value={option.value} />{option.label}</label>
         ))}
-      </div>
+      </RadioGroup>
       <div className="mt-4 flex flex-wrap items-center gap-2">
         {index > 0 && <Button variant="outline" onClick={() => setIndex((current) => current - 1)}>Back</Button>}
         <Button onClick={() => index === ONBOARDING_QUESTIONS.length - 1 ? setReview(true) : setIndex((current) => current + 1)}>{index === ONBOARDING_QUESTIONS.length - 1 ? "Review answers" : "Continue"}</Button>
