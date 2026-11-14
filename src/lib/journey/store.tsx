@@ -61,6 +61,21 @@ interface Store {
   editMessage: (id: string, message: string) => void;
   setChannel: (id: string, channel: Channel) => void;
   chooseStep: (participantId: string, stepId: string) => void;
+  /** Sahayak: its settings, the morning brief, live reminders and the coordinator's inbox. */
+  sahayak: SahayakState;
+  brief: BriefItem[];
+  reminders: Reminder[];
+  inbox: InboxMessage[];
+  setSahayakOn: (on: boolean) => void;
+  setSahayakFeature: (key: SahayakFeature, on: boolean) => void;
+  setNudge: (n: Nudge) => void;
+  decideSahayak: (on: boolean) => void;
+  resetSahayakDemo: () => void;
+  dismissBrief: () => void;
+  snoozeReminder: (id: string, days: number) => void;
+  dismissReminder: (id: string) => void;
+  /** Approving a drafted reply is the only thing that records it as sent. */
+  replyInbox: (id: string, text: string) => void;
   /** Participant-scoped data and actions. Only exposes the signed-in demo participant. */
   me: MySlice | null;
   logPractice: (minutes?: number | null) => void;
@@ -111,6 +126,8 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
   const [activity, setActivity] = useState<ActivityEntry[]>([]);
   const [city, setCity] = useState("all");
   const [meId, setMeId] = useState<string | null>(null);
+  const [sahayak, setSahayak] = useState<SahayakState>(SAHAYAK_DEFAULTS);
+  const [inbox, setInbox] = useState<InboxMessage[]>(() => buildInbox());
   const seq = useRef(0);
   const catalog = useMemo(() => new Map(catalogList.map((s) => [s.id, s])), [catalogList]);
 
@@ -165,7 +182,6 @@ export function JourneyProvider({ children }: { children: ReactNode }) {
   [catalogList, suggestions]);
 
   const update = useCallback((id: string, fn: (s: Suggestion) => Suggestion) => setSuggestions((all) => all.map((s) => (s.id === id ? fn(s) : s))), []);
-  const nameOf = (participantId: string) => data.participants.find((x) => x.id === participantId)?.firstName ?? "participant";
   const log = useCallback((kind: ActivityEntry["kind"], participantId: string, detail: string) => {
     seq.current += 1;
     setActivity((a) => [{ id: `a${seq.current}`, at: new Date().toISOString(), kind, participantId, detail }, ...a]);
