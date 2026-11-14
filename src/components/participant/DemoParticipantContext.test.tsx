@@ -49,12 +49,12 @@ describe("No-login participant demo", () => {
     expect(result.current.sahayakOn).toBe(false);
 
     act(() => result.current.requestSahayak(true));
-    expect(result.current.sahayaakConsentOpen).toBe(true);
+    expect(result.current.sahayakConsentOpen).toBe(true);
     expect(result.current.sahayakOn).toBe(false);
 
     act(() => result.current.acceptSahayakConsent());
     expect(result.current.sahayakOn).toBe(true);
-    expect(result.current.sahayaakConsentOpen).toBe(false);
+    expect(result.current.sahayakConsentOpen).toBe(false);
 
     unmount();
     const fresh = renderHook(() => useDemoParticipant(), { wrapper });
@@ -69,7 +69,7 @@ describe("No-login participant demo", () => {
     act(() => result.current.declineSahayakConsent());
 
     expect(result.current.sahayakOn).toBe(false);
-    expect(result.current.sahayaakConsentOpen).toBe(false);
+    expect(result.current.sahayakConsentOpen).toBe(false);
     unmount();
   });
 });

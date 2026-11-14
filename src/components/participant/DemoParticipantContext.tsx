@@ -18,7 +18,10 @@ interface DemoParticipantValue {
   welcomeOpen: boolean;
   closeWelcome: () => void;
   sahayakOn: boolean;
-  setSahayakOn: (on: boolean) => void;
+  requestSahayak: (on: boolean) => void;
+  sahayakConsentOpen: boolean;
+  acceptSahayakConsent: () => void;
+  declineSahayakConsent: () => void;
 }
 
 const DemoParticipantContext = createContext<DemoParticipantValue | null>(null);
@@ -84,10 +87,18 @@ export function DemoParticipantProvider({ children }: { children: ReactNode }) {
     welcomeOpen,
     closeWelcome: () => setWelcomeOpen(false),
     sahayakOn,
-    setSahayakOn,
+    requestSahayak: (on) => { if (on) setConsentOpen(true); else setSahayakOn(false); },
+    sahayakConsentOpen: consentOpen,
+    acceptSahayakConsent: () => { setSahayakOn(true); setConsentOpen(false); },
+    declineSahayakConsent: () => setConsentOpen(false),
   };
 
-  return <DemoParticipantContext.Provider value={value}>{children}</DemoParticipantContext.Provider>;
+  return (
+    <DemoParticipantContext.Provider value={value}>
+      {children}
+      <SahayakConsentDialog open={consentOpen} onAccept={() => { setSahayakOn(true); setConsentOpen(false); }} onDecline={() => setConsentOpen(false)} />
+    </DemoParticipantContext.Provider>
+  );
 }
 
 export function useDemoParticipant() {
