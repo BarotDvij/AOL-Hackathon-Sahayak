@@ -29,7 +29,7 @@ export function draftMessage(p: Participant, stage: StageId, step: NextStep, cha
     invite = `If it ever appeals, we'd love your help to ${step.title.charAt(0).toLowerCase()}${step.title.slice(1)}. Only if it feels right.`;
   } else {
     const when = step.startDate ? ` on ${formatLong(step.startDate)}` : "";
-    invite = `There's a ${step.title}${when} if you'd like to join. No pressure at all.${step.link ? ` Here's the link if it suits: ${step.link}` : ""}`;
+    invite = `There's ${/^[aeiou]/i.test(step.title) ? "an" : "a"} ${step.title}${when} if you'd like to join. No pressure at all.${step.link ? ` Here's the link if it suits: ${step.link}` : ""}`;
   }
   const body = `${OPENERS[stage]} ${invite}`.trim();
   if (channel === "email") {
