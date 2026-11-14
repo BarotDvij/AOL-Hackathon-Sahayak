@@ -48,7 +48,7 @@ export const getMyJourney = createServerFn({ method: "GET" })
       practice,
       goals: (goalsResult.data ?? []).map((g) => ({ id: g.id, period: g.period, text: g.text, createdAt: g.created_at })),
       messages: (messagesResult.data ?? []).map((m) => ({ id: m.id, coordinatorName: m.coordinator_name, text: m.text, sentAt: m.sent_at, reply: m.reply })),
-      upcoming: participantEvents(account.participant_id, getRequestUrl().origin, 20, catalog, { prefersOnline: answers.support === "online" }),
+      upcoming: participantEvents(account.participant_id, getRequestUrl().origin, 20, catalog, { prefersOnline: prefersOnline(answers) }),
       interests: (interestsResult.data ?? []).map((i) => i.event_id),
       milestones: milestones(bundle.participant, bundle.history, logs),
       timeline,
@@ -110,7 +110,7 @@ export const markMyInterest = createServerFn({ method: "POST" })
     if (onboarding.error) throw new Error("Your preferences could not be loaded.");
     const answers = normalizeOnboardingAnswers(onboarding.data?.answers ?? {});
     const catalog = buildCatalog(programCatalog.programs, programCatalog.prerequisites);
-    if (!participantEvents(account.participant_id, "https://events.invalid", 50, catalog, { prefersOnline: answers.support === "online" }).some((e) => e.id === data.eventId)) throw new Error("That event is not in your upcoming list.");
+    if (!participantEvents(account.participant_id, "https://events.invalid", 50, catalog, { prefersOnline: prefersOnline(answers) }).some((e) => e.id === data.eventId)) throw new Error("That event is not in your upcoming list.");
     const { error } = await context.supabase.from("participant_interests").upsert({ user_id: context.userId, event_id: data.eventId }, { onConflict: "user_id,event_id" });
     if (error) throw new Error("Your interest could not be saved.");
     return { ok: true };

@@ -40,7 +40,7 @@ function useDemoData(
     if (!me) return null;
     const history = { ...me.history, contacts: [] };
     const rows = me.practice.map((entry) => ({ id: `${entry.participantId}-${entry.date}`, practiced_on: entry.date, minutes: entry.minutes }));
-    const upcoming = participantEvents(TEMP_PARTICIPANT_ID, "https://demo.invalid", 20, catalogList, { prefersOnline: answers.support === "online" }).map((event) => ({
+    const upcoming = participantEvents(TEMP_PARTICIPANT_ID, "https://demo.invalid", 20, catalogList, { prefersOnline: prefersOnline(answers) }).map((event) => ({
       ...event,
       calendarUrl: event.calendarUrl ? new URL(event.calendarUrl).pathname : null,
     }));

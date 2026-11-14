@@ -19,6 +19,6 @@ export default defineTool({
     if (onboarding.error) throw new Error("Onboarding answers could not be loaded.");
     const answers = normalizeOnboardingAnswers(onboarding.data?.answers ?? {});
     const catalog = buildCatalog(programCatalog.programs, programCatalog.prerequisites);
-    return { events: participantEvents(participantId, getRequestUrl().origin, 20, catalog, { prefersOnline: answers.support === "online" }) };
+    return { events: participantEvents(participantId, getRequestUrl().origin, 20, catalog, { prefersOnline: prefersOnline(answers) }) };
   }),
 });
