@@ -32,16 +32,31 @@ export function pickChannel(p: Participant, h: History): Channel {
   return p.phone ? "whatsapp" : "email";
 }
 
+/** Honest floor: with one course, nothing attended and no contact yet, a confident recommendation would be a guess. */
+export const LOW_DATA_WHY = "Not enough info yet — a gentle check-in is the safest next step.";
+export function hasEnoughInfo(h: History) {
+  return h.courses.length > 1 || h.events.length > 0 || h.contacts.length > 0;
+}
+
 export function buildSuggestion(p: Participant, h: History, stage: StageId, why: string, catalog: NextStep[], now = today()): Suggestion | null {
   if (stage === "paused") return null;
+  const channel = pickChannel(p, h);
+  if (!hasEnoughInfo(h)) {
+    const checkIn = catalog.find((s) => s.id === "gentle-checkin") ?? catalog.find((s) => s.type === "check-in");
+    if (!checkIn) return null;
+    return {
+      id: `sug-${p.id}`, participantId: p.id, nextStepId: checkIn.id, alternateNextStepId: null,
+      channel, why: LOW_DATA_WHY, draftMessage: draftMessage(p, stage, checkIn, channel), editedMessage: null,
+      status: "pending", skipReason: null, reviewedBy: null, reviewedAt: null, lowData: true,
+    };
+  }
   const ranked = eligibleSteps(p, h, stage, catalog, now)
     .map((s) => ({ s, score: scoreStep(s, p, h, stage, now) }))
     .sort((a, b) => b.score - a.score || (a.s.startDate ?? "9").localeCompare(b.s.startDate ?? "9"));
   if (!ranked[0]) return null;
-  const channel = pickChannel(p, h);
   return {
     id: `sug-${p.id}`, participantId: p.id, nextStepId: ranked[0].s.id, alternateNextStepId: ranked[1]?.s.id ?? null,
     channel, why, draftMessage: draftMessage(p, stage, ranked[0].s, channel), editedMessage: null,
-    status: "pending", skipReason: null, reviewedBy: null, reviewedAt: null,
+    status: "pending", skipReason: null, reviewedBy: null, reviewedAt: null, lowData: false,
   };
 }
