@@ -109,6 +109,7 @@ const weekTrend = (delta: number) => (delta === 0 ? "no change from last week" :
 
 function initial(programCatalog: ProgramCatalog) {
   const data = buildSampleData();
+  for (const id of ["p23", "p24", "p28"]) { const p = data.participants.find(p=>p.id===id); if (p) data.events.push({participantId:id,eventType:"follow-up",date:isoDaysFrom(id === "p23" ? -2 : id === "p24" ? -4 : -6),city:p.city,online:false}); }
   const catalogList = buildCatalog(programCatalog.programs, programCatalog.prerequisites);
   const suggestions: Suggestion[] = [];
   const pickerIds: string[] = [];
@@ -136,7 +137,7 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
   const [assignments, setAssignments] = useState<Record<string,string>>(() => Object.fromEntries(data.participants.filter((p,i) => i < 10).map((p,i) => [p.id, VOLUNTEERS[i % 5]?.id ?? "v1"])));
   const [activeVolunteer, setActiveVolunteer] = useState("v1");
   const [myFollowUps, setMyFollowUps] = useState(false);
-  const [sentMessages, setSentMessages] = useState<SentRecord[]>(() => seedOutcomes(data.participants, id => historyFor(id, data.courses, data.events, data.contacts), id => { const p = data.participants.find(x => x.id === id); return p ? computeStage(p, historyFor(id, data.courses, data.events, data.contacts)).stage : "new"; }));
+  const [sentMessages, setSentMessages] = useState<SentRecord[]>(() => seedOutcomes([...data.participants.filter(p=>["p23","p24","p28"].includes(p.id)), ...data.participants.filter(p=>!["p23","p24","p28"].includes(p.id))], id => historyFor(id, data.courses, data.events, data.contacts), id => { const p = data.participants.find(x => x.id === id); return id === "p28" ? "dormant" : ["p23","p24"].includes(id) ? "quiet" : p ? computeStage(p, historyFor(id, data.courses, data.events, data.contacts)).stage : "new"; }));
   const [suggestions, setSuggestions] = useState(s0);
   const [contacts, setContacts] = useState(data.contacts);
   const [practice, setPractice] = useState(seed.practice);
@@ -224,6 +225,8 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
     const p = participants.find((x) => x.id === participantId);
     if (!p) return;
     setContacts((c) => [...c, { participantId, channel: p.preferredChannel ?? "email", direction: "in", date: isoDaysFrom(0), outcome: kind === "not now" ? "declined" : "replied", ...(nextStepId ? { nextStepId } : {}) }]);
+    const latest = [...sentMessages].filter(m=>m.participantId===participantId).sort((a,b)=>b.sentAt.localeCompare(a.sentAt))[0];
+    if (latest) setSentMessages(all=>all.map(m=>m.id===latest.id?{...m,reply:kind=== "not now"?"not now":"join"}:m));
     setReplies((r) => [{ id: `r${Date.now()}`, participantId, kind, about, at: new Date().toISOString() }, ...r]);
   };
 
