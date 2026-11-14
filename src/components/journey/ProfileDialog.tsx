@@ -50,7 +50,7 @@ export function ProfileDialog({ view, onOpenChange }: { view: ParticipantView | 
             <p className="text-sm font-semibold text-primary-strong">Next step: {step.shortTitle}{step.startDate ? ` · ${formatShort(step.startDate)}` : ""}</p>
             <p className="mt-1 text-sm text-muted-foreground">{s.why}</p>
             <Button asChild size="sm" className="mt-3">
-              <Link to="/review" hash={s.id} onClick={() => onOpenChange(false)}>Open in review queue</Link>
+              <span>Waiting for review</span>
             </Button>
           </section>
         ) : (

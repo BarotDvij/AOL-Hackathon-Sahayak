@@ -10,7 +10,6 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
-import { AppShell } from "@/components/journey/AppShell";
 import { JourneyProvider } from "@/lib/journey/store";
 import { Toaster } from "@/components/ui/sonner";
 import appCss from "../styles.css?url";
@@ -129,9 +128,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <JourneyProvider>
-        <AppShell>
           <Outlet />
-        </AppShell>
         <Toaster position="bottom-right" />
       </JourneyProvider>
     </QueryClientProvider>
