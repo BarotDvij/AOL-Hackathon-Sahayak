@@ -43,7 +43,7 @@ function ParticipantSettings() {
         )}
       </ParticipantCard>
       {sahayakOn && <ConnectMuseCard />}
-      <ParticipantCard><h2 className="font-heading text-base font-semibold text-primary">A little about you</h2><p className="mb-5 mt-1 text-sm text-muted-foreground">Six gentle questions. Skip any of them, review your answers, then confirm before saving.</p><OnboardingForm initialAnswers={data.answers} onSave={saveAnswers} /></ParticipantCard>
+      <ParticipantCard><h2 className="font-heading text-base font-semibold text-primary">A little about you</h2><p className="mb-5 mt-1 text-sm text-muted-foreground">Where you are, your practice and your goals. Skip any of them, review your answers, then confirm before saving.</p><OnboardingForm initialAnswers={data.answers} onSave={saveAnswers} /></ParticipantCard>
       <ParticipantCard><h2 className="font-heading text-base font-semibold text-primary">Your current rhythm</h2><p className="mt-2 text-sm text-primary">{data.schedule.days.join(", ")} · {data.schedule.time} · {data.schedule.minutes} minutes</p>{data.schedule.reminders.length > 0 && <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-muted-foreground">{data.schedule.reminders.map((reminder) => <li key={reminder}>{reminder}</li>)}</ul>}<p className="mt-2 text-sm text-muted-foreground">{data.schedule.note} {data.schedule.safetyNote}</p></ParticipantCard>
     </div>
   );

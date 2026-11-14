@@ -4,49 +4,14 @@ import { comingUpFor, friendlyStage, milestones, participantStage, practiceStrea
 import { buildSampleData } from "@/lib/journey/sample-data";
 import { computeStage, explainReasons } from "@/lib/journey/stages";
 import { buildSuggestion, eligibleSteps, hasEnoughInfo, pickChannel, scoreStep } from "@/lib/journey/suggestions";
-import { canonicalCourseName, PART_1, SAHAJ, type Program } from "@/lib/journey/programs";
+import { canonicalCourseName, PART_1, PART_2, SAHAJ, type Program } from "@/lib/journey/programs";
 import type { History, NextStep, Participant, PracticeLog, StageId } from "@/lib/journey/types";
 
 /** The single entry point for journey rules used by screens, server functions and MCP tools. */
 export { computeStage, explainReasons, buildSuggestion, eligibleSteps, hasEnoughInfo, pickChannel, scoreStep, comingUpFor, friendlyStage, milestones, participantStage, practiceStreaks, weekDots };
 
-export const ONBOARDING_INSTRUCTIONS = "Ask one question at a time. Every question is skippable. Keep a warm, unhurried tone. Read the answers back and ask for confirmation before saving.";
-
-export const ONBOARDING_QUESTIONS = [
-  { id: "practice_rhythm", text: "How is your home practice feeling right now?", options: [
-    { value: "daily", label: "Most days" }, { value: "weekly", label: "A few times a week" }, { value: "occasionally", label: "Occasionally" }, { value: "paused", label: "Not practising right now" },
-  ] },
-  { id: "practice_days", text: "Which days usually suit you best?", options: [
-    { value: "weekdays", label: "Weekdays" }, { value: "weekends", label: "Weekends" }, { value: "both", label: "Both weekdays and weekends" }, { value: "unsure", label: "I'm not sure yet" },
-  ] },
-  { id: "practice_time", text: "What time of day feels most natural?", options: [
-    { value: "morning", label: "Morning" }, { value: "afternoon", label: "Afternoon" }, { value: "evening", label: "Evening" }, { value: "flexible", label: "It changes from day to day" },
-  ] },
-  { id: "session_minutes", text: "How much time would you like to set aside?", options: [
-    { value: "10", label: "10 minutes" }, { value: "20", label: "20 minutes" }, { value: "30", label: "30 minutes" }, { value: "45", label: "45 minutes or more" },
-  ] },
-  { id: "focus", text: "What would you most like to nurture?", options: [
-    { value: "meditation", label: "Meditation" }, { value: "yoga", label: "Yoga" }, { value: "community", label: "Community connection" }, { value: "seva", label: "Seva" },
-  ] },
-  { id: "support", text: "What kind of support would feel helpful?", options: [
-    { value: "reminders", label: "Gentle practice reminders" }, { value: "local", label: "Local follow-up sessions" }, { value: "online", label: "Online sessions" }, { value: "none", label: "No reminders for now" },
-  ] },
-] as const;
-
-export type OnboardingQuestionId = typeof ONBOARDING_QUESTIONS[number]["id"];
-export type OnboardingAnswers = Partial<Record<OnboardingQuestionId, string>>;
-
-/** Drops unknown questions and options instead of allowing arbitrary data into a participant record. */
-export function normalizeOnboardingAnswers(input: unknown): OnboardingAnswers {
-  if (!input || typeof input !== "object" || Array.isArray(input)) return {};
-  const raw = input as Record<string, unknown>;
-  const clean: OnboardingAnswers = {};
-  for (const q of ONBOARDING_QUESTIONS) {
-    const value = raw[q.id];
-    if (typeof value === "string" && q.options.some((o) => o.value === value)) clean[q.id] = value;
-  }
-  return clean;
-}
+export * from "./intake";
+import { prefersOnline, type CourseLevel, type OnboardingAnswers } from "./intake";
 
 export interface ParticipantBundle {
   participant: Participant;
@@ -101,24 +66,21 @@ export function practiceReminders(history: Pick<History, "courses"> | undefined,
 
 /** A realistic, gentle schedule derived only from saved answers and the shared stage. */
 export function recommendedSchedule(answers: OnboardingAnswers, stage: StageId, history?: Pick<History, "courses">, programs: Program[] = []) {
-  const rhythm = answers.practice_rhythm ?? (stage === "new" ? "weekly" : "occasionally");
+  const following = answers.practice_following;
+  const rhythm = following === "fully" || following === "mostly" ? "daily" : following === "sometimes" ? "weekly" : following === "not_now" ? "paused" : stage === "new" ? "weekly" : "occasionally";
   let days = rhythm === "daily" ? [...WEEKDAYS, ...WEEKENDS] : rhythm === "weekly" ? ["Tuesday", "Thursday", "Saturday"] : ["Saturday"];
-  if (answers.practice_days === "weekdays") days = days.filter((d) => WEEKDAYS.includes(d));
-  if (answers.practice_days === "weekends") days = days.filter((d) => WEEKENDS.includes(d));
-  if (answers.practice_days === "weekdays" && !days.length) days = ["Wednesday"];
-  if (answers.practice_days === "weekends" && !days.length) days = ["Saturday"];
   if (!days.length) days = ["Saturday"];
 
   const time = answers.practice_time === "afternoon" ? "3:00 PM" : answers.practice_time === "evening" ? "7:00 PM" : answers.practice_time === "flexible" ? "Whenever your day allows" : "7:00 AM";
-  const requested = Number(answers.session_minutes ?? "20");
-  const minutes = stage === "quiet" || stage === "dormant" || answers.practice_rhythm === "paused" ? Math.min(requested, 10) : requested;
+  const requested = 20;
+  const minutes = stage === "quiet" || stage === "dormant" || rhythm === "paused" ? Math.min(requested, 10) : requested;
   return {
     days,
     time,
     minutes,
     reminders: practiceReminders(history, programs),
     safetyNote: "Reminders and encouragement only. Techniques are taught by certified teachers.",
-    note: answers.support === "none" ? "A suggestion to keep for yourself — no reminders." : "Start gently. You can change this rhythm whenever you like.",
+    note: "Start gently. You can change this rhythm whenever you like.",
   };
 }
 
@@ -152,4 +114,14 @@ export function practiceDto(rows: { id: string; practiced_on: string; minutes: n
     week: weekDots(logs),
     streaks: practiceStreaks(logs),
   };
+}
+
+/** Best guess of course level from records, used when the person skips that question. */
+export function levelFromHistory(history: Pick<History, "courses"> | undefined): CourseLevel {
+  const done = new Set((history?.courses ?? []).map((c) => canonicalCourseName(c.courseName)));
+  if ([...done].some((n) => /Dive Deep|Sanyam|Blessings|Intensive|Shakti|DSN/i.test(n))) return "advanced";
+  if (done.has(PART_2)) return "part2";
+  if (done.has(SAHAJ)) return "sahaj";
+  if (done.has(PART_1)) return "part1";
+  return "none";
 }

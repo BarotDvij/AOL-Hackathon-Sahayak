@@ -1,6 +1,6 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { getRequestUrl } from "@tanstack/react-start/server";
-import { normalizeOnboardingAnswers, participantEvents } from "@/lib/sahayak/core";
+import { normalizeOnboardingAnswers, participantEvents, prefersOnline } from "@/lib/sahayak/core";
 import { withParticipant } from "../participant";
 import { fetchProgramCatalog } from "@/lib/program-catalog";
 import { buildCatalog } from "@/lib/journey/catalog";
@@ -19,6 +19,6 @@ export default defineTool({
     if (onboarding.error) throw new Error("Onboarding answers could not be loaded.");
     const answers = normalizeOnboardingAnswers(onboarding.data?.answers ?? {});
     const catalog = buildCatalog(programCatalog.programs, programCatalog.prerequisites);
-    return { events: participantEvents(participantId, getRequestUrl().origin, 20, catalog, { prefersOnline: answers.support === "online" }) };
+    return { events: participantEvents(participantId, getRequestUrl().origin, 20, catalog, { prefersOnline: prefersOnline(answers) }) };
   }),
 });

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { CalendarPlus, Check, Clock3, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useDemoParticipant } from "@/components/participant/DemoParticipantContext";
@@ -21,6 +21,7 @@ export const Route = createFileRoute("/me/")({
 
 function ParticipantHome() {
   const { data, logToday, showInterest, saveAnswers, welcomeOpen, closeWelcome } = useDemoParticipant();
+  const navigate = useNavigate();
   const today = new Date().toISOString().slice(0, 10);
   const practisedToday = data.practice.entries.some((entry) => entry.date === today);
 
@@ -30,9 +31,9 @@ function ParticipantHome() {
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="font-display text-2xl font-normal text-primary">Welcome, {data.participant.firstName}</DialogTitle>
-            <DialogDescription>Six gentle questions help us suggest a rhythm that fits you. Skip any of them — you can change your answers anytime in Settings.</DialogDescription>
+            <DialogDescription>A few gentle questions about where you are, your practice and your goals. We'll then show your path and a weekly plan. Skip any of them — you can change your answers anytime in Settings.</DialogDescription>
           </DialogHeader>
-          <OnboardingForm initialAnswers={data.answers} onSave={(answers) => { saveAnswers(answers); closeWelcome(); toast.success("Thank you — your answers are saved."); }} />
+          <OnboardingForm initialAnswers={data.answers} onSave={(answers) => { saveAnswers(answers); closeWelcome(); toast.success("Thank you — here is your journey and weekly plan."); navigate({ to: "/me/journey" }); }} />
           <Button variant="ghost" className="w-full" onClick={closeWelcome}>Maybe later</Button>
         </DialogContent>
       </Dialog>

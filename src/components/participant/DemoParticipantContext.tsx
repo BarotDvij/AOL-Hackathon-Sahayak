@@ -4,15 +4,15 @@ import { TEMP_PARTICIPANT_ID } from "@/lib/journey/demo-seed";
 import type { Program } from "@/lib/journey/programs";
 import type { NextStep } from "@/lib/journey/types";
 import { useJourney } from "@/lib/journey/store";
-import { friendlyStageFor, milestones, normalizeOnboardingAnswers, participantEvents, practiceDto, recommendedSchedule, type OnboardingAnswers } from "@/lib/sahayak/core";
+import { friendlyStageFor, journeyPosition, levelFromHistory, prefersOnline, weeklyPlan, JOURNEY_LADDER, milestones, normalizeOnboardingAnswers, participantEvents, practiceDto, recommendedSchedule, type OnboardingAnswers } from "@/lib/sahayak/core";
 
-interface DemoGoal { id: string; period: "quarter" | "year"; text: string; createdAt: string }
+interface DemoGoal { id: string; period: "month" | "quarter" | "year"; text: string; createdAt: string }
 
 interface DemoParticipantValue {
   data: NonNullable<ReturnType<typeof useDemoData>>;
   logToday: () => void;
   showInterest: (eventId: string) => void;
-  saveGoal: (period: "quarter" | "year", text: string) => void;
+  saveGoal: (period: "month" | "quarter" | "year", text: string) => void;
   respond: (messageId: string, reply: "join" | "not now") => void;
   saveAnswers: (answers: OnboardingAnswers) => void;
   welcomeOpen: boolean;
@@ -40,7 +40,7 @@ function useDemoData(
     if (!me) return null;
     const history = { ...me.history, contacts: [] };
     const rows = me.practice.map((entry) => ({ id: `${entry.participantId}-${entry.date}`, practiced_on: entry.date, minutes: entry.minutes }));
-    const upcoming = participantEvents(TEMP_PARTICIPANT_ID, "https://demo.invalid", 20, catalogList, { prefersOnline: answers.support === "online" }).map((event) => ({
+    const upcoming = participantEvents(TEMP_PARTICIPANT_ID, "https://demo.invalid", 20, catalogList, { prefersOnline: prefersOnline(answers) }).map((event) => ({
       ...event,
       calendarUrl: event.calendarUrl ? new URL(event.calendarUrl).pathname : null,
     }));
@@ -48,6 +48,9 @@ function useDemoData(
       participant: { id: me.participant.id, firstName: me.participant.firstName, lastName: me.participant.lastName, city: me.participant.city },
       stage: friendlyStageFor({ participant: me.participant, history, stage: me.stage }),
       answers,
+      position: journeyPosition(answers, levelFromHistory(history)),
+      plan: weeklyPlan(answers, me.stage, levelFromHistory(history)),
+      guideline: JOURNEY_LADDER[journeyPosition(answers, levelFromHistory(history)).current]?.practice ?? "",
       schedule: recommendedSchedule(answers, me.stage, history, programs),
       practice: practiceDto(rows, me.participant.id),
       goals,
