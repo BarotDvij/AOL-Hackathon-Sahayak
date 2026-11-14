@@ -12,21 +12,21 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Design system definition.
+ * Design system definition — the hackathon palette.
  *
- * The design lives in this file: oklch color tokens on the shadcn variables
- * (--background, --foreground, --primary, --secondary, --muted, --accent, ...) plus
- * new tokens as needed, font tokens, and custom styles and animations.
+ * navy #2F3350   primary text, sidebar active state, primary buttons
+ * purple #8147AF links, active filters, focus rings, selected states
+ * sun orange     important alerts, the "Going quiet" stage, priority badges
+ * sun yellow     small positive moments ("+3 this week", "All caught up")
+ * brand gradient lavender -> peach -> cream, only in the dashboard banner and the sidebar logo area
+ *
+ * Type: Lora for page titles and the greeting, Poppins semibold for card titles,
+ * numbers and buttons, Inter 14px for body, table rows and labels.
  *
  * The @theme inline block maps CSS custom properties to Tailwind utility
  * classes (e.g. --color-primary -> bg-primary, text-primary).
  *
- * The :root and .dark blocks define the actual color values using oklch.
  * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
  */
 
 @theme inline {
@@ -37,6 +37,8 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+  /* buttons are 8px, cards 12px */
+  --radius-btn: 8px;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -71,8 +73,13 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-primary-strong: var(--primary-strong);
-  --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Fraunces", Georgia, serif;
+  --color-purple: var(--purple);
+  --color-sun-orange: var(--sun-orange);
+  --color-sun-orange-deep: var(--sun-orange-deep);
+  --color-sun-yellow: var(--sun-yellow);
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Lora", Georgia, "Times New Roman", serif;
+  --font-heading: "Poppins", "Inter", ui-sans-serif, system-ui, sans-serif;
   --shadow-soft: var(--shadow-soft);
   --color-stage-paused: var(--stage-paused);
   --color-stage-paused-foreground: var(--stage-paused-foreground);
@@ -91,55 +98,70 @@
 }
 
 :root {
+  /* 12px card corners, 8px button corners, 240px sidebar, 8px spacing multiples */
   --radius: 0.75rem;
-  --background: oklch(0.977 0.008 80);
-  --foreground: oklch(0.275 0 0);
-  --card: oklch(0.995 0.003 80);
-  --card-foreground: oklch(0.275 0 0);
-  --popover: oklch(0.995 0.003 80);
-  --popover-foreground: oklch(0.275 0 0);
-  --primary: oklch(0.70 0.155 58);
-  --primary-foreground: oklch(0.24 0.04 55);
-  --primary-strong: oklch(0.56 0.14 55);
-  --secondary: oklch(0.96 0.03 70);
-  --secondary-foreground: oklch(0.42 0.1 55);
-  --muted: oklch(0.95 0.01 80);
-  --muted-foreground: oklch(0.52 0 0);
-  --accent: oklch(0.96 0.03 70);
-  --accent-foreground: oklch(0.42 0.1 55);
-  --destructive: oklch(0.577 0.2 27);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.92 0.012 80);
-  --input: oklch(0.92 0.012 80);
-  --ring: oklch(0.70 0.155 58);
-  --shadow-soft: 0 1px 2px oklch(0.4 0.03 60 / 6%), 0 4px 14px -6px oklch(0.4 0.03 60 / 10%);
-  --stage-paused: oklch(0.93 0.003 80);
-  --stage-paused-foreground: oklch(0.45 0 0);
-  --stage-new: oklch(0.94 0.05 75);
-  --stage-new-foreground: oklch(0.45 0.11 60);
-  --stage-building: oklch(0.94 0.045 140);
-  --stage-building-foreground: oklch(0.42 0.08 145);
-  --stage-active: oklch(0.93 0.05 25);
-  --stage-active-foreground: oklch(0.47 0.12 30);
-  --stage-serving: oklch(0.93 0.04 330);
-  --stage-serving-foreground: oklch(0.45 0.1 340);
-  --stage-quiet: oklch(0.94 0.07 90);
-  --stage-quiet-foreground: oklch(0.47 0.1 80);
-  --stage-dormant: oklch(0.93 0.02 240);
-  --stage-dormant-foreground: oklch(0.45 0.04 245);
-  --chart-1: oklch(0.70 0.155 58);
-  --chart-2: oklch(0.6 0.1 145);
-  --chart-3: oklch(0.55 0.05 240);
-  --chart-4: oklch(0.75 0.12 85);
-  --chart-5: oklch(0.6 0.12 30);
-  --sidebar: oklch(0.965 0.012 78);
-  --sidebar-foreground: oklch(0.275 0 0);
-  --sidebar-primary: oklch(0.70 0.155 58);
-  --sidebar-primary-foreground: oklch(0.24 0.04 55);
-  --sidebar-accent: oklch(0.94 0.035 70);
-  --sidebar-accent-foreground: oklch(0.42 0.1 55);
-  --sidebar-border: oklch(0.92 0.012 80);
-  --sidebar-ring: oklch(0.70 0.155 58);
+  --sidebar-width: 240px;
+  /* warm off-white page, navy text, white cards */
+  --background: oklch(0.9858 0.0045 78.3);
+  --foreground: oklch(0.3312 0.0515 277.19);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.3312 0.0515 277.19);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.3312 0.0515 277.19);
+  /* navy is the only colour used for buttons and the active nav item */
+  --primary: oklch(0.3312 0.0515 277.19);
+  --primary-foreground: oklch(0.99 0 0);
+  --primary-strong: oklch(0.2567 0.0435 277.21);
+  --secondary: oklch(0.9536 0.0147 312.24);
+  --secondary-foreground: oklch(0.3312 0.0515 277.19);
+  --muted: oklch(0.9599 0.0079 73.74);
+  /* muted navy for every secondary line */
+  --muted-foreground: oklch(0.5466 0.0361 277.38);
+  /* hovers and selected fills: the soft lavender end of the brand gradient */
+  --accent: oklch(0.9536 0.0147 312.24);
+  --accent-foreground: oklch(0.3312 0.0515 277.19);
+  --destructive: oklch(0.503 0.1394 9.77);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.9327 0.013 321.9);
+  --input: oklch(0.8957 0.0177 320.06);
+  /* purple is the focus ring */
+  --ring: oklch(0.5157 0.1635 307.34);
+  /* the two sun colours: orange for alerts, yellow for small positive moments */
+  --purple: oklch(0.5157 0.1635 307.34);
+  --sun-orange: oklch(0.7227 0.1567 61.38);
+  --sun-orange-deep: oklch(0.4806 0.1121 56.32);
+  --sun-yellow: oklch(0.8411 0.1669 90.66);
+  /* lavender -> peach -> cream, soft diagonal; banner and sidebar logo area only */
+  --brand-gradient: linear-gradient(115deg, oklch(0.8996 0.0291 320.58) 0%, oklch(0.9077 0.0352 54.78) 52%, oklch(0.9349 0.0479 81.5) 100%);
+  --shadow-soft: 0 1px 2px oklch(0.3312 0.0515 277.19 / 4%), 0 4px 14px oklch(0.3312 0.0515 277.19 / 4%);
+  /* one soft background + darker text from the same colour per stage, all AA-checked */
+  --stage-new: oklch(0.9564 0.0505 94.96);
+  --stage-new-foreground: oklch(0.455 0.086 87.35);
+  --stage-building: oklch(0.9337 0.0315 53.48);
+  --stage-building-foreground: oklch(0.4334 0.096 48.28);
+  --stage-active: oklch(0.9159 0.0355 311.41);
+  --stage-active-foreground: oklch(0.398 0.1449 306.14);
+  --stage-serving: oklch(0.9227 0.0253 271.14);
+  --stage-serving-foreground: oklch(0.3866 0.1018 269.72);
+  --stage-quiet: oklch(0.93 0.0421 66.12);
+  --stage-quiet-foreground: oklch(0.4375 0.1005 57.36);
+  --stage-dormant: oklch(0.921 0.0305 5.05);
+  --stage-dormant-foreground: oklch(0.4116 0.1095 9.15);
+  --stage-paused: oklch(0.953 0.004 286.32);
+  --stage-paused-foreground: oklch(0.4306 0.025 276.38);
+  --chart-1: oklch(0.3312 0.0515 277.19);
+  --chart-2: oklch(0.5157 0.1635 307.34);
+  --chart-3: oklch(0.7227 0.1567 61.38);
+  --chart-4: oklch(0.8411 0.1669 90.66);
+  --chart-5: oklch(0.503 0.1394 9.77);
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.3312 0.0515 277.19);
+  --sidebar-primary: oklch(0.3312 0.0515 277.19);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.9536 0.0147 312.24);
+  --sidebar-accent-foreground: oklch(0.3312 0.0515 277.19);
+  --sidebar-border: oklch(0.9327 0.013 321.9);
+  --sidebar-ring: oklch(0.5157 0.1635 307.34);
 }
 
 @layer base {
@@ -151,17 +173,23 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
-    font-size: 16px;
-    line-height: 1.6;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
   }
   :target {
     scroll-margin-top: 1.5rem;
   }
 }
 
+/* The brand gradient, used only behind the dashboard greeting and the sidebar logo. */
+@utility brand-gradient {
+  background-image: var(--brand-gradient);
+}
+
 @utility review-target {
   &:target {
-    outline: 2px solid var(--primary);
+    outline: 2px solid var(--purple);
     outline-offset: 3px;
   }
 }

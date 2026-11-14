@@ -49,8 +49,9 @@ function ReviewPage() {
   if (!s || !v || !step) {
     return (
       <AppShell>
-        <div className="mx-auto max-w-md rounded-2xl border border-border bg-card p-8 text-center shadow-soft">
-          <p className="font-display text-2xl font-semibold">All caught up!</p>
+        <div className="mx-auto max-w-md rounded-lg border border-border bg-card p-8 text-center shadow-soft">
+          <span className="mx-auto grid size-10 place-items-center rounded-full bg-sun-yellow"><Check className="size-5 text-primary" aria-hidden /></span>
+          <h1 className="mt-3 font-display text-[32px] font-normal text-primary">All caught up!</h1>
           <p className="mt-2 text-sm text-muted-foreground">Every drafted message has been reviewed. New suggestions appear here as people drift.</p>
           <Button asChild className="mt-5">
             <Link to="/">Back to dashboard</Link>
@@ -63,7 +64,7 @@ function ReviewPage() {
   return (
     <AppShell>
       <header className="mb-5">
-        <h1 className="font-display text-2xl font-semibold tracking-tight md:text-3xl">Review queue</h1>
+        <h1 className="font-display text-[32px] font-normal text-primary">Review queue</h1>
         <p className="mt-1 text-sm text-muted-foreground">Nothing is ever sent without you approving it.</p>
       </header>
 
@@ -74,18 +75,18 @@ function ReviewPage() {
         </div>
       </div>
 
-      <article className="rounded-2xl border border-border bg-card p-5 shadow-soft">
+      <article className="rounded-lg border border-border bg-card p-5 shadow-soft">
         <div className="flex flex-wrap items-center gap-2">
-          <h2 className="font-display text-xl font-semibold">{v.participant.firstName} {v.participant.lastName}</h2>
+          <h2 className="font-display text-xl font-normal text-primary">{v.participant.firstName} {v.participant.lastName}</h2>
           <StageBadge stage={v.stage} />
         </div>
         <p className="mt-0.5 text-xs text-muted-foreground">{v.participant.city}</p>
 
-        <div className="mt-4 rounded-xl bg-secondary p-4">
-          <p className="text-sm font-semibold text-primary-strong">Suggested next step: {step.shortTitle}{step.startDate ? ` · ${formatShort(step.startDate)}` : ""}</p>
+        <div className="mt-4 rounded-lg bg-secondary p-4">
+          <p className="font-heading text-sm font-semibold text-primary">Suggested next step: {step.shortTitle}{step.startDate ? ` · ${formatShort(step.startDate)}` : ""}</p>
           <p className="mt-1 text-sm text-muted-foreground">{s.why}</p>
           {alt && (
-            <button onClick={() => { useAlternate(s.id); done(); }} className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary-strong underline-offset-4 hover:underline">
+            <button onClick={() => { useAlternate(s.id); done(); }} className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-purple underline-offset-4 hover:underline">
               <Undo2 className="size-3.5" aria-hidden />Try {alt.shortTitle} instead
             </button>
           )}
@@ -111,7 +112,7 @@ function ReviewPage() {
             </div>
           </div>
         ) : mode === "skip" ? (
-          <div className="mt-3 rounded-xl border border-border p-4">
+          <div className="mt-3 rounded-lg border border-border p-4">
             <p className="text-sm font-medium">Why are you skipping this one?</p>
             <p className="text-xs text-muted-foreground">Optional — it helps us suggest better next time.</p>
             <div className="mt-3 flex flex-wrap gap-2">
@@ -120,7 +121,7 @@ function ReviewPage() {
                   key={r}
                   onClick={() => setReason(r)}
                   aria-pressed={reason === r}
-                  className={cn("rounded-full border px-3 py-1.5 text-sm transition-colors", reason === r ? "border-primary bg-secondary font-medium text-primary-strong" : "border-border text-muted-foreground hover:text-foreground")}
+                  className={cn("rounded-full border px-3 py-1.5 text-sm transition-colors", reason === r ? "border-purple bg-secondary font-medium text-purple" : "border-border text-muted-foreground hover:text-foreground")}
                 >
                   {r}
                 </button>
@@ -136,11 +137,11 @@ function ReviewPage() {
           </div>
         ) : (
           <div className="mt-3">
-            <p className="whitespace-pre-wrap rounded-xl border border-border bg-background p-4 text-sm leading-relaxed">{text}</p>
+            <p className="whitespace-pre-wrap rounded-lg border border-border bg-background p-4 text-sm leading-relaxed">{text}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               <Button onClick={approveNow}><Check className="size-4" aria-hidden />Approve and send</Button>
               <Button variant="outline" onClick={() => { setDraft(text); setMode("edit"); }}><Pencil className="size-4" aria-hidden />Edit</Button>
-              <Button variant="ghost" onClick={() => setMode("skip")}>Skip for now</Button>
+              <Button variant="accent" onClick={() => setMode("skip")}>Skip for now</Button>
             </div>
           </div>
         )}

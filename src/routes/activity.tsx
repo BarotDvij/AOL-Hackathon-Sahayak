@@ -18,8 +18,8 @@ export const Route = createFileRoute("/activity")({
 });
 
 const KIND: Record<ActivityEntry["kind"], { label: string; Icon: typeof Check; className: string }> = {
-  approved: { label: "Approved", Icon: Check, className: "bg-secondary text-primary-strong" },
-  edited: { label: "Edited", Icon: Pencil, className: "bg-muted text-muted-foreground" },
+  approved: { label: "Approved", Icon: Check, className: "bg-sun-yellow text-primary" },
+  edited: { label: "Edited", Icon: Pencil, className: "bg-secondary text-primary" },
   skipped: { label: "Skipped", Icon: X, className: "bg-muted text-muted-foreground" },
 };
 
@@ -37,9 +37,9 @@ function ActivityPage() {
   if (activity.length === 0) {
     return (
       <AppShell>
-        <div className="mx-auto max-w-md rounded-2xl border border-border bg-card p-8 text-center shadow-soft">
+        <div className="mx-auto max-w-md rounded-lg border border-border bg-card p-8 text-center shadow-soft">
           <History className="mx-auto size-6 text-muted-foreground" aria-hidden />
-          <p className="mt-3 font-display text-xl font-semibold">Nothing reviewed yet</p>
+          <h1 className="mt-3 font-display text-[32px] font-normal text-primary">Nothing reviewed yet</h1>
           <p className="mt-2 text-sm text-muted-foreground">As soon as you approve, edit or skip a message, it shows up here with the time.</p>
           <Button asChild className="mt-5"><Link to="/review">Go to review queue</Link></Button>
         </div>
@@ -56,7 +56,7 @@ function ActivityPage() {
   return (
     <AppShell>
       <header className="mb-5">
-        <h1 className="font-display text-2xl font-semibold tracking-tight md:text-3xl">Activity</h1>
+        <h1 className="font-display text-[32px] font-normal text-primary">Activity</h1>
         <p className="mt-1 text-sm text-muted-foreground">What you approved, edited or skipped, and when.</p>
       </header>
       <div className="space-y-6">
@@ -67,7 +67,7 @@ function ActivityPage() {
               {entries.map((e) => {
                 const k = KIND[e.kind];
                 return (
-                  <li key={e.id} className="flex items-start gap-3 rounded-xl border border-border bg-card p-3.5 shadow-soft">
+                  <li key={e.id} className="flex items-start gap-3 rounded-lg border border-border bg-card p-3.5 shadow-soft">
                     <span className={`grid size-7 shrink-0 place-items-center rounded-full ${k.className}`}><k.Icon className="size-4" aria-hidden /></span>
                     <span className="min-w-0 flex-1">
                       <span className="block text-sm">{e.detail}</span>
