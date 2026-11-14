@@ -10,32 +10,27 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as ActivityRouteImport } from './routes/activity'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as InboxRouteImport } from './routes/inbox'
 import { Route as McpRouteImport } from './routes/mcp'
+import { Route as MeRouteRouteImport } from './routes/me/route'
 import { Route as ParticipantsRouteImport } from './routes/participants'
 import { Route as ReviewRouteImport } from './routes/review'
 import { Route as SahayakRouteImport } from './routes/sahayak'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StartRouteImport } from './routes/start'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
-import { Route as AuthenticatedMeRouteRouteImport } from './routes/_authenticated/me/route'
+import { Route as MeIndexRouteImport } from './routes/me/index'
+import { Route as MeJourneyRouteImport } from './routes/me/journey'
+import { Route as MeMessagesRouteImport } from './routes/me/messages'
+import { Route as MeSettingsRouteImport } from './routes/me/settings'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
-import { Route as AuthenticatedMeIndexRouteImport } from './routes/_authenticated/me/index'
-import { Route as AuthenticatedMeJourneyRouteImport } from './routes/_authenticated/me/journey'
-import { Route as AuthenticatedMeMessagesRouteImport } from './routes/_authenticated/me/messages'
-import { Route as AuthenticatedMeSettingsRouteImport } from './routes/_authenticated/me/settings'
 import { Route as ApiPublicCalendarEventIdRouteImport } from './routes/api/public/calendar/$eventId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ActivityRoute = ActivityRouteImport.update({
@@ -56,6 +51,11 @@ const InboxRoute = InboxRouteImport.update({
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeRouteRoute = MeRouteRouteImport.update({
+  id: '/me',
+  path: '/me',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ParticipantsRoute = ParticipantsRouteImport.update({
@@ -89,35 +89,30 @@ const Char91DotwellKnownChar93OauthProtectedResourceRoute =
     path: '/.well-known/oauth-protected-resource',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AuthenticatedMeRouteRoute = AuthenticatedMeRouteRouteImport.update({
-  id: '/me',
-  path: '/me',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const MeIndexRoute = MeIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MeRouteRoute,
+} as any)
+const MeJourneyRoute = MeJourneyRouteImport.update({
+  id: '/journey',
+  path: '/journey',
+  getParentRoute: () => MeRouteRoute,
+} as any)
+const MeMessagesRoute = MeMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => MeRouteRoute,
+} as any)
+const MeSettingsRoute = MeSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => MeRouteRoute,
 } as any)
 const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   id: '/.lovable/oauth/consent',
   path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedMeIndexRoute = AuthenticatedMeIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthenticatedMeRouteRoute,
-} as any)
-const AuthenticatedMeJourneyRoute = AuthenticatedMeJourneyRouteImport.update({
-  id: '/journey',
-  path: '/journey',
-  getParentRoute: () => AuthenticatedMeRouteRoute,
-} as any)
-const AuthenticatedMeMessagesRoute = AuthenticatedMeMessagesRouteImport.update({
-  id: '/messages',
-  path: '/messages',
-  getParentRoute: () => AuthenticatedMeRouteRoute,
-} as any)
-const AuthenticatedMeSettingsRoute = AuthenticatedMeSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AuthenticatedMeRouteRoute,
 } as any)
 const ApiPublicCalendarEventIdRoute =
   ApiPublicCalendarEventIdRouteImport.update({
@@ -128,6 +123,7 @@ const ApiPublicCalendarEventIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/me': typeof MeRouteRouteWithChildren
   '/activity': typeof ActivityRoute
   '/auth': typeof AuthRoute
   '/inbox': typeof InboxRoute
@@ -137,13 +133,12 @@ export interface FileRoutesByFullPath {
   '/sahayak': typeof SahayakRoute
   '/settings': typeof SettingsRoute
   '/start': typeof StartRoute
-  '/me': typeof AuthenticatedMeRouteRouteWithChildren
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/me/journey': typeof MeJourneyRoute
+  '/me/messages': typeof MeMessagesRoute
+  '/me/settings': typeof MeSettingsRoute
+  '/me/': typeof MeIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
-  '/me/journey': typeof AuthenticatedMeJourneyRoute
-  '/me/messages': typeof AuthenticatedMeMessagesRoute
-  '/me/settings': typeof AuthenticatedMeSettingsRoute
-  '/me/': typeof AuthenticatedMeIndexRoute
   '/api/public/calendar/$eventId': typeof ApiPublicCalendarEventIdRoute
 }
 export interface FileRoutesByTo {
@@ -158,17 +153,17 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/start': typeof StartRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/me/journey': typeof MeJourneyRoute
+  '/me/messages': typeof MeMessagesRoute
+  '/me/settings': typeof MeSettingsRoute
+  '/me': typeof MeIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
-  '/me/journey': typeof AuthenticatedMeJourneyRoute
-  '/me/messages': typeof AuthenticatedMeMessagesRoute
-  '/me/settings': typeof AuthenticatedMeSettingsRoute
-  '/me': typeof AuthenticatedMeIndexRoute
   '/api/public/calendar/$eventId': typeof ApiPublicCalendarEventIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/me': typeof MeRouteRouteWithChildren
   '/activity': typeof ActivityRoute
   '/auth': typeof AuthRoute
   '/inbox': typeof InboxRoute
@@ -178,19 +173,19 @@ export interface FileRoutesById {
   '/sahayak': typeof SahayakRoute
   '/settings': typeof SettingsRoute
   '/start': typeof StartRoute
-  '/_authenticated/me': typeof AuthenticatedMeRouteRouteWithChildren
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/me/journey': typeof MeJourneyRoute
+  '/me/messages': typeof MeMessagesRoute
+  '/me/settings': typeof MeSettingsRoute
+  '/me/': typeof MeIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
-  '/_authenticated/me/journey': typeof AuthenticatedMeJourneyRoute
-  '/_authenticated/me/messages': typeof AuthenticatedMeMessagesRoute
-  '/_authenticated/me/settings': typeof AuthenticatedMeSettingsRoute
-  '/_authenticated/me/': typeof AuthenticatedMeIndexRoute
   '/api/public/calendar/$eventId': typeof ApiPublicCalendarEventIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/me'
     | '/activity'
     | '/auth'
     | '/inbox'
@@ -200,13 +195,12 @@ export interface FileRouteTypes {
     | '/sahayak'
     | '/settings'
     | '/start'
-    | '/me'
     | '/.well-known/oauth-protected-resource'
-    | '/.lovable/oauth/consent'
     | '/me/journey'
     | '/me/messages'
     | '/me/settings'
     | '/me/'
+    | '/.lovable/oauth/consent'
     | '/api/public/calendar/$eventId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -221,16 +215,16 @@ export interface FileRouteTypes {
     | '/settings'
     | '/start'
     | '/.well-known/oauth-protected-resource'
-    | '/.lovable/oauth/consent'
     | '/me/journey'
     | '/me/messages'
     | '/me/settings'
     | '/me'
+    | '/.lovable/oauth/consent'
     | '/api/public/calendar/$eventId'
   id:
     | '__root__'
     | '/'
-    | '/_authenticated'
+    | '/me'
     | '/activity'
     | '/auth'
     | '/inbox'
@@ -240,19 +234,18 @@ export interface FileRouteTypes {
     | '/sahayak'
     | '/settings'
     | '/start'
-    | '/_authenticated/me'
     | '/.well-known/oauth-protected-resource'
+    | '/me/journey'
+    | '/me/messages'
+    | '/me/settings'
+    | '/me/'
     | '/.lovable/oauth/consent'
-    | '/_authenticated/me/journey'
-    | '/_authenticated/me/messages'
-    | '/_authenticated/me/settings'
-    | '/_authenticated/me/'
     | '/api/public/calendar/$eventId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  MeRouteRoute: typeof MeRouteRouteWithChildren
   ActivityRoute: typeof ActivityRoute
   AuthRoute: typeof AuthRoute
   InboxRoute: typeof InboxRoute
@@ -274,13 +267,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/activity': {
@@ -309,6 +295,13 @@ declare module '@tanstack/react-router' {
       path: '/mcp'
       fullPath: '/mcp'
       preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/me': {
+      id: '/me'
+      path: '/me'
+      fullPath: '/me'
+      preLoaderRoute: typeof MeRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/participants': {
@@ -353,12 +346,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/me': {
-      id: '/_authenticated/me'
-      path: '/me'
-      fullPath: '/me'
-      preLoaderRoute: typeof AuthenticatedMeRouteRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/me/': {
+      id: '/me/'
+      path: '/'
+      fullPath: '/me/'
+      preLoaderRoute: typeof MeIndexRouteImport
+      parentRoute: typeof MeRouteRoute
+    }
+    '/me/journey': {
+      id: '/me/journey'
+      path: '/journey'
+      fullPath: '/me/journey'
+      preLoaderRoute: typeof MeJourneyRouteImport
+      parentRoute: typeof MeRouteRoute
+    }
+    '/me/messages': {
+      id: '/me/messages'
+      path: '/messages'
+      fullPath: '/me/messages'
+      preLoaderRoute: typeof MeMessagesRouteImport
+      parentRoute: typeof MeRouteRoute
+    }
+    '/me/settings': {
+      id: '/me/settings'
+      path: '/settings'
+      fullPath: '/me/settings'
+      preLoaderRoute: typeof MeSettingsRouteImport
+      parentRoute: typeof MeRouteRoute
     }
     '/.lovable/oauth/consent': {
       id: '/.lovable/oauth/consent'
@@ -366,34 +380,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/.lovable/oauth/consent'
       preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/me/': {
-      id: '/_authenticated/me/'
-      path: '/'
-      fullPath: '/me/'
-      preLoaderRoute: typeof AuthenticatedMeIndexRouteImport
-      parentRoute: typeof AuthenticatedMeRouteRoute
-    }
-    '/_authenticated/me/journey': {
-      id: '/_authenticated/me/journey'
-      path: '/journey'
-      fullPath: '/me/journey'
-      preLoaderRoute: typeof AuthenticatedMeJourneyRouteImport
-      parentRoute: typeof AuthenticatedMeRouteRoute
-    }
-    '/_authenticated/me/messages': {
-      id: '/_authenticated/me/messages'
-      path: '/messages'
-      fullPath: '/me/messages'
-      preLoaderRoute: typeof AuthenticatedMeMessagesRouteImport
-      parentRoute: typeof AuthenticatedMeRouteRoute
-    }
-    '/_authenticated/me/settings': {
-      id: '/_authenticated/me/settings'
-      path: '/settings'
-      fullPath: '/me/settings'
-      preLoaderRoute: typeof AuthenticatedMeSettingsRouteImport
-      parentRoute: typeof AuthenticatedMeRouteRoute
     }
     '/api/public/calendar/$eventId': {
       id: '/api/public/calendar/$eventId'
@@ -405,37 +391,26 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AuthenticatedMeRouteRouteChildren {
-  AuthenticatedMeJourneyRoute: typeof AuthenticatedMeJourneyRoute
-  AuthenticatedMeMessagesRoute: typeof AuthenticatedMeMessagesRoute
-  AuthenticatedMeSettingsRoute: typeof AuthenticatedMeSettingsRoute
-  AuthenticatedMeIndexRoute: typeof AuthenticatedMeIndexRoute
+interface MeRouteRouteChildren {
+  MeJourneyRoute: typeof MeJourneyRoute
+  MeMessagesRoute: typeof MeMessagesRoute
+  MeSettingsRoute: typeof MeSettingsRoute
+  MeIndexRoute: typeof MeIndexRoute
 }
 
-const AuthenticatedMeRouteRouteChildren: AuthenticatedMeRouteRouteChildren = {
-  AuthenticatedMeJourneyRoute: AuthenticatedMeJourneyRoute,
-  AuthenticatedMeMessagesRoute: AuthenticatedMeMessagesRoute,
-  AuthenticatedMeSettingsRoute: AuthenticatedMeSettingsRoute,
-  AuthenticatedMeIndexRoute: AuthenticatedMeIndexRoute,
+const MeRouteRouteChildren: MeRouteRouteChildren = {
+  MeJourneyRoute: MeJourneyRoute,
+  MeMessagesRoute: MeMessagesRoute,
+  MeSettingsRoute: MeSettingsRoute,
+  MeIndexRoute: MeIndexRoute,
 }
 
-const AuthenticatedMeRouteRouteWithChildren =
-  AuthenticatedMeRouteRoute._addFileChildren(AuthenticatedMeRouteRouteChildren)
-
-interface AuthenticatedRouteRouteChildren {
-  AuthenticatedMeRouteRoute: typeof AuthenticatedMeRouteRouteWithChildren
-}
-
-const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedMeRouteRoute: AuthenticatedMeRouteRouteWithChildren,
-}
-
-const AuthenticatedRouteRouteWithChildren =
-  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+const MeRouteRouteWithChildren =
+  MeRouteRoute._addFileChildren(MeRouteRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  MeRouteRoute: MeRouteRouteWithChildren,
   ActivityRoute: ActivityRoute,
   AuthRoute: AuthRoute,
   InboxRoute: InboxRoute,

@@ -8,7 +8,7 @@ import { replyToMyMessage } from "@/lib/participant.functions";
 
 const parent = getRouteApi("/_authenticated/me");
 
-export const Route = createFileRoute("/_authenticated/me/messages")({
+export const Route = createFileRoute("/me/messages")({
   head: () => ({ meta: [
     { title: "My messages · Sahayak" },
     { name: "description", content: "Only the messages your coordinator has approved for you, with simple reply choices." },

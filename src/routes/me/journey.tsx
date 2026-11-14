@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 
 const parent = getRouteApi("/_authenticated/me");
 
-export const Route = createFileRoute("/_authenticated/me/journey")({
+export const Route = createFileRoute("/me/journey")({
   head: () => ({ meta: [
     { title: "My journey · Sahayak" },
     { name: "description", content: "Your course milestones, journey timeline and personal quarter or year goals." },

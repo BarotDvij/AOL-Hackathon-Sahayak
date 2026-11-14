@@ -3,7 +3,7 @@ import { ParticipantPicker } from "@/components/participant/ParticipantPicker";
 import { ParticipantShell } from "@/components/participant/ParticipantShell";
 import { getMyJourney } from "@/lib/participant.functions";
 
-export const Route = createFileRoute("/_authenticated/me")({
+export const Route = createFileRoute("/me")({
   loader: () => getMyJourney(),
   component: ParticipantLayout,
 });

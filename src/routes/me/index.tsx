@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 const parent = getRouteApi("/_authenticated/me");
 
-export const Route = createFileRoute("/_authenticated/me/")({
+export const Route = createFileRoute("/me/")({
   head: () => ({ meta: [
     { title: "My home · Sahayak" },
     { name: "description", content: "A gentle view of your practice, friendly journey stage and upcoming sessions." },

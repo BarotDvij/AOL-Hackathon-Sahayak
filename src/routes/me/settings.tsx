@@ -5,7 +5,7 @@ import { ParticipantCard } from "@/components/participant/ParticipantShell";
 
 const parent = getRouteApi("/_authenticated/me");
 
-export const Route = createFileRoute("/_authenticated/me/settings")({
+export const Route = createFileRoute("/me/settings")({
   head: () => ({ meta: [
     { title: "My settings · Sahayak" },
     { name: "description", content: "Complete participant onboarding, review your practice rhythm and optionally connect Muse with OAuth." },
