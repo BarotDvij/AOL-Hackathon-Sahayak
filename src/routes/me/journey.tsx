@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { BookOpen, CalendarHeart, Check, Circle, Flag, MapPin, Target } from "lucide-react";
+import { BookOpen, CalendarHeart, Check, Circle, MapPin, Plus, Target } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useDemoParticipant } from "@/components/participant/DemoParticipantContext";
 import { ParticipantCard } from "@/components/participant/ParticipantShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatFull } from "@/lib/journey/dates";
 import { GoalsOverview } from "@/components/participant/GoalsOverview";
@@ -26,6 +27,7 @@ function JourneyPage() {
   const { data, saveGoal } = useDemoParticipant();
   const [period, setPeriod] = useState<GoalPeriod | "week">("week");
   const [text, setText] = useState("");
+  const [goalsOpen, setGoalsOpen] = useState(false);
   const intakeGoals = (["month", "quarter", "year"] as const).map((p) => ({ period: p, text: answerLabel(GOAL_QUESTION[p], data.answers[GOAL_QUESTION[p]]) })).filter((g) => g.text);
 
   function submit(event: React.FormEvent) {
@@ -41,6 +43,17 @@ function JourneyPage() {
       <div className="grid gap-5 lg:grid-cols-2">
         <div><GoalsOverview /></div>
         <div className="space-y-5">
+          <Dialog open={goalsOpen} onOpenChange={setGoalsOpen}>
+            <DialogTrigger asChild><Button variant="outline" size="icon" aria-label="Open your goals" title="Your goals"><Plus className="size-4" aria-hidden /></Button></DialogTrigger>
+            <DialogContent className="max-h-[85dvh] w-[calc(100%-2rem)] overflow-y-auto rounded-lg">
+              <DialogHeader><DialogTitle>Your goals</DialogTitle><DialogDescription>What would you like to work towards?</DialogDescription></DialogHeader>
+              {intakeGoals.length === 0 && data.goals.length === 0 && <p className="text-sm text-muted-foreground">No goals yet — add one below, or answer the questions in Settings.</p>}
+              <ul className="divide-y divide-border">
+                {[...intakeGoals, ...data.goals].map((goal, i) => <li key={`${goal.period}-${i}`} className="py-3"><span className="font-heading text-xs font-semibold text-purple">{PERIOD_LABEL[goal.period]}</span><p className="mt-0.5 break-words text-sm text-primary">{goal.text}</p></li>)}
+              </ul>
+              <form onSubmit={submit} className="flex flex-col gap-2"><Select value={period} onValueChange={(value) => setPeriod(value as GoalPeriod | "week")}><SelectTrigger aria-label="Goal period"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="week">This week</SelectItem><SelectItem value="month">This month</SelectItem><SelectItem value="quarter">This quarter</SelectItem><SelectItem value="year">This year</SelectItem></SelectContent></Select><Input required maxLength={500} value={text} onChange={(event) => setText(event.target.value)} placeholder="Add another goal" aria-label="Goal text" /><Button type="submit">Save</Button></form>
+            </DialogContent>
+          </Dialog>
           <ParticipantCard>
             <h2 className="font-heading text-base font-semibold text-primary">Your path</h2>
             <ol className="mt-5" aria-label="Course path">
@@ -56,14 +69,6 @@ function JourneyPage() {
               ))}
             </ol>
             <p className="mt-4 rounded-md bg-secondary px-3 py-2 text-xs text-muted-foreground"><span className="font-medium text-primary">Your home practice:</span> {data.guideline}</p>
-          </ParticipantCard>
-          <ParticipantCard>
-            <h2 className="flex items-center gap-2 font-heading text-base font-semibold text-primary"><Flag className="size-4 text-purple" aria-hidden />Your goals</h2>
-            {intakeGoals.length === 0 && data.goals.length === 0 && <p className="mt-2 text-sm text-muted-foreground">No goals yet — add one below, or answer the questions in Settings.</p>}
-            <ul className="mt-2 divide-y divide-border">
-              {[...intakeGoals, ...data.goals].map((goal, i) => <li key={`${goal.period}-${i}`} className="py-3"><span className="font-heading text-xs font-semibold text-purple">{PERIOD_LABEL[goal.period]}</span><p className="mt-0.5 text-sm text-primary">{goal.text}</p></li>)}
-            </ul>
-            <form onSubmit={submit} className="mt-3 flex flex-col gap-2"><Select value={period} onValueChange={(value) => setPeriod(value as GoalPeriod | "week")}><SelectTrigger aria-label="Goal period"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="week">This week</SelectItem><SelectItem value="month">This month</SelectItem><SelectItem value="quarter">This quarter</SelectItem><SelectItem value="year">This year</SelectItem></SelectContent></Select><Input required maxLength={500} value={text} onChange={(event) => setText(event.target.value)} placeholder="Add another goal" aria-label="Goal text" /><Button type="submit">Save</Button></form>
           </ParticipantCard>
         </div>
       </div>
