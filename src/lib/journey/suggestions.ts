@@ -1,11 +1,15 @@
 import { JOURNEY_CONFIG as C, SCORE_WEIGHTS as W } from "./config";
 import { daysUntil, today } from "./dates";
 import { draftMessage } from "./messages";
+import { programEligible, type Program } from "./programs";
 import type { Channel, History, NextStep, Participant, StageId, Suggestion } from "./types";
 
 export function eligibleSteps(p: Participant, h: History, stage: StageId, catalog: NextStep[], now = today()) {
   const done = new Set(h.courses.map((c) => c.courseName));
+  const programsById = new Map<string, Program>();
+  for (const step of catalog) if (step.program) programsById.set(step.program.id, step.program);
   return catalog.filter((s) => {
+    if (s.program) return programEligible(p, h, stage, s.program, s.programPrerequisites ?? [], programsById, now);
     if (!s.stageFit.includes(stage)) return false;
     if (s.prerequisite && !done.has(s.prerequisite)) return false;
     if (s.completesCourse && done.has(s.completesCourse)) return false;
@@ -21,8 +25,10 @@ export function scoreStep(s: NextStep, p: Participant, h: History, stage: StageI
   const interest = s.tags.some((t) => p.interests.includes(t)) || (s.language !== "English" && s.language === p.language) ? 1 : 0;
   const soon = s.startDate && daysUntil(s.startDate, now) <= C.startsSoonDays ? 1 : 0;
   const nearby = s.city === p.city ? 1 : 0;
+  const prefersOnline = p.prefersOnline || p.city === "Online" || p.interests.includes("online");
+  const online = prefersOnline && s.program?.online_option === "yes" ? W.onlineYes : prefersOnline && s.program?.online_option === "some_regions" ? W.onlineSomeRegions : 0;
   const declined = h.contacts.some((c) => c.outcome === "declined" && c.nextStepId === s.id) ? 1 : 0;
-  return W.stageFit * stageFit + W.statedInterest * interest + W.startsSoon * soon + W.nearby * nearby + W.alreadyDeclined * declined;
+  return W.stageFit * stageFit + W.statedInterest * interest + W.startsSoon * soon + W.nearby * nearby + online + W.alreadyDeclined * declined;
 }
 
 export function pickChannel(p: Participant, h: History): Channel {

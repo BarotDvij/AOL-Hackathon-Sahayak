@@ -10,6 +10,7 @@ import { mySlice, type MySlice } from "./participant";
 import { buildSampleData } from "./sample-data";
 import { briefItems, buildReminders, SAHAYAK_DEFAULTS, type BriefItem, type Nudge, type Reminder, type SahayakFeature, type SahayakState } from "./sahayak";
 import { buildSuggestion, computeStage, explainReasons, participantStage } from "@/lib/sahayak/core";
+import { EMPTY_PROGRAM_CATALOG, type ProgramCatalog } from "@/lib/journey/programs";
 import { supabase } from "@/integrations/supabase/client";
 import { saveApprovedMessage } from "@/lib/participant.functions";
 import type { ActivityEntry, Channel, Contact, History, Message, NextStep, Participant, ParticipantReply, PracticeLog, StageId, Suggestion } from "./types";
@@ -36,6 +37,7 @@ export interface Opportunity { step: NextStep; suggestedFor: number }
 
 interface Store {
   views: ParticipantView[];
+  programCatalog: ProgramCatalog;
   catalog: Map<string, NextStep>;
   catalogList: NextStep[];
   pending: Suggestion[];
