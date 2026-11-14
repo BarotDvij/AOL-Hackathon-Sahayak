@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useDemoParticipant } from "@/components/participant/DemoParticipantContext";
-import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { ConnectMuseCard } from "@/components/participant/ConnectMuseCard";
 import { OnboardingForm } from "@/components/participant/OnboardingForm";
@@ -18,8 +17,7 @@ export const Route = createFileRoute("/me/settings")({
 });
 
 function ParticipantSettings() {
-  const { data, saveAnswers } = useDemoParticipant();
-  const [sahayakOn, setSahayakOn] = useState(false);
+  const { data, saveAnswers, sahayaakOn, setSahayakOn } = useDemoParticipant();
   return (
     <div className="space-y-5"><header><h1 className="font-display text-[32px] font-normal text-primary">Settings</h1><p className="mt-1 text-sm text-muted-foreground">Shape the sample practice journey in your own words.</p></header>
       <ParticipantCard><h2 className="font-heading text-base font-semibold text-primary">No-login demo</h2><p className="mt-1 text-sm text-muted-foreground">You are using Priya's fictional profile. Changes stay in this tab and reset when you reload. </p></ParticipantCard>

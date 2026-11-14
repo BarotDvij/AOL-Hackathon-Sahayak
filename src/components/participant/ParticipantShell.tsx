@@ -1,6 +1,8 @@
 import { Link, useRouterState, type LinkProps } from "@tanstack/react-router";
 import { CalendarDays, Home, MessageCircle, Route as JourneyIcon, Settings, Sparkles } from "lucide-react";
 import type { ReactNode } from "react";
+import { Switch } from "@/components/ui/switch";
+import { useDemoParticipant } from "@/components/participant/DemoParticipantContext";
 import { cn } from "@/lib/utils";
 
 const NAV = [
