@@ -23,9 +23,9 @@ function ParticipantHome() {
   const practisedToday = data.practice.entries.some((entry) => entry.date === today);
 
   return (
-    <div className="space-y-5">
-      <header><p className="font-heading text-xs font-semibold uppercase tracking-widest text-purple">Your journey · Demo</p><h1 className="mt-1 font-display text-[32px] font-normal text-primary">Hello, {data.participant.firstName}</h1><p className="mt-1 text-sm text-muted-foreground">A little awareness today is enough.</p></header>
-      <ParticipantCard className="bg-secondary"><p className="font-heading text-lg font-semibold text-primary">{data.stage.name}</p><p className="mt-1 text-sm leading-relaxed text-muted-foreground">{data.stage.line}</p></ParticipantCard>
+    <div className="space-y-4">
+      <header className="brand-gradient mb-2 rounded-lg border border-border px-5 py-5"><p className="font-heading text-xs font-semibold text-purple">Your journey · Demo</p><h1 className="mt-1 font-display text-[32px] font-normal leading-tight text-primary">Hello, {data.participant.firstName}</h1><p className="mt-1 text-sm text-muted-foreground">A little awareness today is enough.</p></header>
+      <ParticipantCard><p className="font-heading text-xs font-semibold text-purple">Your journey today</p><p className="mt-2 font-heading text-lg font-semibold text-primary">{data.stage.name}</p><p className="mt-1 text-sm leading-relaxed text-muted-foreground">{data.stage.line}</p></ParticipantCard>
       <div className="grid gap-4 md:grid-cols-2">
         <ParticipantCard>
           <h2 className="font-heading text-base font-semibold text-primary">Today's practice</h2>
@@ -40,10 +40,10 @@ function ParticipantHome() {
           <p className="mt-2 text-sm text-muted-foreground">{data.schedule.days.join(", ")}</p><p className="mt-3 text-xs text-muted-foreground">{data.schedule.note}</p>
         </ParticipantCard>
       </div>
-      <ParticipantCard>
+      <section className="pt-2" aria-label="Coming up for you">
         <h2 className="font-heading text-base font-semibold text-primary">Coming up for you</h2>
-        {data.upcoming.length === 0 ? <p className="mt-3 text-sm text-muted-foreground">Nothing scheduled just now. Your practice is still here for you.</p> : <div className="mt-4 grid gap-3 md:grid-cols-3">{data.upcoming.slice(0, 3).map((event) => <article key={event.id} className="rounded-lg border border-border p-4"><h3 className="font-heading text-sm font-semibold text-primary">{event.title}</h3><p className="mt-1 text-xs text-muted-foreground">{event.startDate} · {event.city}</p><div className="mt-4 flex flex-wrap gap-2"><Button size="sm" disabled={data.interests.includes(event.id)} variant={data.interests.includes(event.id) ? "secondary" : "outline"} onClick={() => { showInterest(event.id); toast.success("Your interest is noted for this demo."); }}>{data.interests.includes(event.id) ? "Interested" : "I'm interested"}</Button>{event.calendarUrl && <Button asChild size="sm" variant="accent"><a href={event.calendarUrl}><CalendarPlus className="size-4" aria-hidden />Calendar</a></Button>}</div></article>)}</div>}
-      </ParticipantCard>
+        {data.upcoming.length === 0 ? <p className="mt-3 text-sm text-muted-foreground">Nothing scheduled just now. Your practice is still here for you.</p> : <div className="mt-3 grid gap-4 md:grid-cols-3">{data.upcoming.slice(0, 3).map((event) => <article key={event.id} className="flex flex-col rounded-lg border border-border bg-card p-5 shadow-soft"><h3 className="font-heading text-sm font-semibold text-primary">{event.title}</h3><p className="mt-1 text-xs text-muted-foreground">{event.startDate} · {event.city}</p><div className="mt-auto flex flex-wrap gap-2 pt-4"><Button size="sm" disabled={data.interests.includes(event.id)} variant={data.interests.includes(event.id) ? "secondary" : "outline"} onClick={() => { showInterest(event.id); toast.success("Your interest is noted for this demo."); }}>{data.interests.includes(event.id) ? "Interested" : "I'm interested"}</Button>{event.calendarUrl && <Button asChild size="sm" variant="accent"><a href={event.calendarUrl}><CalendarPlus className="size-4" aria-hidden />Calendar</a></Button>}</div></article>)}</div>}
+      </section>
       {data.messages.length === 0 && <EmptyParticipantNote>No coordinator messages yet. When one is approved, it will appear in Messages.</EmptyParticipantNote>}
     </div>
   );
