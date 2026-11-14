@@ -10,7 +10,8 @@
 - Tests: 14 passing (stage thresholds, low-data check-in, follow-up priority, summary counts, skip reason, approved message lands with the right person).
 
 ## In progress
-(none)
+- Participant Sahayak: shared journey core, participant-scoped MCP tools, hashed keys and audit records, participant app with onboarding, practice, goals, events, approved messages and optional Muse connection.
+- Verify participant data isolation, onboarding parity, key revocation, audit logging and every MCP tool; add rule tests and exercise the main app flow.
 
 ## Done
 - Sahayak helper: first-time question, sidebar On/Off plus a settings page (four switches, nudge frequency, reset demo), daily brief on the dashboard, inbox with "waiting N days" flags and editable suggested replies, reminder bell with Do it now / snooze / dismiss, floating Ask Sahayak panel answering from the records, and a purple "Suggested by Sahayak" marker on everything it offers. 29 tests passing.
