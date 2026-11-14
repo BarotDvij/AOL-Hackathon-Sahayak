@@ -82,7 +82,7 @@ const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 
 /** A gentle week built from the course guideline, how closely they follow it, and their goals. Reminders only — never technique instructions. */
 export function weeklyPlan(answers: OnboardingAnswers, stage: StageId, fallbackLevel: CourseLevel): PlanDay[] {
-  const level = JOURNEY_LADDER[journeyPosition(answers, fallbackLevel).current].value;
+  const level = JOURNEY_LADDER[journeyPosition(answers, fallbackLevel).current]?.value ?? "none";
   const following = answers.practice_following ?? (stage === "quiet" || stage === "dormant" ? "not_now" : "sometimes");
   const practiceDays = following === "fully" || following === "mostly" ? 7 : following === "sometimes" ? 5 : 3;
   const activeDays = practiceDays === 7 ? DAYS : practiceDays === 5 ? ["Monday", "Tuesday", "Thursday", "Friday", "Saturday"] : ["Monday", "Wednesday", "Saturday"];

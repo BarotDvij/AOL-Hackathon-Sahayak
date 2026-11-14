@@ -50,7 +50,7 @@ function useDemoData(
       answers,
       position: journeyPosition(answers, levelFromHistory(history)),
       plan: weeklyPlan(answers, me.stage, levelFromHistory(history)),
-      guideline: JOURNEY_LADDER[journeyPosition(answers, levelFromHistory(history)).current].practice,
+      guideline: JOURNEY_LADDER[journeyPosition(answers, levelFromHistory(history)).current]?.practice ?? "",
       schedule: recommendedSchedule(answers, me.stage, history, programs),
       practice: practiceDto(rows, me.participant.id),
       goals,
