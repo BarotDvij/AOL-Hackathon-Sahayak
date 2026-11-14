@@ -16,6 +16,7 @@ type NavItem = { to: To; label: string; Icon: typeof LayoutDashboard; exact?: bo
 const NAV: NavItem[] = [
   { to: "/", label: "Dashboard", Icon: LayoutDashboard, exact: true },
   { to: "/participants", label: "Participants", Icon: Users },
+  { to: "/programs", label: "Programs", Icon: BookOpen },
   { to: "/review", label: "Review Queue", Icon: Inbox },
   { to: "/inbox", label: "Inbox", Icon: Mail },
   { to: "/activity", label: "Activity Log", Icon: History },
