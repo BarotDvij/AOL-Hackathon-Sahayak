@@ -70,7 +70,7 @@ export interface SahayakPerson {
   stage: StageId;
   suggestion: Suggestion | null;
   /** The volunteer this person is connected to, when there is one. */
-  connection?: Connection | undefined;
+  connection?: Connection | null | undefined;
 }
 export interface UpcomingItem { step: NextStep; suggestedFor: number }
 

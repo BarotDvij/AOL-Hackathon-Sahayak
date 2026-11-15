@@ -54,7 +54,7 @@ export function MessageGroupDialog({ group, open, onOpenChange }: { group: Volun
         <DialogHeader>
           <DialogTitle className="font-display text-[22px] font-normal text-primary">{t("Message group")}</DialogTitle>
           <DialogDescription>
-            {t("One warm invite for")}: {group.members.length} {group.members.length === 1 ? "person" : "people"} {t("in")} {group.volunteer.name}&rsquo;s {t("group")}.
+            {t("One warm invite for this group")}: {group.members.length} {group.members.length === 1 ? "person" : "people"} · {group.volunteer.name}
           </DialogDescription>
         </DialogHeader>
 
