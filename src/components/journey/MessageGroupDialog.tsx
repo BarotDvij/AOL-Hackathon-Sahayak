@@ -35,6 +35,7 @@ export function MessageGroupDialog({ group, open, onOpenChange }: { group: Volun
   const [text, setText] = useState(() => draftGroupMessage(group, channel, C.coordinatorName));
   const [edited, setEdited] = useState(false);
   const previous = groupMessages.filter((m) => m.volunteerId === group.volunteer.id);
+  const lastInvite = previous[0];
 
   const pickChannel = (c: Channel) => {
     setChannel(c);

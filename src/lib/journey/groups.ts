@@ -174,7 +174,7 @@ export function quietProgram(group: VolunteerGroup): string | null {
 }
 
 /** People nobody has connected to a volunteer yet. */
-export function unassignedViews(views: Groupable[]): Groupable[] {
+export function unassignedViews<T extends Groupable>(views: T[]): T[] {
   return views.filter((v) => !v.connection);
 }
 

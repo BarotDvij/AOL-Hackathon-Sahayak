@@ -141,7 +141,7 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
   );
 
   /** A collapsible section: who it is, how they stand, and what you can do with them. */
-  const Section = ({ id, name, sub, rows, quiet, counts, onMessage, volunteerId }: { id: string; name: string; sub: string; rows: ParticipantView[]; quiet: number; counts: { id: StageId; label: string; count: number }[]; onMessage?: () => void; volunteerId?: string | undefined }) => {
+  const Section = ({ id, name, sub, rows, quiet, counts, onMessage, volunteerId }: { id: string; name: string; sub: string; rows: ParticipantView[]; quiet: number; counts: { id: StageId; label: string; count: number }[]; onMessage?: (() => void) | undefined; volunteerId?: string | undefined }) => {
     const isOpen = !collapsed.includes(id);
     const drop = volunteerId !== undefined;
     return (

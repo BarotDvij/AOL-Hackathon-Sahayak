@@ -32,7 +32,7 @@ function renderTable(props: { stage?: "all" | "paused" } = {}) {
   );
 }
 
-const section = (container: HTMLElement, name: string) => container.querySelector(`section[aria-label="${name}"]`);
+const section = (container: HTMLElement, name: string) => container.querySelector<HTMLElement>(`section[aria-label="${name}"]`);
 
 describe("participants table", () => {
   it("groups people under the volunteer they did their most recent program with", async () => {
