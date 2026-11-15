@@ -145,6 +145,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span className="text-xs text-muted-foreground">Sahayak is off · manual mode</span>
           )}
           <div className="flex items-center gap-3">
+            <span className="rounded-full bg-stage-new px-2 py-0.5 text-xs font-medium text-stage-new-foreground">{t("Demo data · nothing is sent")}</span>
             <Link to="/start" className="text-xs font-medium text-purple hover:underline">{t("Switch view")}</Link>
             {sahayak.on && <BellButton count={reminders.length} onClick={() => setRemindersOpen(true)} />}
           </div>
@@ -166,6 +167,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <nav className="mt-4 grid grid-cols-2 gap-2" aria-label="More sections">{NAV.filter((n) => !["/", "/participants", "/sessions", "/impact"].includes(n.to)).map((n) => <NavItemLink key={n.to} {...n} waiting={badgeFor(n.to)} onNavigate={() => setOpen(false)} />)}</nav>
           <SahayakSwitch onNavigate={() => setOpen(false)} onMeet={() => { setOpen(false); setIntroOpen(true); }} />
           <Link to="/start" onClick={() => setOpen(false)} className="mt-3 flex min-h-11 items-center px-3 text-sm font-medium text-purple">{t("Switch view")}</Link>
+          <p className="px-3 text-xs text-muted-foreground">{t("Demo data · nothing is sent")}</p>
         </SheetContent>
       </Sheet>
 

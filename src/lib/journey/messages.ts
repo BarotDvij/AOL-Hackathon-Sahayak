@@ -51,3 +51,12 @@ export function messageLimitNote(text: string, channel: Channel) {
   }
   return { ok: text.length <= MAX_SHORT_CHARS, label: `${text.length}/${MAX_SHORT_CHARS} characters` };
 }
+
+// ponytail: fixed English/French phrase list, matched from the start of a word; add phrases as coordinators report misses.
+const PRESSURE_PHRASES = ["last chance", "don't miss", "miss out", "hurry", "act now", "urgent", "limited spots", "final reminder", "you must", "guarantee", "cure", "dernière chance", "ne manquez pas", "dépêchez", "garanti"];
+
+/** Pressure, urgency and outcome-promise wording found in a message. Advisory only: the coordinator still decides. */
+export function toneNote(text: string): string[] {
+  const plain = text.toLowerCase().replace(/’/g, "'");
+  return PRESSURE_PHRASES.filter((phrase) => new RegExp(`(^|[^a-zà-ÿ])${phrase}`).test(plain));
+}

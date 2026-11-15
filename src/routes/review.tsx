@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { SKIP_REASONS } from "@/lib/journey/config";
 import { formatShort } from "@/lib/journey/dates";
 import { useLanguage } from "@/lib/journey/i18n";
-import { draftMessage, messageLimitNote } from "@/lib/journey/messages";
+import { draftMessage, messageLimitNote, toneNote } from "@/lib/journey/messages";
 import { useJourney } from "@/lib/journey/store";
 import type { Channel } from "@/lib/journey/types";
 import { cn } from "@/lib/utils";
@@ -44,7 +44,14 @@ function ReviewPage() {
   const step = s ? catalog.get(s.nextStepId) ?? null : null;
   const alt = s?.alternateNextStepId ? catalog.get(s.alternateNextStepId) ?? null : null;
   const text = s ? s.editedMessage ?? s.draftMessage : "";
-  const limit = s ? messageLimitNote(text, s.channel) : null;
+  const shown = mode === "edit" ? draft : text;
+  const limit = s ? messageLimitNote(shown, s.channel) : null;
+  const tone = toneNote(shown);
+  const toneWarning = tone.length > 0 && (
+    <p role="status" className="mt-2 rounded-lg bg-stage-quiet px-3 py-2 text-xs text-stage-quiet-foreground">
+      Gentle reminder: {tone.map((x) => `“${x}”`).join(", ")} can read as pressure or a promise. Consider softer wording before you approve.
+    </p>
+  );
 
   const done = () => { setTranslation(false); setMode("view"); setReason(""); setOther(""); setDraft(""); };
   const approveNow = () => { if (s) approve(s.id, text); done(); };
@@ -114,6 +121,7 @@ function ReviewPage() {
           <div className="mt-3">
             <Textarea value={draft} onChange={(e) => setDraft(e.target.value)} rows={9} aria-label="Message text" className="bg-card font-normal" />
             <p className={cn("mt-1 text-xs", limit?.ok ? "text-muted-foreground" : "text-destructive")}>{limit?.label}</p>
+            {toneWarning}
             <div className="review-actions mt-3 flex flex-wrap gap-2">
               <Button size="sm" onClick={() => { editMessage(s.id, draft); done(); }}>{t("Save changes")}</Button>
               <Button size="sm" variant="ghost" onClick={done}>{t("Cancel")}</Button>
@@ -146,6 +154,7 @@ function ReviewPage() {
         ) : (
           <div className="mt-3">
             <p className="whitespace-pre-wrap rounded-lg border border-border bg-background p-4 text-sm leading-relaxed">{text}</p>
+            {toneWarning}
             <div className="review-actions mt-4 flex flex-wrap gap-2">
               <Button onClick={approveNow}><Check className="size-4" aria-hidden />{t("Approve and send")}</Button>
               <Button variant="outline" onClick={() => { setDraft(text); setMode("edit"); }}><Pencil className="size-4" aria-hidden />{t("Edit")}</Button>

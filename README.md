@@ -75,6 +75,7 @@ Use the links in the app to move between pages. A browser reload resets the demo
 - **Limits on the model.** "Ask Sahayak" receives only name, city, stage, last contact and next step; never an email address or phone number. If the model fails, the app answers from the records.
 - **Respect for the person.** "Do not contact" and anyone contacted in the last 14 days are paused and get no draft. Drafts carry no pressure or health promises and stay within 400 characters (WhatsApp, SMS) or 120 words (email).
 - **Privacy.** Participants see only their own data. Account data is protected by row-level security, and every assistant tool call is written to an audit table.
+- **Tone check.** The review screen flags pressure or promise wording such as "last chance" or "guaranteed" in a draft or an edit. It advises; the coordinator decides.
 - **Traceable.** The activity log records each approval, edit and skip.
 
 ## Tools used
@@ -87,7 +88,7 @@ Use the links in the app to move between pages. A browser reload resets the demo
 
 ## What is simulated, and known limitations
 
-- **Sample data.** The coordinator view and the no-login participant view (Priya) use fictional people held in memory, with dates relative to today. Changes reset on reload.
+- **Sample data.** The coordinator view and the no-login participant view (Priya) use fictional people held in memory, with dates relative to today. Changes reset on reload. The coordinator header says "Demo data · nothing is sent".
 - **No real sending.** Approved messages appear only in the participant app. Nothing goes out by WhatsApp, SMS or email.
 - **QR check-in** synchronizes between tabs of one browser only, not between devices.
 - **Typed replies** from the participant stay in the participant view. Only "I'm interested" taps and quick replies reach the coordinator.
