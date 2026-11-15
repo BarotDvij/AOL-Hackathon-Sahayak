@@ -15,8 +15,8 @@ const FRENCH: Record<string,string> = {
 const Context = createContext({ language: 'English' as AppLanguage, setLanguage: (_: AppLanguage) => {}, t: (text: string) => text });
 export function LanguageProvider({children}: {children: ReactNode}) {
   const [language, setLanguage] = useState<AppLanguage>('English');
-  useEffect(() => { const stored = localStorage.getItem('journey-language'); if (stored === 'French') setLanguage(stored); }, []);
-  useEffect(() => { localStorage.setItem('journey-language', language); document.documentElement.lang = language === 'French' ? 'fr' : 'en'; }, [language]);
+  useEffect(() => { try { if (localStorage.getItem('journey-language') === 'French') setLanguage('French'); } catch { /* storage unavailable: stay in English */ } }, []);
+  useEffect(() => { try { localStorage.setItem('journey-language', language); } catch { /* storage unavailable: the choice lasts for this visit */ } document.documentElement.lang = language === 'French' ? 'fr' : 'en'; }, [language]);
   return <Context.Provider value={{language, setLanguage, t: text => language === 'French' ? FRENCH[text] ?? text : text}}>{children}</Context.Provider>;
 }
 export const useLanguage = () => useContext(Context);
