@@ -4,10 +4,16 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { routeTree } from "@/routeTree.gen";
-import { JourneyProvider } from "@/lib/journey/store";
+import { JourneyProvider, useJourney } from "@/lib/journey/store";
 import { ParticipantsTable } from "./ParticipantsTable";
 
 const noop = () => {};
+
+/** Shows what the group invite actually recorded, so the test can read it back. */
+function GroupRecord() {
+  const { groupMessages } = useJourney();
+  return <span data-testid="group-record">{`${groupMessages.length}:${groupMessages[0]?.memberIds.length ?? 0}`}</span>;
+}
 
 /** The table links to group pages, so it needs a router in context around it. */
 function renderTable(props: { stage?: "all" | "paused" } = {}) {
@@ -19,6 +25,7 @@ function renderTable(props: { stage?: "all" | "paused" } = {}) {
   return render(
     <JourneyProvider>
       <RouterContextProvider router={router}>
+        <GroupRecord />
         <ParticipantsTable stage={props.stage ?? "all"} onStage={noop} onOpen={noop} />
       </RouterContextProvider>
     </JourneyProvider>,
@@ -54,11 +61,12 @@ describe("participants table", () => {
   it("records a group invite only once the coordinator approves it", async () => {
     const { container } = await renderTable();
     const shivam = section(container, "Shivam Kapoor")!;
+    expect(screen.getByTestId("group-record").textContent).toBe("0:0");
     fireEvent.click(within(shivam).getByRole("button", { name: "Message group" }));
     const approve = screen.getByRole("button", { name: /Approve and send to/ });
     expect(approve.textContent).toContain("7");
     fireEvent.click(approve);
-    expect(await screen.findByText("Group invite approved")).toBeInTheDocument();
+    expect(screen.getByTestId("group-record").textContent).toBe("1:7");
   });
 
   it("pages through everyone when grouping is turned off", async () => {
@@ -73,7 +81,7 @@ describe("participants table", () => {
 
   it("marks paused people with a Paused badge instead of a next step", async () => {
     const { container } = await renderTable({ stage: "paused" });
-    const rows = [...container.querySelectorAll("tbody tr")];
+    const rows = [...container.querySelectorAll("tbody tr")].filter((r) => !r.textContent?.includes("No one matches these filters"));
     expect(rows.length).toBeGreaterThan(0);
     expect(rows.every((r) => r.textContent?.includes("Paused"))).toBe(true);
   });
