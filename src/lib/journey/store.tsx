@@ -183,6 +183,13 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
     if (stored === "on" || stored === "off") {
       setSahayak((s) => ({ ...s, decided: true, on: stored === "on" }));
     }
+    try {
+      const saved = JSON.parse(localStorage.getItem('journey-sahayak-settings') ?? 'null');
+      if (saved) setSahayak(s => ({ ...s,
+        features: Object.fromEntries(Object.entries(s.features).map(([key, value]) => [key, typeof saved.features?.[key] === 'boolean' ? saved.features[key] : value])) as SahayakState['features'],
+        nudge: ['gentle', 'normal', 'frequent'].includes(saved.nudge) ? saved.nudge : s.nudge,
+      }));
+    } catch { /* Invalid or unavailable storage keeps safe defaults. */ }
   }, []);
 
   useEffect(() => {
@@ -338,6 +345,7 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
     decideSahayak: (on) => setSahayak((s) => ({ ...s, on, decided: true })),
     resetSahayakDemo: () => {
       try { localStorage.removeItem(SAHAYAK_CHOICE_KEY); } catch { /* storage unavailable */ }
+      try { localStorage.removeItem('journey-sahayak-settings'); } catch { /* storage unavailable */ }
       setSahayak({ ...SAHAYAK_DEFAULTS, features: { ...SAHAYAK_DEFAULTS.features }, snoozed: {}, dismissed: [] });
     },
     dismissBrief: () => setSahayak((s) => ({ ...s, briefDismissedOn: isoDaysFrom(0) })),
