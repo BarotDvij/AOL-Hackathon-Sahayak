@@ -13,9 +13,9 @@ import { isMontreal, MONTREAL_CALENDAR } from "@/lib/sahayak/montreal-events";
 
 export const Route = createFileRoute("/me/")({
   head: () => ({ meta: [
-    { title: "My home · Sahayak" },
+    { title: "My home · Journey" },
     { name: "description", content: "A gentle view of your practice, friendly journey stage and suggested rhythm." },
-    { property: "og:title", content: "My home · Sahayak" },
+    { property: "og:title", content: "My home · Journey" },
     { property: "og:description", content: "A gentle view of your practice, friendly journey stage and suggested rhythm." },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
   ] }),

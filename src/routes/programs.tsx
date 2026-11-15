@@ -6,9 +6,9 @@ import { useJourney } from "@/lib/journey/store";
 
 export const Route = createFileRoute("/programs")({
   head: () => ({ meta: [
-    { title: "Programs · Journey Companion" },
+    { title: "Programs · Journey" },
     { name: "description", content: "The Art of Living program catalog, prerequisites, online availability and local-confirmation notes." },
-    { property: "og:title", content: "Programs · Journey Companion" },
+    { property: "og:title", content: "Programs · Journey" },
     { property: "og:description", content: "The Art of Living program catalog, prerequisites, online availability and local-confirmation notes." },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
   ] }),

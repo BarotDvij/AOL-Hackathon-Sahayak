@@ -18,9 +18,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/sahayak")({
   head: () => ({
     meta: [
-      { title: "Sahayak settings · Journey Companion" },
+      { title: "Sahayak settings · Journey" },
       { name: "description", content: "Turn Sahayak on or off, choose what it keeps an eye on, and decide how often it nudges you." },
-      { property: "og:title", content: "Sahayak settings · Journey Companion" },
+      { property: "og:title", content: "Sahayak settings · Journey" },
       { property: "og:description", content: "Turn Sahayak on or off, choose what it keeps an eye on, and decide how often it nudges you." },
       { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
     ],

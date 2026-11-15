@@ -17,9 +17,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/review")({
   head: () => ({
     meta: [
-      { title: "Review queue · Journey Companion" },
+      { title: "Review queue · Journey" },
       { name: "description", content: "Read each drafted follow-up one at a time, then approve, edit or skip it. Nothing is sent without you." },
-      { property: "og:title", content: "Review queue · Journey Companion" },
+      { property: "og:title", content: "Review queue · Journey" },
       { property: "og:description", content: "Read each drafted follow-up one at a time, then approve, edit or skip it. Nothing is sent without you." },
       { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
     ],

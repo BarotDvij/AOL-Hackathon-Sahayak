@@ -8,7 +8,7 @@ import { impactMetrics, monthlyTrend } from '@/lib/journey/operations';
 import { useLanguage } from '@/lib/journey/i18n';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-export const Route = createFileRoute('/impact')({head: () => ({meta:[{title:'Impact · Journey Companion'},{name:'description',content:'Follow-up attendance, returning participants and the impact of coordinator outreach.'},{property:'og:title',content:'Impact · Journey Companion'},{property:'og:description',content:'Follow-up attendance, returning participants and the impact of coordinator outreach.'},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary'}]}), component: ImpactPage});
+export const Route = createFileRoute('/impact')({head: () => ({meta:[{title:'Impact · Journey'},{name:'description',content:'Follow-up attendance, returning participants and the impact of coordinator outreach.'},{property:'og:title',content:'Impact · Journey'},{property:'og:description',content:'Follow-up attendance, returning participants and the impact of coordinator outreach.'},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary'}]}), component: ImpactPage});
 function ImpactPage() {
   const {views, sentMessages, city, setCity} = useJourney(); const {t} = useLanguage(); const [range, setRange] = useState('180');
   const people = views.filter(v => city === 'all' || v.participant.city === city);

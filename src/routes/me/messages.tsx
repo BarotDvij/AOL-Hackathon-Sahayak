@@ -3,9 +3,9 @@ import { ParticipantMessages } from "@/components/participant/ParticipantMessage
 
 export const Route = createFileRoute("/me/messages")({
   head: () => ({ meta: [
-    { title: "My messages · Sahayak" },
+    { title: "My messages · Journey" },
     { name: "description", content: "Only the messages your coordinator has approved for you, with simple reply choices." },
-    { property: "og:title", content: "My messages · Sahayak" },
+    { property: "og:title", content: "My messages · Journey" },
     { property: "og:description", content: "Only the messages your coordinator has approved for you, with simple reply choices." },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
   ] }),

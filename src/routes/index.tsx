@@ -17,9 +17,9 @@ import type { StageId } from "@/lib/journey/types";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Dashboard · Journey Companion" },
+      { title: "Dashboard · Journey" },
       { name: "description", content: "Who needs a caring next step today, how the stages break down, and what is waiting for your review." },
-      { property: "og:title", content: "Dashboard · Journey Companion" },
+      { property: "og:title", content: "Dashboard · Journey" },
       { property: "og:description", content: "Who needs a caring next step today, how the stages break down, and what is waiting for your review." },
       { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
     ],
