@@ -16,7 +16,7 @@ async function renderTable(props: { stage?: "all" | "paused" } = {}) {
     history: createMemoryHistory({ initialEntries: ["/participants"] }),
     context: { queryClient: new QueryClient() },
   });
-  await router.start();
+  await router.load();
   return render(
     <JourneyProvider>
       <RouterProvider router={router}>
