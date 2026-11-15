@@ -123,7 +123,7 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
   };
 
   const MobileCards = ({ rows }: { rows: ParticipantView[] }) => (
-    <ul className="divide-y divide-border md:hidden">
+    <ul className="divide-y divide-border lg:hidden">
       {rows.map((v) => {
         const p = v.participant;
         const step = stepOf(v);
@@ -151,8 +151,8 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
     <thead>
       <tr className="border-b border-border">
         <Head label="Participant" sortKey="name" className="w-[26%]" />
-        <Head label="Stage" sortKey="stage" className="w-[15%]" />
-        <Head label="Last contact" sortKey="contact" className="w-[17%]" />
+        <Head label="Stage" sortKey="stage" className="w-[18%]" />
+        <Head label="Last contact" sortKey="contact" className="w-[14%]" />
         <Head label="Suggested next step" sortKey="step" className="w-[24%]" />
         <Head label="Channel" className="w-[9%]" />
         <Head label="" className="w-[9%] text-right" />
@@ -202,7 +202,7 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
         {isOpen && (
           <div>
           <MobileCards rows={rows} />
-          <div className="hidden overflow-x-auto md:block">
+          <div className="hidden overflow-x-auto lg:block">
             <table className="w-full table-fixed">
               <Columns />
               <TableBody rows={rows} empty="No one matches these filters." />
@@ -305,7 +305,7 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
       {mode === "none" ? (
         <div className="rounded-lg border border-border bg-card shadow-soft">
           <MobileCards rows={shown} />
-          <div className="hidden overflow-x-auto md:block">
+          <div className="hidden overflow-x-auto lg:block">
             <table className="w-full table-fixed">
               <Columns />
               <TableBody rows={shown} empty="No one matches these filters." />
@@ -348,7 +348,7 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
             </div>
             {!collapsed.includes("unassigned") && (
               <div><MobileCards rows={unassignedRows} />
-              <div className="hidden overflow-x-auto md:block">
+              <div className="hidden overflow-x-auto lg:block">
                 <table className="w-full table-fixed">
                   <Columns />
                   <TableBody rows={unassignedRows} empty="No one matches these filters." />
