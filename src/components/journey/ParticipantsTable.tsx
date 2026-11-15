@@ -348,7 +348,7 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
         </div>
       )}
 
-      {messagingGroup && <MessageGroupDialog group={messagingGroup} open={messaging !== null} onOpenChange={(o) => setMessaging(o ? messagingGroup.volunteer.id : null)} />}
+      {messagingGroup && <MessageGroupDialog key={`${messagingGroup.volunteer.id}-${messagingGroup.members.length}`} group={messagingGroup} open={messaging !== null} onOpenChange={(o) => setMessaging(o ? messagingGroup.volunteer.id : null)} />}
     </section>
   );
 }

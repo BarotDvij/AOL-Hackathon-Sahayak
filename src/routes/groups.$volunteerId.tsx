@@ -150,7 +150,7 @@ function GroupPage() {
         </ul>
       </section>
 
-      <MessageGroupDialog group={group} open={messaging} onOpenChange={setMessaging} />
+      <MessageGroupDialog key={`${group.volunteer.id}-${group.members.length}`} group={group} open={messaging} onOpenChange={setMessaging} />
     </AppShell>
   );
 }
