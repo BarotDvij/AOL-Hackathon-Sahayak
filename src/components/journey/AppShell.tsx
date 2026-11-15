@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { BarChart3, CalendarDays, UserRound, Bell, BookOpen, History, Inbox, LayoutDashboard, Mail, Menu, MoreHorizontal, Settings, Sparkles, Users } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -12,6 +12,8 @@ import { cn } from "@/lib/utils";
 import { RemindersPanel } from "./RemindersPanel";
 import { SahayakChat } from "./SahayakChat";
 import { SahayakIntro } from "./SahayakIntro";
+import { useDemoSession, demoPageVisible } from '@/lib/journey/demo-session';
+import { DemoLogin } from './DemoLogin';
 
 type To = "/" | "/impact" | "/sessions" | "/team" | "/participants" | "/programs" | "/review" | "/inbox" | "/activity" | "/settings";
 type NavItem = { to: To; label: string; Icon: typeof LayoutDashboard; exact?: boolean; alsoActive?: string };
@@ -52,6 +54,7 @@ function NavItemLink({ to, label, Icon, exact, alsoActive, waiting, onNavigate }
 
 /** The one place Sahayak is turned on or off without leaving the page. */
 function SahayakSwitch({ onNavigate, onMeet }: { onNavigate?: () => void; onMeet: () => void }) {
+  const session = useDemoSession();
   const {t} = useLanguage();
   const { sahayak, setSahayakOn } = useJourney();
   return (
@@ -66,13 +69,13 @@ function SahayakSwitch({ onNavigate, onMeet }: { onNavigate?: () => void; onMeet
         <Button variant="link" size="sm" onClick={onMeet} className="h-auto p-0 text-xs font-medium text-purple hover:underline">
           {t("Meet Sahayak")}
         </Button>
-        <Link
+        {session?.role !== 'volunteer' && <Link
           to="/sahayak"
           onClick={onNavigate}
           className="text-xs font-medium text-purple hover:underline"
         >
           {t("Sahayak settings")}
-        </Link>
+        </Link>}
       </div>
     </div>
   );
@@ -98,6 +101,11 @@ function BellButton({ count, onClick, className }: { count: number; onClick: () 
 
 /** The coordinator's frame: a fixed 240px sidebar on wide screens, a slide-out menu on phones. */
 export function AppShell({ children }: { children: ReactNode }) {
+  const session = useDemoSession();
+  const navigate = useNavigate();
+  const volunteer = session?.role === 'volunteer';
+  const navigation = NAV.filter(item => demoPageVisible(session?.role ?? null, item.to));
+  const account = <div className="flex min-w-0 items-center gap-2"><span className="text-xs text-muted-foreground">{volunteer ? 'Shivam Kapoor · Volunteer' : 'Meera · Admin'}</span><Button variant="link" size="sm" className="shrink-0 px-1" onClick={()=>{session?.signOut();void navigate({to:'/demo-login',replace:true});}}>Sign out</Button></div>;
   const {t} = useLanguage();
   const { summary, sahayak, reminders, inbox, city, setCity, views } = useJourney();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -110,6 +118,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   const unread = sahayak.on ? inbox.filter(needsReply).length : 0;
   const badgeFor = (to: To) => (to === "/review" ? waiting : to === "/inbox" ? unread : undefined);
 
+  if (session && !session.ready) return <div className="min-h-dvh bg-background" />;
+  if (session && !session.role) return <DemoLogin />;
+
   return (
     <div className="coordinator-shell min-h-screen bg-background">
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-[240px] flex-col border-r border-border bg-card md:flex">
@@ -118,7 +129,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
         <SahayakSwitch onMeet={() => setIntroOpen(true)} />
         <nav className="mt-2 flex flex-1 flex-col gap-1 px-3" aria-label="Sections">
-          {NAV.map((n) => <NavItemLink key={n.to} {...n} waiting={badgeFor(n.to)} />)}
+          {navigation.map((n) => <NavItemLink key={n.to} {...n} waiting={badgeFor(n.to)} />)}
         </nav>
         <p className="px-5 py-4 text-xs leading-relaxed text-muted-foreground">{t("Nothing is ever sent without you approving it.")}</p>
       </aside>
@@ -133,6 +144,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <BellButton count={sahayak.on ? reminders.length : 0} onClick={() => setRemindersOpen(true)} />
         </div>
       </header>
+      <div className="flex justify-end border-b border-border bg-card px-4 md:hidden">{account}</div>
 
       <main className="md:pl-[240px]">
         <div className="sticky top-0 z-20 hidden h-12 items-center justify-between gap-3 border-b border-border bg-card/90 px-8 backdrop-blur md:flex">
@@ -145,17 +157,18 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span className="text-xs text-muted-foreground">Sahayak is off · manual mode</span>
           )}
           <div className="flex items-center gap-3">
+            {account}
             <span className="rounded-full bg-stage-new px-2 py-0.5 text-xs font-medium text-stage-new-foreground">{t("Demo data · nothing is sent")}</span>
             <Link to="/start" className="text-xs font-medium text-purple hover:underline">{t("Switch view")}</Link>
             {sahayak.on && <BellButton count={reminders.length} onClick={() => setRemindersOpen(true)} />}
           </div>
         </div>
-        <div className="mx-auto w-full max-w-[1280px] app-page px-4 pb-40 pt-4 md:px-6 md:pb-24 md:pt-6 lg:px-8 lg:pt-8">{children}</div>
+        <div className="mx-auto w-full max-w-[1280px] app-page px-4 pb-40 pt-4 md:px-6 md:pb-24 md:pt-6 lg:px-8 lg:pt-8">{volunteer && <p className="mb-5 border-l-2 border-purple bg-secondary px-4 py-3 text-sm text-primary">Signed in as Shivam Kapoor. You are seeing only the people you know.</p>}{demoPageVisible(session?.role ?? null, pathname) ? children : <p className="text-sm text-muted-foreground">This page is available in the Admin demo view.</p>}</div>
       </main>
 
       <nav aria-label="Mobile sections" className="mobile-bottom-nav fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border bg-card md:hidden">
         {(["/", "/participants", "/sessions", "/impact"] as To[]).map((to) => {
-          const item = NAV.find((n) => n.to === to);
+          const item = navigation.find((n) => n.to === to);
           if (!item) return null;
           return <Link key={to} to={to} activeOptions={{ exact: to === "/" }} className="flex min-h-16 min-w-0 flex-col items-center justify-center gap-1 text-muted-foreground" activeProps={{ className: "bg-secondary text-purple" }}><item.Icon className="size-5 shrink-0" aria-hidden /><span className="max-w-full truncate text-xs font-medium">{t(item.label)}</span></Link>;
         })}
@@ -164,7 +177,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="bottom" className="mobile-more-sheet max-h-[85dvh] overflow-y-auto rounded-t-lg p-4">
           <SheetTitle className="pr-12 font-heading">{t("More")}</SheetTitle>
-          <nav className="mt-4 grid grid-cols-2 gap-2" aria-label="More sections">{NAV.filter((n) => !["/", "/participants", "/sessions", "/impact"].includes(n.to)).map((n) => <NavItemLink key={n.to} {...n} waiting={badgeFor(n.to)} onNavigate={() => setOpen(false)} />)}</nav>
+          <nav className="mt-4 grid grid-cols-2 gap-2" aria-label="More sections">{navigation.filter((n) => !["/", "/participants", "/sessions", "/impact"].includes(n.to)).map((n) => <NavItemLink key={n.to} {...n} waiting={badgeFor(n.to)} onNavigate={() => setOpen(false)} />)}</nav>
           <SahayakSwitch onNavigate={() => setOpen(false)} onMeet={() => { setOpen(false); setIntroOpen(true); }} />
           <Link to="/start" onClick={() => setOpen(false)} className="mt-3 flex min-h-11 items-center px-3 text-sm font-medium text-purple">{t("Switch view")}</Link>
           <p className="px-3 text-xs text-muted-foreground">{t("Demo data · nothing is sent")}</p>

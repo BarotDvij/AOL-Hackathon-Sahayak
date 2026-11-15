@@ -11,6 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import { LanguageProvider } from "@/lib/journey/i18n";
+import { DemoSessionProvider } from '@/lib/journey/demo-session';
 import { JourneyProvider } from "@/lib/journey/store";
 import { Toaster } from "@/components/ui/sonner";
 import appCss from "../styles.css?url";
@@ -142,10 +143,10 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <LanguageProvider><JourneyProvider programCatalog={programCatalog}>
+      <DemoSessionProvider><LanguageProvider><JourneyProvider programCatalog={programCatalog}>
           <Outlet />
         <Toaster position="bottom-right" />
-      </JourneyProvider></LanguageProvider>
+      </JourneyProvider></LanguageProvider></DemoSessionProvider>
     </QueryClientProvider>
   );
 }

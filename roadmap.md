@@ -72,3 +72,6 @@
 - The floating "Ask Sahayak" button sits over the bottom-right of the participants table while scrolling (the spec asked for bottom right); move or shrink it if it gets in the way.
 - Every CSV Source cell contains an organization or listing name rather than a URL, so program source links remain unavailable until real URLs are supplied.
 - Coordinator and no-login participant demo state reset on reload; authenticated participant/MCP records remain protected in Lovable Cloud for later account-based use.
+
+## Done
+- Added a browser-local Admin/Volunteer demo sign-in screen and sign-out, with no passwords, authentication or database changes. Admin retains the existing pages; volunteer automatically uses Shivam’s group and My follow-ups, with participant counts/review/inbox records scoped by existing connection membership, a signed-in banner and hidden Impact/Team/Settings navigation. Verified first entry, volunteer group, reload, sign-out, Admin navigation and 614px layout; 12 focused tests passed.
