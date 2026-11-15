@@ -1,6 +1,6 @@
 import { useLanguage } from "@/lib/journey/i18n";
 import { createFileRoute } from "@tanstack/react-router";
-import { Check, ChevronDown, ChevronUp } from "lucide-react";
+import { Check, ChevronDown, ChevronUp, TriangleAlert } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/journey/AppShell";
 import { ChannelIcon, Initials, SahayakTag } from "@/components/journey/bits";
@@ -12,6 +12,8 @@ import { useJourney } from "@/lib/journey/store";
 import { suggestedReply, waitingDays, WAITING_AFTER_DAYS } from "@/lib/journey/sahayak";
 import type { InboxMessage } from "@/lib/journey/inbox-seed";
 import { cn } from "@/lib/utils";
+import { pressurePhrases, TONE_DEMO_DRAFT } from '@/lib/journey/message-pressure';
+import { messageLimitNote } from '@/lib/journey/messages';
 
 export const Route = createFileRoute("/inbox")({
   head: () => ({
@@ -111,7 +113,10 @@ function MessageCard({ message: m, open, onToggle }: { message: InboxMessage; op
   const suggested = sahayak.on && sahayak.features.autoDraft && person && needsReply(m)
     ? suggestedReply(m, person.participant, catalogList)
     : null;
-  const text = draft ?? suggested ?? "";
+  const toneDemo = m.id === 'i01';
+  const text = draft ?? (toneDemo ? TONE_DEMO_DRAFT : suggested) ?? "";
+  const lengthNote = messageLimitNote(text, m.channel);
+  const flags = pressurePhrases(text);
 
   return (
     <article className="overflow-hidden rounded-lg border border-border bg-card shadow-soft">
@@ -126,6 +131,7 @@ function MessageCard({ message: m, open, onToggle }: { message: InboxMessage; op
               </span>
             )}
             <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", STATUS_CLASS[m.status])}>{STATUS_LABEL[m.status]}</span>
+            {toneDemo && <span className="rounded-full bg-stage-quiet px-2 py-0.5 text-xs font-medium text-stage-quiet-foreground">Tone-check demo</span>}
           </span>
           <span className="mt-0.5 block truncate text-sm text-foreground">{m.subject}</span>
           <span className="block truncate text-xs text-muted-foreground">{m.preview}</span>
@@ -150,10 +156,14 @@ function MessageCard({ message: m, open, onToggle }: { message: InboxMessage; op
           ) : needsReply(m) ? (
             <div className="mt-3">
               <label htmlFor={`reply-${m.id}`} className="text-xs font-medium text-muted-foreground">
-                {suggested ? "Suggested reply — read it, change it, then approve" : "Write a reply"}
+                {toneDemo ? 'Demo draft · intentionally includes pressure wording · not sent' : suggested ? "Suggested reply — read it, change it, then approve" : "Write a reply"}
               </label>
               <Textarea id={`reply-${m.id}`} value={text} onChange={(e) => setDraft(e.target.value)} rows={6} className="mt-1 bg-card" />
-              {suggested && <SahayakTag className="mt-1.5" />}
+              <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs" aria-live="polite">
+                <span className={lengthNote.ok ? 'text-muted-foreground' : 'text-destructive'}>{lengthNote.label}</span>
+                {flags.length > 0 && <span className="inline-flex items-start gap-1 text-sun-orange-deep"><TriangleAlert className="size-4 shrink-0" aria-hidden /><span>Pressure phrases: {flags.map(word => `“${word}”`).join(', ')}. Consider gentler wording.</span></span>}
+              </div>
+              {suggested && !toneDemo && <SahayakTag className="mt-1.5" />}
               <div className="mt-2 flex flex-wrap gap-2">
                 <Button size="sm" disabled={!text.trim()} onClick={() => { replyInbox(m.id, text); setDraft(null); }}>
                   <Check className="size-4" aria-hidden />Approve and send reply
