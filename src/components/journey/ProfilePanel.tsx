@@ -51,12 +51,20 @@ function Body({ view }: { view: ParticipantView }) {
         <SheetTitle className="font-display text-[22px] font-normal text-primary">{p.firstName} {p.lastName}</SheetTitle>
         <SheetDescription className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
           <StageBadge stage={view.stage} />
-          <span>{p.city}</span><span className="rounded-full bg-secondary px-2 py-0.5 text-xs text-purple">{p.language === "French" ? "FR" : "EN"}</span><VolunteerAvatar id={assignments[p.id]}/>{personMessages.some(broughtBack)&&<span className="rounded-full bg-stage-new px-2 py-0.5 text-xs text-stage-new-foreground">{t("Brought back")}</span>}
+          <span>{p.city}</span><span className="rounded-full bg-secondary px-2 py-0.5 text-xs text-purple">{p.language === "French" ? "FR" : "EN"}</span><VolunteerAvatar id={assignments[p.id] ?? view.connection?.volunteerId}/>{personMessages.some(broughtBack)&&<span className="rounded-full bg-stage-new px-2 py-0.5 text-xs text-stage-new-foreground">{t("Brought back")}</span>}
           {channel && <ChannelIcon channel={channel} withLabel />}
         </SheetDescription>
       </div>
 
       <div className="flex-1 space-y-6 overflow-y-auto px-6 py-5">
+        <section aria-label={t("Follow-up volunteer")} className="rounded-lg border border-border bg-secondary/40 p-3">
+          <p className="text-xs font-medium text-muted-foreground">{t("Follow-up volunteer")}</p>
+          <p className="mt-1 text-sm font-medium text-foreground">{view.connection?.volunteerName ?? t("Nobody yet")}</p>
+          {view.connection && <p className="mt-0.5 text-xs text-muted-foreground">{view.connection.reason}</p>}
+          {view.alsoKnows.length > 0 && (
+            <p className="mt-2 text-xs text-muted-foreground">{t("Also knows")}: {view.alsoKnows.map((id) => VOLUNTEERS.find((v) => v.id === id)?.name ?? id).join(", ")}</p>
+          )}
+        </section>
         <section className="space-y-3"><label className="block text-xs font-medium">{t("Assigned volunteer")}<Select value={assignments[p.id] ?? "unassigned"} onValueChange={id=>assign(p.id,id=== "unassigned" ? "" : id)}><SelectTrigger className="mt-1"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="unassigned">{t("Unassigned")}</SelectItem>{VOLUNTEERS.map(v=><SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>)}</SelectContent></Select></label><label className="block text-xs font-medium">{t("Preferred language")}<Select value={p.language} onValueChange={language=>setParticipantLanguage(p.id,language)}><SelectTrigger className="mt-1"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="English">English</SelectItem><SelectItem value="French">Français</SelectItem></SelectContent></Select></label></section>
         <section>
           <h3 className="mb-3 font-heading text-sm font-semibold text-primary">Journey so far</h3>

@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell } from "@/components/journey/AppShell";
 import { DailyBrief } from "@/components/journey/DailyBrief";
-import { PriorityList } from "@/components/journey/PriorityList";
+import { GroupAttentionList } from "@/components/journey/GroupAttentionList";
 import { ProfilePanel } from "@/components/journey/ProfilePanel";
 import { StageBar } from "@/components/journey/StageBar";
 import { SummaryCards } from "@/components/journey/SummaryCards";
@@ -53,7 +53,7 @@ function DashboardPage() {
         <StageBar active={stage} onChange={setStage} />
 
         <div className="grid gap-4 lg:grid-cols-3">
-          <div className="lg:col-span-2"><PriorityList onOpen={setOpenId} /></div>
+          <div className="lg:col-span-2"><GroupAttentionList /></div>
           <UpcomingList />
         </div>
 
