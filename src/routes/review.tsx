@@ -28,7 +28,7 @@ export const Route = createFileRoute("/review")({
 });
 
 function ReviewPage() {
-  const { pending, catalog, views, approve, skip, editMessage, setChannel, useAlternate, setMessageLanguage } = useJourney();
+  const { pending, catalog, views, approve, skip, editMessage, setChannel, swapToAlternate, setMessageLanguage } = useJourney();
   const {t} = useLanguage();
   const [translation, setTranslation] = useState(false);
   const total = views.filter((v) => v.suggestion).length;
@@ -99,7 +99,7 @@ function ReviewPage() {
           {step.program?.suggested_timing && <p className="mt-2 text-xs text-muted-foreground">Suggested timing: {step.program.suggested_timing}</p>}
           {step.program?.needs_local_check && <p className="mt-2 inline-flex rounded-full bg-sun-orange px-2.5 py-1 text-xs font-semibold text-primary">Confirm with your centre</p>}
           {alt && (
-            <button onClick={() => { useAlternate(s.id); done(); }} className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-purple underline-offset-4 hover:underline">
+            <button onClick={() => { swapToAlternate(s.id); done(); }} className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-purple underline-offset-4 hover:underline">
               <Undo2 className="size-3.5" aria-hidden />Try {alt.shortTitle} instead
             </button>
           )}

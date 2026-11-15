@@ -84,7 +84,7 @@ interface Store {
   meId: string | null; setMeId: (id: string | null) => void;
   approve: (id: string, message: string) => void;
   skip: (id: string, reason: string) => void;
-  useAlternate: (id: string) => void;
+  swapToAlternate: (id: string) => void;
   editMessage: (id: string, message: string) => void;
   setChannel: (id: string, channel: Channel) => void;
   chooseStep: (participantId: string, stepId: string) => void;
@@ -317,7 +317,9 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
       const session = sessions.find(s => s.id === sessionId);
       if (!session || session.ended || !identity.trim()) return {ok: false, name: "", message: "This check-in is closed or the name is missing."};
       const needle = identity.trim().toLowerCase();
-      let person = participants.find(p => `${p.firstName} ${p.lastName}`.toLowerCase() === needle || p.firstName.toLowerCase() === needle || p.phone === identity.trim());
+      const sameFirstName = participants.filter(p => p.firstName.toLowerCase() === needle);
+      let person = participants.find(p => `${p.firstName} ${p.lastName}`.toLowerCase() === needle || p.phone === identity.trim()) ?? (sameFirstName.length === 1 ? sameFirstName[0] : undefined);
+      if (!person && sameFirstName.length > 1) return {ok: false, name: "", message: "More than one person has that first name. Please enter your full name."};
       const firstTimer = !person || !events.some(e => e.participantId === person?.id);
       if (!person) { const words = identity.trim().split(/\s+/); const isPhone = /^[+\d ()-]+$/.test(identity.trim()); person = {id: `guest-${Date.now()}`, firstName: isPhone ? "Guest" : words[0] ?? "Guest", lastName: isPhone ? "" : words.slice(1).join(" "), age: 30, city: session.city, language: "English", email: null, phone: isPhone ? identity.trim() : null, preferredChannel: isPhone ? "sms" : null, doNotContact: false, sevaRole: null, interests: []}; setParticipants(all => [...all, person as Participant]); }
       if (checkIns.some(c => c.sessionId === sessionId && c.participantId === person?.id)) return {ok: true, name: person.firstName, message: "Already checked in"};
@@ -384,7 +386,7 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
       update(id, (x) => ({ ...x, status: "skipped", skipReason: reason, reviewedBy: C.coordinatorName, reviewedAt: new Date().toISOString() }));
       log("skipped", s.participantId, `Skipped ${nameOf(s.participantId)}: ${reason}`);
     },
-    useAlternate: (id) => update(id, (s) => {
+    swapToAlternate: (id) => update(id, (s) => {
       if (!s.alternateNextStepId) return s;
       const v = views.find((x) => x.participant.id === s.participantId);
       const alt = catalog.get(s.alternateNextStepId);
@@ -424,11 +426,14 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
       incoming(m.participantId, reply, "your message");
     },
   };
+  // The listener subscribes once and always calls the latest checkIn, so it never reads stale records.
+  const checkInRef = useRef(store.checkIn);
+  checkInRef.current = store.checkIn;
   useEffect(() => {
     const channel = new BroadcastChannel('journey-check-in');
-    channel.onmessage = event => { const value = event.data; if (typeof value?.sessionId === 'string' && typeof value?.identity === 'string') store.checkIn(value.sessionId, value.identity); };
+    channel.onmessage = event => { const value = event.data; if (typeof value?.sessionId === 'string' && typeof value?.identity === 'string') checkInRef.current(value.sessionId, value.identity); };
     return () => channel.close();
-  }, [sessions, checkIns, participants, events, sentMessages]);
+  }, []);
   return <Ctx.Provider value={store}>{children}</Ctx.Provider>;
 }
 
