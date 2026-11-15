@@ -4,11 +4,13 @@ import { useState } from "react";
 import { AppShell } from "@/components/journey/AppShell";
 import { ParticipantsTable } from "@/components/journey/ParticipantsTable";
 import { ProfilePanel } from "@/components/journey/ProfilePanel";
-import { StageBar } from "@/components/journey/StageBar";
+import { STAGES } from "@/lib/journey/config";
 import { useJourney } from "@/lib/journey/store";
 import type { StageId } from "@/lib/journey/types";
 
 export const Route = createFileRoute("/participants")({
+  validateSearch: (search: Record<string, unknown>): { stage?: string } =>
+    typeof search["stage"] === "string" ? { stage: search["stage"] } : {},
   head: () => ({
     meta: [
       { title: "Participants · Journey" },
@@ -24,7 +26,10 @@ export const Route = createFileRoute("/participants")({
 function ParticipantsPage() {
   const {t} = useLanguage();
   const { views } = useJourney();
-  const [stage, setStage] = useState<StageId | "all">("all");
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
+  const stage: StageId | "all" = STAGES.find((s) => s.id === search["stage"])?.id ?? "all";
+  const setStage = (next: StageId | "all") => { void navigate({ search: (prev) => ({ ...prev, stage: next }), replace: true }); };
   const [openId, setOpenId] = useState<string | null>(null);
   const openView = views.find((v) => v.participant.id === openId) ?? null;
 
@@ -36,8 +41,7 @@ function ParticipantsPage() {
           <p className="mt-1 text-sm text-muted-foreground">Everyone in your centre, with their stage and next step.</p>
         </header>
 
-        <StageBar active={stage} onChange={setStage} />
-        <ParticipantsTable stage={stage} onStage={setStage} onOpen={setOpenId} title="All participants" />
+        <ParticipantsTable stage={stage} onStage={setStage} onOpen={setOpenId} title="All participants" stageChips />
       </div>
 
       <ProfilePanel view={openView} onOpenChange={(o) => !o && setOpenId(null)} />

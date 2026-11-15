@@ -1,5 +1,5 @@
 import { useLanguage } from "@/lib/journey/i18n";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell } from "@/components/journey/AppShell";
 import { DailyBrief } from "@/components/journey/DailyBrief";
@@ -30,6 +30,7 @@ export const Route = createFileRoute("/")({
 /** Set after mount so the server and the first client render say the same thing. */
 function DashboardPage() {
   const {t} = useLanguage();
+  const navigate = useNavigate();
   const { views, pending } = useJourney();
   const greeting = useGreeting();
   const [stage, setStage] = useState<StageId | "all">("all");
@@ -50,7 +51,7 @@ function DashboardPage() {
         <DailyBrief />
 
         <SummaryCards />
-        <StageBar active={stage} onChange={setStage} />
+        <StageBar active={stage} onChange={(selected) => { void navigate({ to: "/participants", search: { stage: selected } }); }} />
 
         <div className="grid gap-4 lg:grid-cols-3">
           <div className="min-w-0 lg:col-span-2"><GroupAttentionList /></div>

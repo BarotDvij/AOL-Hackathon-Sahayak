@@ -24,7 +24,7 @@ type GroupMode = "volunteer" | "city" | "none";
 const plural = (n: number, one: string, many = one === "person" ? "people" : `${one}s`) => `${n} ${n === 1 ? one : many}`;
 
 /** Search, filters, sortable columns and grouping by volunteer, city or none. */
-export function ParticipantsTable({ stage, onStage, onOpen, title = "Participants" }: { stage: StageId | "all"; onStage: (s: StageId | "all") => void; onOpen: (id: string) => void; title?: string }) {
+export function ParticipantsTable({ stage, onStage, onOpen, title = "Participants", stageChips = false }: { stage: StageId | "all"; onStage: (s: StageId | "all") => void; onOpen: (id: string) => void; title?: string; stageChips?: boolean }) {
   const { views, catalog, assignments, activeVolunteer, setActiveVolunteer, myFollowUps, setMyFollowUps, groups, unassigned, assign, confirmAssignments } = useJourney();
   const {t} = useLanguage();
   const [q, setQ] = useState("");
@@ -241,13 +241,13 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
   const messagingGroup = groups.find((g) => g.volunteer.id === messaging);
 
   const filterControls = <>
-        <Select value={stage} onValueChange={(s) => { onStage(s as StageId | "all"); setPage(1); }}>
+        {!stageChips && <Select value={stage} onValueChange={(s) => { onStage(s as StageId | "all"); setPage(1); }}>
           <SelectTrigger className={cn("w-40 bg-card", stage !== "all" && "border-purple text-purple")} aria-label="Filter by stage"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("All stages")}</SelectItem>
             {STAGES.map((s) => <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>)}
           </SelectContent>
-        </Select>
+        </Select>}
         <Select value={city} onValueChange={(c) => { setCity(c); setPage(1); }}>
           <SelectTrigger className={cn("w-36 bg-card", city !== "all" && "border-purple text-purple")} aria-label="Filter by city"><SelectValue /></SelectTrigger>
           <SelectContent>
@@ -275,6 +275,17 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
         <Button variant="outline" className="md:hidden" onClick={() => setFiltersOpen(true)}><SlidersHorizontal className="size-4" />{t("Filters")}</Button>
         <div className="hidden flex-wrap gap-3 md:flex">{filterControls}</div>
       </div>
+
+      {stageChips && <div role="group" aria-label="Filter participants by stage" className="flex flex-wrap items-center gap-2">
+        {[{ id: "all" as const, label: "All" }, ...STAGES].map((item) => {
+          const count = item.id === "all" ? views.length : views.filter((v) => v.stage === item.id).length;
+          return <Button key={item.id} variant="outline" size="sm" aria-pressed={stage === item.id}
+            onClick={() => { onStage(item.id); setPage(1); }}
+            className={cn("rounded-full border-border px-3 font-sans text-xs font-medium", stage === item.id ? "border-purple bg-purple text-primary-foreground hover:bg-purple hover:text-primary-foreground" : "bg-card text-muted-foreground")}>
+            {t(item.label)} <span className="tabular-nums">{count}</span>
+          </Button>;
+        })}
+      </div>}
 
       <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card px-4 py-2 shadow-soft">
         <span className="text-xs font-medium text-muted-foreground">{t("Group by")}</span>
