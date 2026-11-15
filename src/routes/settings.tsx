@@ -23,7 +23,7 @@ const TABS = [
 ] as const;
 type Tab = typeof TABS[number]['id'];
 export const Route = createFileRoute('/settings')({
-  validateSearch: (search: Record<string, unknown>): { tab?: Tab } => ({ tab: TABS.find(item => item.id === search.tab)?.id }),
+  validateSearch: (search: Record<string, unknown>): { tab?: Tab | undefined } => ({ tab: TABS.find(item => item.id === search['tab'])?.id }),
   head: () => ({ meta: [
     { title:'Settings · Journey' }, { name:'description', content:'Manage your centre, profile, appearance, reminders and Sahayak preferences in Journey.' },
     { property:'og:title', content:'Settings · Journey' }, { property:'og:description', content:'Manage your centre, profile, appearance, reminders and Sahayak preferences in Journey.' },
@@ -51,9 +51,9 @@ function SettingsPage() {
   const {views,groups,sahayak,setSahayakOn,setSahayakFeature,setNudge,resetSahayakDemo}=useJourney();
   const tab=Route.useSearch().tab ?? 'profile'; const navigate=Route.useNavigate();
   const [draft,setDraft]=useState(preferences); const [resetOpen,setResetOpen]=useState(false); const [importOpen,setImportOpen]=useState(false);
-  useEffect(()=>setDraft(preferences),[preferences]);
+  useEffect(()=>setDraft({...preferences, language}),[preferences,language]);
   const update=<K extends keyof Preferences>(key:K,value:Preferences[K])=>setDraft(prev=>({...prev,[key]:value}));
-  const save=()=> { const persisted=savePreferences(draft); setLanguage(draft.language); if(persisted) toast.success(t('Saved')); else toast.warning(t('Saved for this visit only. Browser storage is unavailable.')); };
+  const save=()=> { const persisted=savePreferences(draft); setLanguage(draft.language); if(tab==='notifications') { setSahayakFeature('dailyBrief',draft.dailyBrief); setSahayakFeature('replyReminders',draft.replyReminders); setSahayakFeature('followUpReminders',draft.followUpReminders); } if(persisted) toast.success(t('Saved')); else toast.warning(t('Saved for this visit only. Browser storage is unavailable.')); };
   const textField=(key:'name'|'email'|'phone'|'centre'|'city'|'region',label:string,type='text')=><Field label={label} id={`settings-${key}`}><Input id={`settings-${key}`} type={type} value={draft[key]} onChange={e=>update(key,e.target.value)} /></Field>;
   return <AppShell><header className="mb-6"><h1 className="font-display text-[32px] font-normal text-primary">{t('Settings')}</h1><p className="mt-1 text-sm text-muted-foreground">{t('Manage your centre, preferences and how Journey Companion works')}</p></header>
     <div className="grid items-start gap-6 md:grid-cols-[180px_minmax(0,1fr)] lg:grid-cols-[200px_minmax(0,1fr)]">
