@@ -30,7 +30,7 @@ const ROWS: Row[] = [
   { n: ["Ravi", "Kapoor"], city: "Waterloo", ch: "whatsapp", v: "v1", int: ["meditation"], c: [[SKY, 70]], e: [["follow-up", 60], ["follow-up", 50], ["follow-up", 35]] },
   { n: ["Hannah", "Schultz"], city: "Kitchener", ch: "email", v: "v3", int: ["yoga"], c: [[SKY, 95]], e: [["follow-up", 80], ["follow-up", 70]] },
   { n: ["Kwame", "Mensah"], city: "Toronto", ch: "sms", v: "v2", c: [[SKY, 55]], e: [["follow-up", 40]], k: [["sms", "out", 30, "replied"]] },
-  { n: ["Isabel", "Moreau"], city: "Mississauga", ch: "whatsapp", v: "v2", int: ["music"], c: [[SKY, 110]], e: [["follow-up", 100], ["satsang", 85]] },
+  { n: ["Isabel", "Moreau"], city: "Mississauga", ch: "whatsapp", v: "v4", int: ["music"], c: [[SKY, 110]], e: [["follow-up", 100], ["satsang", 85]] },
   // Actively engaged — the October Art of Silence retreat with Shivam (v4) is the newest thing these three did.
   { n: ["Neha", "Joshi"], city: "Waterloo", ch: "whatsapp", v: "v1", c: [[SKY, 300], ["Sahaj Samadhi Meditation", 40], [SILENCE, 38, "v4"]], e: [["satsang", 25], ["satsang", 15], ["satsang", 20]] },
   { n: ["Oliver", "Grant"], city: "Toronto", ch: "email", v: "v2", int: ["retreat"], c: [[SKY, 400], [SILENCE, 38, "v4"]], e: [["follow-up", 50], ["follow-up", 30], ["follow-up", 16]] },

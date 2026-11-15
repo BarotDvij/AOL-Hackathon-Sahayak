@@ -158,6 +158,21 @@ export function groupsNeedingAttention(groups: VolunteerGroup[]): VolunteerGroup
   );
 }
 
+/**
+ * The program the drifting people in a group share, e.g. "Art of Silence".
+ * Falls back to the group's most shared program when the drifting people share none.
+ */
+export function quietProgram(group: VolunteerGroup): string | null {
+  const counts = new Map<string, number>();
+  for (const m of group.members.filter((x) => x.stage === "quiet" || x.stage === "dormant")) {
+    const p = m.connection?.program;
+    if (p) counts.set(p, (counts.get(p) ?? 0) + 1);
+  }
+  return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0]?.[0]
+    ?? group.programs[0]?.name
+    ?? null;
+}
+
 /** People nobody has connected to a volunteer yet. */
 export function unassignedViews(views: Groupable[]): Groupable[] {
   return views.filter((v) => !v.connection);

@@ -1,7 +1,7 @@
 import { JOURNEY_CONFIG as C } from "./config";
 import { contactText, daysSinceActivity, daysSinceLastContact } from "./contact";
 import { daysSince, isoDaysFrom, parseIso, today } from "./dates";
-import { groupsNeedingAttention, type VolunteerGroup } from "./groups";
+import { groupsNeedingAttention, quietProgram, type VolunteerGroup } from "./groups";
 import { needsReply, type InboxMessage } from "./inbox-seed";
 import { draftMessage } from "./messages";
 import type { Connection, History, NextStep, Participant, StageId, Suggestion } from "./types";
@@ -156,7 +156,7 @@ export function briefItems({ views, upcoming, inbox, groups = [], now = today() 
     const goneQuiet = quietGroup.members.filter((m) => m.stage === "quiet");
     items.push({
       id: "brief-group",
-      text: `${plural(goneQuiet.length, "person")} from ${first}'s ${quietGroup.programs[0]?.name ?? "group"} group ${goneQuiet.length === 1 ? "has" : "have"} gone quiet. ${first} could reach out.`,
+      text: `${plural(goneQuiet.length, "person")} from ${first}'s ${quietProgram(quietGroup) ?? "group"} group ${goneQuiet.length === 1 ? "has" : "have"} gone quiet. ${first} could reach out.`,
       why: `${goneQuiet.map((m) => m.participant.firstName).join(", ")} ${goneQuiet.length === 1 ? "has" : "have"} nothing on record for ${C.quietMinDays} days or more. ${goneQuiet[0]?.connection?.reason ?? ""}`.trim(),
       to: "/groups",
       volunteerId: quietGroup.volunteer.id,
