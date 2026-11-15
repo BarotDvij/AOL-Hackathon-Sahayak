@@ -1,84 +1,74 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useLanguage } from "@/lib/journey/i18n";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AppShell } from "@/components/journey/AppShell";
-import { JOURNEY_CONFIG as C, STAGES, stageLabel } from "@/lib/journey/config";
-
-export const Route = createFileRoute("/settings")({
-  head: () => ({
-    meta: [
-      { title: "Settings · Journey" },
-      { name: "description", content: "How Journey decides who needs a follow-up, and what it never does on its own." },
-      { property: "og:title", content: "Settings · Journey" },
-      { property: "og:description", content: "How Journey decides who needs a follow-up, and what it never does on its own." },
-      { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
-    ],
-  }),
-  component: SettingsPage,
+import { useEffect, useState, type ReactNode } from 'react';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { Check, ChevronDown, Download, Monitor, Moon, Sun, UserRound, Building2, Palette, Bell, Sparkles, ShieldCheck, Save, RotateCcw, Upload } from 'lucide-react';
+import { toast } from 'sonner';
+import { AppShell } from '@/components/journey/AppShell';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useLanguage } from '@/lib/journey/i18n';
+import { usePreferences, type Preferences } from '@/lib/journey/preferences';
+import { useJourney } from '@/lib/journey/store';
+import { FEATURE_HELP, FEATURE_LABEL, NUDGE_HELP, NUDGE_LABEL, type SahayakFeature, type Nudge } from '@/lib/journey/sahayak';
+import { JOURNEY_CONFIG as C, STAGES, stageLabel } from '@/lib/journey/config';
+import { participantCsv } from '@/lib/journey/participant-csv';
+import { cn } from '@/lib/utils';
+const TABS = [
+  { id:'profile', label:'Profile', Icon:UserRound }, { id:'centre', label:'Centre', Icon:Building2 },
+  { id:'appearance', label:'Appearance', Icon:Palette }, { id:'notifications', label:'Notifications', Icon:Bell },
+  { id:'sahayak', label:'Sahayak', Icon:Sparkles }, { id:'privacy', label:'Privacy and data', Icon:ShieldCheck },
+] as const;
+type Tab = typeof TABS[number]['id'];
+export const Route = createFileRoute('/settings')({
+  validateSearch: (search: Record<string, unknown>): { tab?: Tab | undefined } => ({ tab: TABS.find(item => item.id === search['tab'])?.id }),
+  head: () => ({ meta: [
+    { title:'Settings · Journey' }, { name:'description', content:'Manage your centre, profile, appearance, reminders and Sahayak preferences in Journey.' },
+    { property:'og:title', content:'Settings · Journey' }, { property:'og:description', content:'Manage your centre, profile, appearance, reminders and Sahayak preferences in Journey.' },
+    { property:'og:type', content:'website' }, { name:'twitter:card', content:'summary' },
+  ] }), component:SettingsPage,
 });
-
 const RULES: Record<string, string> = {
-  new: `Finished ${C.skyCourseName} in the last ${C.newAfterSkyDays} days.`,
-  building: `Finished it within ${C.buildingMaxDays} days and came to at least ${C.buildingMinFollowUps} follow-up since.`,
-  active: `Came to ${C.activeMinEvents} things in the last ${C.activeWindowDays} days, or finished a course in the last ${C.activeRecentCourseDays} days.`,
-  serving: `Has a seva role, or helped out in the last ${C.servingVolunteerDays} days.`,
-  quiet: `No event for ${C.quietMinDays} to ${C.quietMaxDays} days.`,
-  dormant: `No event or reply for ${C.dormantDays}+ days.`,
-  paused: `We wrote to them in the last ${C.pausedRecentContactDays} days, or they asked not to be contacted.`,
+  new:`Finished ${C.skyCourseName} in the last ${C.newAfterSkyDays} days.`,
+  building:`Finished it within ${C.buildingMaxDays} days and came to at least ${C.buildingMinFollowUps} follow-up since.`,
+  active:`Came to ${C.activeMinEvents} things in the last ${C.activeWindowDays} days, or finished a course in the last ${C.activeRecentCourseDays} days.`,
+  serving:`Has a seva role, or helped out in the last ${C.servingVolunteerDays} days.`, quiet:`No event for ${C.quietMinDays} to ${C.quietMaxDays} days.`,
+  dormant:`No event or reply for ${C.dormantDays}+ days.`, paused:`We wrote to them in the last ${C.pausedRecentContactDays} days, or they asked not to be contacted.`,
 };
-
+const FEATURES: SahayakFeature[] = ['dailyBrief','replyReminders','followUpReminders','autoDraft'];
+function Card({ title, help, children }: { title:string; help:string; children:ReactNode }) {
+  const {t}=useLanguage();
+  return <section className="rounded-lg border border-border bg-card p-5 shadow-soft md:p-6"><h2 className="font-heading text-base font-semibold text-primary">{t(title)}</h2><p className="mt-1 text-sm text-muted-foreground">{t(help)}</p><div className="mt-5">{children}</div></section>;
+}
+function Field({ label, id, children }: { label:string; id:string; children:ReactNode }) { const {t}=useLanguage(); return <div className="min-w-0 space-y-2"><Label htmlFor={id}>{t(label)}</Label>{children}</div>; }
+function Choice({ id, value, choices, onChange }: { id:string; value:string; choices: [string,string][]; onChange:(value:string)=>void }) {
+ const {t}=useLanguage(); return <Select value={value} onValueChange={onChange}><SelectTrigger id={id} className="w-full"><SelectValue /></SelectTrigger><SelectContent>{choices.map(([v,label])=><SelectItem key={v} value={v}>{t(label)}</SelectItem>)}</SelectContent></Select>;
+}
 function SettingsPage() {
-  const {language,setLanguage,t} = useLanguage();
-  return (
-    <AppShell>
-      <div className="max-w-3xl space-y-4">
-        <header className="mb-2">
-          <h1 className="font-display text-[32px] font-normal text-primary">{t("Settings")}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{t('How the app decides who needs a follow-up. Read-only in this version.')}</p>
-        </header>
-
-        <section className="border-y border-border py-5"><label htmlFor="app-language" className="font-heading text-base font-semibold">{t("App language")}</label><Select value={language} onValueChange={v=>setLanguage(v === "French" ? "French" : "English")}><SelectTrigger id="app-language" className="mt-3 w-52"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="English">{t('English')}</SelectItem><SelectItem value="French">Français</SelectItem></SelectContent></Select></section>
-        <section className="rounded-lg border border-border bg-card p-5 shadow-soft">
-          <h2 className="font-heading text-base font-semibold text-primary">{t('Journey stages')}</h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">Everyone is placed in the first stage that fits, checked in this order.</p>
-          <dl className="mt-4 divide-y divide-border">
-            {STAGES.map((s) => (
-              <div key={s.id} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 py-2.5">
-                <dt className="w-40 shrink-0 text-sm font-medium text-foreground">{t(stageLabel(s.id))}</dt>
-                <dd className="min-w-0 flex-1 text-sm text-muted-foreground">{RULES[s.id]}</dd>
-              </div>
-            ))}
-          </dl>
-        </section>
-
-        <section className="rounded-lg border border-border bg-card p-5 shadow-soft">
-          <h2 className="font-heading text-base font-semibold text-primary">{t('Sahayak')}</h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            Sahayak means helper. It keeps track of follow-ups so no one slips through the cracks.
-          </p>
-          <Link to="/sahayak" className="mt-2 inline-block text-sm font-medium text-purple hover:underline">
-            Sahayak settings
-          </Link>
-        </section>
-
-        <section className="rounded-lg border border-border bg-card p-5 shadow-soft">
-          <h2 className="font-heading text-base font-semibold text-primary">{t('This centre')}</h2>
-          <dl className="mt-3 divide-y divide-border">
-            <div className="flex items-baseline justify-between gap-4 py-2.5">
-              <dt className="text-sm font-medium text-foreground">{t('Coordinator')}</dt>
-              <dd className="text-sm text-muted-foreground">{C.coordinatorName}</dd>
-            </div>
-            <div className="flex items-baseline justify-between gap-4 py-2.5">
-              <dt className="text-sm font-medium text-foreground">{t('Data')}</dt>
-              <dd className="text-sm text-muted-foreground">{t('Sample participants and a sample calendar')}</dd>
-            </div>
-            <div className="flex items-baseline justify-between gap-4 py-2.5">
-              <dt className="text-sm font-medium text-foreground">{t('Sending')}</dt>
-              <dd className="text-sm text-muted-foreground">{t('Nothing is sent automatically — every message needs your approval')}</dd>
-            </div>
-          </dl>
-        </section>
-      </div>
-    </AppShell>
-  );
+  const {t,language,setLanguage}=useLanguage(); const {preferences,savePreferences}=usePreferences();
+  const {views,groups,sahayak,setSahayakOn,setSahayakFeature,setNudge,resetSahayakDemo}=useJourney();
+  const tab=Route.useSearch().tab ?? 'profile'; const navigate=Route.useNavigate();
+  const [draft,setDraft]=useState(preferences); const [resetOpen,setResetOpen]=useState(false); const [importOpen,setImportOpen]=useState(false);
+  useEffect(()=>setDraft({...preferences, language, dailyBrief:sahayak.features.dailyBrief, replyReminders:sahayak.features.replyReminders, followUpReminders:sahayak.features.followUpReminders}),[preferences,language,sahayak.features.dailyBrief,sahayak.features.replyReminders,sahayak.features.followUpReminders]);
+  const update=<K extends keyof Preferences>(key:K,value:Preferences[K])=>setDraft(prev=>({...prev,[key]:value}));
+  const save=()=> { const persisted=savePreferences(draft); setLanguage(draft.language); if(tab==='notifications') { setSahayakFeature('dailyBrief',draft.dailyBrief); setSahayakFeature('replyReminders',draft.replyReminders); setSahayakFeature('followUpReminders',draft.followUpReminders); } if(tab==='sahayak'||tab==='notifications') { try { localStorage.setItem('journey-sahayak-settings',JSON.stringify({features:tab==='notifications'?{...sahayak.features,dailyBrief:draft.dailyBrief,replyReminders:draft.replyReminders,followUpReminders:draft.followUpReminders}:sahayak.features,nudge:sahayak.nudge})); } catch { toast.warning(t('Saved for this visit only. Browser storage is unavailable.')); } } if(persisted) toast.success(t('Saved')); else toast.warning(t('Saved for this visit only. Browser storage is unavailable.')); };
+  const textField=(key:'name'|'email'|'phone'|'centre'|'city'|'region',label:string,type='text')=><Field label={label} id={`settings-${key}`}><Input id={`settings-${key}`} type={type} value={draft[key]} onChange={e=>update(key,e.target.value)} /></Field>;
+  return <AppShell><header className="mb-6"><h1 className="font-display text-[32px] font-normal text-primary">{t('Settings')}</h1><p className="mt-1 text-sm text-muted-foreground">{t('Manage your centre, preferences and how Journey Companion works')}</p></header>
+    <div className="grid items-start gap-6 md:grid-cols-[180px_minmax(0,1fr)] lg:grid-cols-[200px_minmax(0,1fr)]">
+      <nav aria-label="Settings sections" className="grid gap-1 md:sticky md:top-20">{TABS.map(({id,label,Icon})=><Button key={id} variant="ghost" aria-current={tab===id?'page':undefined} className={cn('min-h-11 w-full justify-start gap-3 px-3',tab===id?'bg-secondary text-purple':'text-muted-foreground')} onClick={()=>void navigate({search:{tab:id},replace:true,resetScroll:false})}><Icon className="size-4 shrink-0"/>{t(label)}</Button>)}</nav>
+      <form className="min-w-0 space-y-5" onSubmit={e=>{e.preventDefault();save();}} aria-label={`${TABS.find(item=>item.id===tab)?.label} settings`}>
+      {tab==='profile' && <Card title="Profile" help="Your coordinator details. Contact fields are blank until you add them."><div className="grid gap-5 sm:grid-cols-2">{textField('name','Name')}{textField('email','Email','email')}{textField('phone','Phone','tel')}<Field label="Role" id="settings-role"><Choice id="settings-role" value={draft.role} choices={['Coordinator','Volunteer','National admin'].map(x=>[x,x])} onChange={v=>update('role',v)}/></Field><Field label="Preferred language" id="settings-language"><Choice id="settings-language" value={draft.language} choices={[[ 'English','English'],['French','Français']]} onChange={v=>update('language',v==='French'?'French':'English')}/></Field></div><p className="mt-4 text-xs text-muted-foreground">{t('Role is a demo profile preference; it does not change access permissions.')}</p></Card>}
+      {tab==='centre' && <><Card title="Centre details" help="Add the name and location of your centre."><div className="grid gap-5 sm:grid-cols-2">{textField('centre','Centre name')}{textField('city','City')}{textField('region','Region')}<Field label="Default follow-up channel" id="settings-channel"><Choice id="settings-channel" value={draft.channel} choices={[[ 'email','Email'],['sms','SMS'],['whatsapp','WhatsApp']]} onChange={v=>update('channel',v)}/></Field></div><p className="mt-4 text-xs text-muted-foreground">{t('Participant channel preferences remain unchanged.')}</p></Card><Card title="Volunteers" help="Sample volunteers connected to this centre."><ul className="divide-y divide-border">{groups.filter(g=>!draft.city||g.volunteer.city.toLowerCase()===draft.city.trim().toLowerCase()).map(g=><li key={g.volunteer.id} className="flex flex-wrap justify-between gap-2 py-3"><span className="font-medium">{g.volunteer.name}</span><span className="text-muted-foreground">{g.volunteer.city}</span></li>)}</ul>{draft.city&&!groups.some(g=>g.volunteer.city.toLowerCase()===draft.city.trim().toLowerCase())&&<p className="text-sm text-muted-foreground">{t('No sample volunteers in this city.')}</p>}<Button asChild variant="link" className="mt-2 px-0"><Link to="/team">{t('View Team')} →</Link></Button></Card><Card title="Data source" help="Sample data"><Button type="button" variant="outline" onClick={()=>setImportOpen(true)}><Upload className="size-4"/>{t('Import participants')}</Button></Card></>}
+      {tab==='appearance' && <><Card title="Theme" help="Choose the appearance that feels most comfortable."><div className="grid grid-cols-3 gap-2 sm:gap-4">{([{value:'light',label:'Light',Icon:Sun},{value:'dark',label:'Dark',Icon:Moon},{value:'device',label:'Match my device',Icon:Monitor}] as const).map(({value,label,Icon})=><Button type="button" variant="outline" key={value} aria-pressed={draft.theme===value} onClick={()=>update('theme',value)} className={cn('h-auto min-w-0 flex-col gap-3 whitespace-normal p-2 sm:p-3',draft.theme===value&&'border-purple ring-1 ring-purple text-purple')}><span className={`appearance-preview appearance-${value} flex h-20 w-full gap-2 rounded-sm p-2`} aria-hidden><span className="appearance-preview-panel w-1/4 rounded-sm"/><span className="appearance-preview-panel flex flex-1 flex-col gap-2 rounded-sm p-2"><span className="appearance-preview-line h-1 w-3/4 rounded-sm"/><span className="appearance-preview-line h-1 w-1/2 rounded-sm opacity-50"/></span></span><span className="flex min-h-10 flex-col items-center justify-center gap-1 text-xs sm:flex-row"><Icon className="size-4 shrink-0"/>{t(label)}</span></Button>)}</div></Card><Card title="Text size" help="Larger text applies throughout Journey."><div className="flex gap-2">{(['default','large'] as const).map(size=><Button type="button" key={size} variant="outline" aria-pressed={draft.textSize===size} className={cn(draft.textSize===size&&'border-purple bg-secondary text-purple')} onClick={()=>update('textSize',size)}>{t(size==='default'?'Default':'Large')}</Button>)}</div></Card></>}
+      {tab==='notifications' && <Card title="Notifications" help="Choose the reminders you prefer. External notification delivery is not connected in this demo."><div className="divide-y divide-border">{([['dailyBrief','Daily brief'],['replyReminders','Reply reminders'],['followUpReminders','Follow-up reminders'],['weeklyImpact','Weekly impact summary']] as const).map(([key,label])=><div key={key} className="flex items-center justify-between gap-4 py-4"><Label htmlFor={`notification-${key}`}>{t(label)}</Label><Switch id={`notification-${key}`} checked={draft[key]} onCheckedChange={v=>update(key,v)}/></div>)}</div><div className="mt-5 max-w-sm"><Field label="Delivery" id="notification-delivery"><Choice id="notification-delivery" value={draft.delivery} choices={[[ 'app','In the app'],['email','Email'],['both','Both']]} onChange={v=>update('delivery',v)}/></Field></div></Card>}
+      {tab==='sahayak' && <><Card title="Sahayak" help="It suggests, reminds and drafts. You approve everything."><div className="flex items-center justify-between gap-4"><Label htmlFor="settings-sahayak">{t('Use Sahayak')}</Label><Switch id="settings-sahayak" checked={sahayak.on} onCheckedChange={setSahayakOn}/></div></Card><Card title="What Sahayak keeps an eye on" help="These controls also update the sidebar immediately."><div className="divide-y divide-border">{FEATURES.map(f=><div key={f} className="flex items-center gap-4 py-4"><div className="min-w-0 flex-1"><Label htmlFor={`feature-${f}`}>{t(FEATURE_LABEL[f])}</Label><p className="mt-1 text-sm text-muted-foreground">{t(FEATURE_HELP[f])}</p></div><Switch id={`feature-${f}`} disabled={!sahayak.on} checked={sahayak.features[f]} onCheckedChange={v=>setSahayakFeature(f,v)}/></div>)}</div></Card><Card title="Nudge frequency" help="How much Sahayak brings to you at once."><div className="flex flex-wrap gap-2">{(['gentle','normal','frequent'] as Nudge[]).map(n=><Button type="button" key={n} variant="outline" disabled={!sahayak.on} aria-pressed={sahayak.nudge===n} className={cn(sahayak.nudge===n&&'border-purple bg-secondary text-purple')} onClick={()=>setNudge(n)}>{t(NUDGE_LABEL[n])}</Button>)}</div><p className="mt-3 text-sm text-muted-foreground">{t(NUDGE_HELP[sahayak.nudge])}</p></Card></>}
+      {tab==='privacy' && <><Card title="Privacy and data" help="Clear safeguards for every follow-up."><ul className="space-y-4">{['Nothing is sent without your approval','Volunteers only see their own group','People who ask not to be contacted are never suggested'].map(rule=><li key={rule} className="flex gap-3"><Check className="mt-0.5 size-4 shrink-0 text-purple"/><span>{t(rule)}</span></li>)}</ul><p className="mt-4 text-xs text-muted-foreground">{t('This coordinator demo can view all sample groups. Volunteer-only account access is not implemented here.')}</p></Card><Card title="Journey stages" help="Read-only rules from the shared Journey logic."><details><summary className="flex cursor-pointer items-center justify-between gap-3 font-medium">{t('How stages are decided')}<ChevronDown className="size-4"/></summary><p className="mt-4 text-sm text-muted-foreground">{t('Everyone is placed in the first stage that fits, checked in this order.')}</p><dl className="mt-3 divide-y divide-border">{STAGES.map(s=><div key={s.id} className="grid gap-1 py-3 sm:grid-cols-[160px_minmax(0,1fr)]"><dt className="font-medium">{t(stageLabel(s.id))}</dt><dd className="text-sm text-muted-foreground">{t(RULES[s.id] ?? "")}</dd></div>)}</dl></details></Card><Card title="Sample data" help="Export the sample participants or start the demo again. Resetting does not delete account data."><div className="flex flex-wrap gap-3"><Button type="button" variant="outline" onClick={()=>{const url=URL.createObjectURL(new Blob([participantCsv(views.map(v=>v.participant))],{type:'text/csv;charset=utf-8;'}));const a=document.createElement('a');a.href=url;a.download='journey-participants.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast.success(t('Participant data exported'));}}><Download className="size-4"/>{t('Export participant data')}</Button><Button type="button" variant="outline" onClick={()=>setResetOpen(true)}><RotateCcw className="size-4"/>{t('Reset demo data')}</Button></div></Card></>}
+      <footer className="flex justify-end border-t border-border pt-5"><Button type="submit"><Save className="size-4"/>{t('Save changes')}</Button></footer>
+      </form>
+    </div>
+    <Dialog open={resetOpen} onOpenChange={setResetOpen}><DialogContent className="mobile-dialog"><DialogHeader><DialogTitle>{t('Reset demo data?')}</DialogTitle><DialogDescription>{t('This clears demo replies, approvals, assignments and progress. Your saved profile and appearance preferences stay unchanged.')}</DialogDescription></DialogHeader><div className="flex flex-wrap justify-end gap-3"><Button variant="outline" onClick={()=>setResetOpen(false)}>{t('Cancel')}</Button><Button variant="destructive" onClick={()=>{resetSahayakDemo();window.location.reload();}}>{t('Reset demo data')}</Button></div></DialogContent></Dialog>
+    <Dialog open={importOpen} onOpenChange={setImportOpen}><DialogContent className="mobile-dialog"><DialogHeader><DialogTitle>{t('Import participants')}</DialogTitle><DialogDescription>{t('Journey is using fictional sample participants. Importing real participant records is not connected in this demo; no file will be uploaded.')}</DialogDescription></DialogHeader><Button variant="outline" onClick={()=>setImportOpen(false)}>{t('Close')}</Button></DialogContent></Dialog>
+  </AppShell>;
 }

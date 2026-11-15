@@ -72,3 +72,12 @@
 - The floating "Ask Sahayak" button sits over the bottom-right of the participants table while scrolling (the spec asked for bottom right); move or shrink it if it gets in the way.
 - Every CSV Source cell contains an organization or listing name rather than a URL, so program source links remain unavailable until real URLs are supplied.
 - Coordinator and no-login participant demo state reset on reload; authenticated participant/MCP records remain protected in Lovable Cloud for later account-based use.
+
+## Done
+- Organized coordinator Settings into six sections, browser-saved profile/centre/appearance/reminder preferences, global dark and large-text tokens, consolidated Sahayak with legacy link redirect, CSV export and confirmed demo reset. Verified saved name/theme on reload, CSV download, sidebar settings redirect, desktop/phone appearance and participant calendar; 21 focused tests passed. Real-data import and external notification delivery remain explicitly unavailable in this demo; profile role is not a permission grant.
+
+## Done
+- Added shared coordinator and participant notices identifying fictional records and simulated sending, a visible mobile participant demo badge, and an explicit no-sending notice in the reply composer. Verified both views on a 394px phone without overflow or runtime errors.
+
+## Done
+- Added advisory pressure warnings beside live channel length notes in Review, Inbox replies and group messages. Detects “last chance”, “don’t miss out” and related urgency wording, clears as wording changes and does not block approval. Three detector tests pass; verified warning, removal and saved-message readback in the Review editor.

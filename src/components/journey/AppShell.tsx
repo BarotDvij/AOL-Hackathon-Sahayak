@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { RemindersPanel } from "./RemindersPanel";
 import { SahayakChat } from "./SahayakChat";
 import { SahayakIntro } from "./SahayakIntro";
+import { DemoNotice } from "./DemoNotice";
 
 type To = "/" | "/impact" | "/sessions" | "/team" | "/participants" | "/programs" | "/review" | "/inbox" | "/activity" | "/settings";
 type NavItem = { to: To; label: string; Icon: typeof LayoutDashboard; exact?: boolean; alsoActive?: string };
@@ -67,7 +68,7 @@ function SahayakSwitch({ onNavigate, onMeet }: { onNavigate?: () => void; onMeet
           {t("Meet Sahayak")}
         </Button>
         <Link
-          to="/sahayak"
+          to="/settings" search={{ tab: "sahayak" }}
           onClick={onNavigate}
           className="text-xs font-medium text-purple hover:underline"
         >
@@ -137,7 +138,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main className="md:pl-[240px]">
         <div className="sticky top-0 z-20 hidden h-12 items-center justify-between gap-3 border-b border-border bg-card/90 px-8 backdrop-blur md:flex">
           {sahayak.on ? (
-            <Link to="/sahayak" className="inline-flex items-center gap-1.5 text-xs font-medium text-purple hover:underline">
+            <Link to="/settings" search={{ tab: "sahayak" }} className="inline-flex items-center gap-1.5 text-xs font-medium text-purple hover:underline">
               <Sparkles className="size-3.5" aria-hidden />
               Sahayak is on · {reminders.length} {reminders.length === 1 ? "reminder" : "reminders"}
             </Link>
@@ -149,7 +150,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             {sahayak.on && <BellButton count={reminders.length} onClick={() => setRemindersOpen(true)} />}
           </div>
         </div>
-        <div className="mx-auto w-full max-w-[1280px] app-page px-4 pb-40 pt-4 md:px-6 md:pb-24 md:pt-6 lg:px-8 lg:pt-8">{children}</div>
+        <div className="mx-auto w-full max-w-[1280px] app-page px-4 pb-40 pt-4 md:px-6 md:pb-24 md:pt-6 lg:px-8 lg:pt-8"><DemoNotice />{children}</div>
       </main>
 
       <nav aria-label="Mobile sections" className="mobile-bottom-nav fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border bg-card md:hidden">

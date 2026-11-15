@@ -5,6 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { useDemoParticipant } from "@/components/participant/DemoParticipantContext";
 import { cn } from "@/lib/utils";
 import { ParticipantMessageBox } from "./ParticipantMessageBox";
+import { DemoNotice } from "@/components/journey/DemoNotice";
 
 const NAV = [
   { to: "/me", label: "Home", Icon: Home, exact: true },
@@ -47,12 +48,12 @@ export function ParticipantShell({ children }: { children: ReactNode }) {
           <Link to="/me" className="font-heading text-sm font-semibold text-primary md:hidden">Journey</Link>
           <span className="hidden items-center gap-1.5 text-xs font-medium text-purple md:inline-flex"><Sparkles className="size-3.5" aria-hidden />Your Sahayak journey</span>
           <div className="ml-auto flex items-center gap-3">
-            <span className="hidden rounded-full bg-stage-new px-2 py-0.5 text-xs font-medium text-stage-new-foreground sm:inline-flex">Demo · Priya</span>
+            <span className="inline-flex rounded-full bg-stage-new px-2 py-0.5 text-xs font-medium text-stage-new-foreground">Demo · Priya</span>
             <Link to="/start" className="shrink-0 text-xs font-medium text-purple hover:underline">Switch view</Link>
           </div>
         </div>
       </header>
-      <main className="app-page mx-auto w-full max-w-[1280px] px-4 pb-8 pt-6 sm:px-6 lg:px-8 lg:pt-8">{children}</main>
+      <main className="app-page mx-auto w-full max-w-[1280px] px-4 pb-8 pt-6 sm:px-6 lg:px-8 lg:pt-8"><DemoNotice participant />{children}</main>
       </div>
       <ParticipantMessageBox />
       <nav className="mobile-bottom-nav fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-border bg-card md:hidden" aria-label="Participant sections">

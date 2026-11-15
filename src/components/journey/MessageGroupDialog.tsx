@@ -11,6 +11,7 @@ import { draftGroupMessage, type VolunteerGroup } from "@/lib/journey/groups";
 import { channelLabel, Initials } from "@/components/journey/bits";
 import { useJourney } from "@/lib/journey/store";
 import type { Channel } from "@/lib/journey/types";
+import { MessageNotes } from './MessageNotes';
 
 const CHANNELS: Channel[] = ["whatsapp", "email", "sms"];
 
@@ -45,7 +46,7 @@ export function MessageGroupDialog({ group, open, onOpenChange }: { group: Volun
 
   const approve = () => {
     sendGroupMessage(group.volunteer.id, text, channel);
-    toast.success(t("Group invite approved"), { description: `${group.members.length} ${group.members.length === 1 ? "person" : "people"} in ${group.volunteer.name}'s group marked as sent.` });
+    toast.success(t("Group invite approved"), { description: `Demo only · ${group.members.length} sample recipients. Nothing was sent externally.` });
     onOpenChange(false);
   };
 
@@ -78,6 +79,8 @@ export function MessageGroupDialog({ group, open, onOpenChange }: { group: Volun
           rows={9}
           className="bg-card text-sm leading-relaxed"
         />
+        <MessageNotes text={text} channel={channel} />
+        <p className="text-xs text-muted-foreground">Demo message · approval only updates sample records. Nothing is sent externally.</p>
 
         {lastInvite && (
           <p className="text-xs text-muted-foreground">{t("Last group invite sent")}: {new Date(lastInvite.at).toLocaleDateString("en-CA", { month: "short", day: "numeric" })} · {channelLabel(lastInvite.channel)}</p>

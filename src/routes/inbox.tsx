@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/journey/AppShell";
+import { MessageNotes } from "@/components/journey/MessageNotes";
 import { ChannelIcon, Initials, SahayakTag } from "@/components/journey/bits";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -153,6 +154,7 @@ function MessageCard({ message: m, open, onToggle }: { message: InboxMessage; op
                 {suggested ? "Suggested reply — read it, change it, then approve" : "Write a reply"}
               </label>
               <Textarea id={`reply-${m.id}`} value={text} onChange={(e) => setDraft(e.target.value)} rows={6} className="mt-1 bg-card" />
+              <MessageNotes text={text} channel={m.channel} />
               {suggested && <SahayakTag className="mt-1.5" />}
               <div className="mt-2 flex flex-wrap gap-2">
                 <Button size="sm" disabled={!text.trim()} onClick={() => { replyInbox(m.id, text); setDraft(null); }}>
