@@ -125,7 +125,7 @@ export interface BriefInput {
 }
 
 /** Three to five short, honest lines drawn straight from the data. */
-export function briefItems({ views, upcoming, inbox, now = today() }: BriefInput): BriefItem[] {
+export function briefItems({ views, upcoming, inbox, groups = [], now = today() }: BriefInput): BriefItem[] {
   const items: BriefItem[] = [];
 
   const waiting = inbox.filter(needsReply).sort((a, b) => a.date.localeCompare(b.date));
@@ -227,8 +227,9 @@ export function buildReminders({ views, upcoming, inbox, state, now = today() }:
       out.push({
         id: `rem-quiet-${v.participant.id}`, kind: "going-quiet",
         title: `${v.participant.firstName} ${v.participant.lastName} has gone quiet`,
-        why: contactText(v.history),
+        why: contactText(v.history) + (v.connection ? ` · ${v.connection.volunteerName} could reach out` : ""),
         to: "/review", actionLabel: "Review message", participantId: v.participant.id,
+        volunteerId: v.connection?.volunteerId,
       });
     }
 
