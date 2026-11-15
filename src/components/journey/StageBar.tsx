@@ -20,7 +20,7 @@ export function StageBar({ active, onChange }: { active: StageId | "all"; onChan
         )}
       </div>
 
-      <div className="flex h-3 w-full overflow-hidden rounded-full bg-muted" role="group" aria-label="People in each stage">
+      <div className="stage-segments flex h-3 w-full overflow-hidden rounded-full bg-muted" role="group" aria-label="People in each stage">
         {stageCounts.map((s) => s.count === 0 ? null : (
           <button
             key={s.id}

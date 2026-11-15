@@ -46,14 +46,14 @@ export function SahayakChat() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-40 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-3 font-heading text-sm font-semibold text-primary-foreground shadow-soft transition-transform hover:scale-[1.02]"
+        className="sahayak-launcher fixed bottom-24 right-4 md:bottom-6 md:right-6 z-40 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-3 font-heading text-sm font-semibold text-primary-foreground shadow-soft transition-transform hover:scale-[1.02]"
       >
         <Sparkles className="size-4" aria-hidden />
         Ask Sahayak
       </button>
 
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:w-[420px] sm:max-w-[420px]">
+        <SheetContent side="right" className="full-screen-mobile flex w-full flex-col gap-0 p-0 md:w-[420px] md:max-w-[420px]">
           <div className="border-b border-border px-6 py-5">
             <SheetTitle className="font-display text-[22px] font-normal text-primary">Ask Sahayak</SheetTitle>
             <SheetDescription className="mt-1 text-sm text-muted-foreground">
@@ -74,7 +74,7 @@ export function SahayakChat() {
             ))}
           </div>
 
-          <div className="flex-1 space-y-4 overflow-y-auto px-6 py-5">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-5">
             {items.length === 0 ? (
               <p className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
                 Ask a question, or tap one of the suggestions above.
@@ -85,7 +85,7 @@ export function SahayakChat() {
             {thinking && <p className="text-xs text-muted-foreground">Sahayak is looking through your records…</p>}
           </div>
 
-          <form onSubmit={(e) => { e.preventDefault(); void send(q); }} className="flex items-center gap-2 border-t border-border px-6 py-4">
+          <form onSubmit={(e) => { e.preventDefault(); void send(q); }} className="chat-composer flex shrink-0 items-center gap-2 border-t border-border px-6 py-4">
             <Input
               value={q}
               onChange={(e) => setQ(e.target.value)}

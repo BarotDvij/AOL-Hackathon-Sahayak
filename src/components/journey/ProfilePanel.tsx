@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { BookOpen, CalendarHeart, MessageCircleReply } from "lucide-react";
+import { ArrowLeft, BookOpen, CalendarHeart, MessageCircleReply } from "lucide-react";
 import { PanelClose } from "@/components/journey/AppShell";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { formatFull, formatShort } from "@/lib/journey/dates";
 import { useJourney, type ParticipantView } from "@/lib/journey/store";
 import { eligibleSteps } from "@/lib/sahayak/core";
@@ -18,7 +18,7 @@ import { CoordinatorSummaries } from "./CoordinatorSummaries";
 export function ProfilePanel({ view, onOpenChange }: { view: ParticipantView | null; onOpenChange: (o: boolean) => void }) {
   return (
     <Sheet open={!!view} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:w-[480px] sm:max-w-[480px]">
+      <SheetContent side="right" className="full-screen-mobile profile-mobile flex w-full flex-col gap-0 p-0 md:w-[480px] md:max-w-[480px]">
         {view && <Body view={view} />}
       </SheetContent>
     </Sheet>
@@ -47,7 +47,8 @@ function Body({ view }: { view: ParticipantView }) {
 
   return (
     <>
-      <div className="border-b border-border px-6 py-5">
+      <div className="shrink-0 border-b border-border px-6 py-5">
+        <SheetClose asChild><Button variant="ghost" size="sm" className="mb-2 md:hidden" aria-label="Back to participants"><ArrowLeft className="size-5" />{t("Back")}</Button></SheetClose>
         <SheetTitle className="font-display text-[22px] font-normal text-primary">{p.firstName} {p.lastName}</SheetTitle>
         <SheetDescription className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
           <StageBadge stage={view.stage} />
@@ -56,7 +57,7 @@ function Body({ view }: { view: ParticipantView }) {
         </SheetDescription>
       </div>
 
-      <div className="flex-1 space-y-6 overflow-y-auto px-6 py-5">
+      <div className="min-h-0 flex-1 space-y-6 overflow-y-auto px-6 py-5">
         <section aria-label={t("Follow-up volunteer")} className="rounded-lg border border-border bg-secondary/40 p-3">
           <p className="text-xs font-medium text-muted-foreground">{t("Follow-up volunteer")}</p>
           <p className="mt-1 text-sm font-medium text-foreground">{view.connection?.volunteerName ?? t("Nobody yet")}</p>
