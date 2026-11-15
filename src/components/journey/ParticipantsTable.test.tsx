@@ -44,11 +44,11 @@ const section = (container: HTMLElement, name: string) => container.querySelecto
 describe("participants table", () => {
   it("filters to all five going-quiet people when the stage chip is selected", () => {
     const { container } = renderTable({ chips: true });
-    fireEvent.click(screen.getByRole("button", { name: "Going quiet 5", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "Going quiet 5" }));
     const rows = [...container.querySelectorAll("tbody tr")].filter((r) => !r.textContent?.includes("No one matches"));
     expect(rows).toHaveLength(5);
     expect(rows.every((r) => r.textContent?.includes("Going quiet"))).toBe(true);
-    fireEvent.click(screen.getByRole("button", { name: "All 31", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "All 31" }));
     expect(container.querySelectorAll("tbody tr")).toHaveLength(31);
   });
 
