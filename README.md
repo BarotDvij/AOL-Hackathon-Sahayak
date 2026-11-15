@@ -2,6 +2,8 @@
 
 Personal, caring follow-ups for Art of Living centres. Built for the Art of Living Hackathon, November 14–15, 2026 (#BuildForGood).
 
+**Live demo:** https://stage-and-signal.lovable.app/start (no login needed; choose coordinator or participant)
+
 ## Problem
 
 Problem statement 1: **Help more people stay connected to the wisdom** (and 2: free up volunteers to spend their time on people, not admin).
