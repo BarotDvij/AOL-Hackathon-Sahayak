@@ -1,6 +1,7 @@
 # Roadmap
 
 ## In progress
+- Rename the visible app to Journey, including navigation and page titles.
 - Polish all mobile and tablet pages: bottom navigation, compact header and filters, participant cards, full-screen panels, bottom-sheet dialogs, touch targets, charts, and QR check-in; preserve desktop layout and behavior.
 
 
