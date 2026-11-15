@@ -109,7 +109,7 @@ export const WAITING_AFTER_DAYS = 2;
 export const waitingDays = (m: InboxMessage, now = today()) => (needsReply(m) ? daysSince(m.date, now) : null);
 
 const weekdayOf = (iso: string) => parseIso(iso).toLocaleDateString("en-CA", { weekday: "long" });
-const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+const plural = (n: number, one: string, many = one === "person" ? "people" : `${one}s`) => `${n} ${n === 1 ? one : many}`;
 
 /* ------------------------------------------------------------------ */
 /*  Daily brief                                                        */
