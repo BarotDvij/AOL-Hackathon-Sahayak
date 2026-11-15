@@ -1,4 +1,7 @@
 import { expect,it } from 'vitest';
-import { readDemoRole,demoPageVisible,SHIVAM_ID } from './demo-session';
-it('remembers only the two demo roles',()=>{expect(readDemoRole('admin')).toBe('admin');expect(readDemoRole('volunteer')).toBe('volunteer');expect(readDemoRole('owner')).toBeNull();});
-it('hides Impact Team and Settings for volunteers but keeps all for Admin',()=>{for(const path of ['/impact','/team','/settings']){expect(demoPageVisible('volunteer',path)).toBe(false);expect(demoPageVisible('admin',path)).toBe(true);}expect(demoPageVisible('volunteer','/participants')).toBe(true);expect(SHIVAM_ID).toBe('v4');});
+import { readDemoRole,demoPageVisible,demoHome } from './demo-session';
+it('remembers Admin Volunteer and Participant views',()=>{for(const role of ['admin','volunteer','participant'])expect(readDemoRole(role)).toBe(role);expect(readDemoRole('owner')).toBeNull();});
+it('Admin retains every existing content page',()=>{for(const path of ['/','/impact','/team','/settings','/programs','/activity','/me/journey'])expect(demoPageVisible('admin',path)).toBe(true);});
+it('Volunteer sees exactly the requested sections and Shivam group',()=>{for(const path of ['/','/participants','/review','/inbox','/sessions','/groups/v4'])expect(demoPageVisible('volunteer',path)).toBe(true);for(const path of ['/impact','/team','/settings','/programs','/activity','/me','/groups/v1'])expect(demoPageVisible('volunteer',path)).toBe(false);});
+it('Signed-out demo opens sign-in and cannot open content',()=>{expect(demoHome(null)).toBe('/demo-login');expect(demoPageVisible(null,'/')).toBe(false);expect(demoPageVisible(null,'/me')).toBe(false);});
+it('Participant only sees their existing participant pages',()=>{for(const path of ['/me','/me/journey','/me/sessions','/me/messages','/me/weekly-progress'])expect(demoPageVisible('participant',path)).toBe(true);for(const path of ['/','/participants','/review','/groups/v1'])expect(demoPageVisible('participant',path)).toBe(false);expect(demoHome('participant')).toBe('/me');expect(demoHome('volunteer')).toBe('/');});

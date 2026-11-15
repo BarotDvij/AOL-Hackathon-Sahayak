@@ -31,6 +31,7 @@ import { Route as GroupsVolunteerIdRouteImport } from './routes/groups.$voluntee
 import { Route as MeIndexRouteImport } from './routes/me/index'
 import { Route as MeJourneyRouteImport } from './routes/me/journey'
 import { Route as MeMessagesRouteImport } from './routes/me/messages'
+import { Route as MeSessionsRouteImport } from './routes/me/sessions'
 import { Route as MeSettingsRouteImport } from './routes/me/settings'
 import { Route as MeWeeklyProgressRouteImport } from './routes/me/weekly-progress'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
@@ -148,6 +149,11 @@ const MeMessagesRoute = MeMessagesRouteImport.update({
   path: '/messages',
   getParentRoute: () => MeRouteRoute,
 } as any)
+const MeSessionsRoute = MeSessionsRouteImport.update({
+  id: '/sessions',
+  path: '/sessions',
+  getParentRoute: () => MeRouteRoute,
+} as any)
 const MeSettingsRoute = MeSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -198,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/groups/$volunteerId': typeof GroupsVolunteerIdRoute
   '/me/journey': typeof MeJourneyRoute
   '/me/messages': typeof MeMessagesRoute
+  '/me/sessions': typeof MeSessionsRoute
   '/me/settings': typeof MeSettingsRoute
   '/me/weekly-progress': typeof MeWeeklyProgressRoute
   '/me/': typeof MeIndexRoute
@@ -226,6 +233,7 @@ export interface FileRoutesByTo {
   '/groups/$volunteerId': typeof GroupsVolunteerIdRoute
   '/me/journey': typeof MeJourneyRoute
   '/me/messages': typeof MeMessagesRoute
+  '/me/sessions': typeof MeSessionsRoute
   '/me/settings': typeof MeSettingsRoute
   '/me/weekly-progress': typeof MeWeeklyProgressRoute
   '/me': typeof MeIndexRoute
@@ -256,6 +264,7 @@ export interface FileRoutesById {
   '/groups/$volunteerId': typeof GroupsVolunteerIdRoute
   '/me/journey': typeof MeJourneyRoute
   '/me/messages': typeof MeMessagesRoute
+  '/me/sessions': typeof MeSessionsRoute
   '/me/settings': typeof MeSettingsRoute
   '/me/weekly-progress': typeof MeWeeklyProgressRoute
   '/me/': typeof MeIndexRoute
@@ -287,6 +296,7 @@ export interface FileRouteTypes {
     | '/groups/$volunteerId'
     | '/me/journey'
     | '/me/messages'
+    | '/me/sessions'
     | '/me/settings'
     | '/me/weekly-progress'
     | '/me/'
@@ -315,6 +325,7 @@ export interface FileRouteTypes {
     | '/groups/$volunteerId'
     | '/me/journey'
     | '/me/messages'
+    | '/me/sessions'
     | '/me/settings'
     | '/me/weekly-progress'
     | '/me'
@@ -344,6 +355,7 @@ export interface FileRouteTypes {
     | '/groups/$volunteerId'
     | '/me/journey'
     | '/me/messages'
+    | '/me/sessions'
     | '/me/settings'
     | '/me/weekly-progress'
     | '/me/'
@@ -533,6 +545,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MeMessagesRouteImport
       parentRoute: typeof MeRouteRoute
     }
+    '/me/sessions': {
+      id: '/me/sessions'
+      path: '/sessions'
+      fullPath: '/me/sessions'
+      preLoaderRoute: typeof MeSessionsRouteImport
+      parentRoute: typeof MeRouteRoute
+    }
     '/me/settings': {
       id: '/me/settings'
       path: '/settings'
@@ -574,6 +593,7 @@ declare module '@tanstack/react-router' {
 interface MeRouteRouteChildren {
   MeJourneyRoute: typeof MeJourneyRoute
   MeMessagesRoute: typeof MeMessagesRoute
+  MeSessionsRoute: typeof MeSessionsRoute
   MeSettingsRoute: typeof MeSettingsRoute
   MeWeeklyProgressRoute: typeof MeWeeklyProgressRoute
   MeIndexRoute: typeof MeIndexRoute
@@ -582,6 +602,7 @@ interface MeRouteRouteChildren {
 const MeRouteRouteChildren: MeRouteRouteChildren = {
   MeJourneyRoute: MeJourneyRoute,
   MeMessagesRoute: MeMessagesRoute,
+  MeSessionsRoute: MeSessionsRoute,
   MeSettingsRoute: MeSettingsRoute,
   MeWeeklyProgressRoute: MeWeeklyProgressRoute,
   MeIndexRoute: MeIndexRoute,

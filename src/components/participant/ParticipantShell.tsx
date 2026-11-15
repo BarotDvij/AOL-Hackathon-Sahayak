@@ -1,16 +1,16 @@
 import { Link, useRouterState, type LinkProps } from "@tanstack/react-router";
-import { CalendarDays, ChartNoAxesColumnIncreasing, Home, Route as JourneyIcon, Settings, Sparkles } from "lucide-react";
+import { CalendarDays, Home, Route as JourneyIcon, Sparkles, MessageSquare } from "lucide-react";
 import type { ReactNode } from "react";
 import { Switch } from "@/components/ui/switch";
 import { useDemoParticipant } from "@/components/participant/DemoParticipantContext";
 import { cn } from "@/lib/utils";
 import { ParticipantMessageBox } from "./ParticipantMessageBox";
+import { DemoAccount } from '@/components/journey/DemoAccount';
 
 const NAV = [
-  { to: "/me", label: "Home", Icon: Home, exact: true },
-  { to: "/me/journey", label: "My journey", Icon: JourneyIcon },
-  { to: "/me/weekly-progress", label: "My Progress", Icon: ChartNoAxesColumnIncreasing },
-  { to: "/me/settings", label: "Settings", Icon: Settings },
+  { to: "/me/journey", label: "My Journey", Icon: JourneyIcon, exact:false },
+  { to: "/me/sessions", label: "Upcoming Sessions", Icon: CalendarDays, exact:false },
+  { to: "/me/messages", label: "Messages", Icon: MessageSquare, exact:false },
 ] satisfies { to: LinkProps["to"]; label: string; Icon: typeof Home; exact?: boolean }[];
 
 export function ParticipantShell({ children }: { children: ReactNode }) {
@@ -46,16 +46,15 @@ export function ParticipantShell({ children }: { children: ReactNode }) {
         <div className="flex min-h-12 items-center gap-3 px-4 py-3 sm:px-6 lg:px-8 lg:py-2">
           <Link to="/me" className="font-heading text-sm font-semibold text-primary md:hidden">Journey</Link>
           <span className="hidden items-center gap-1.5 text-xs font-medium text-purple md:inline-flex"><Sparkles className="size-3.5" aria-hidden />Your Sahayak journey</span>
-          <div className="ml-auto flex items-center gap-3">
-            <span className="hidden rounded-full bg-stage-new px-2 py-0.5 text-xs font-medium text-stage-new-foreground sm:inline-flex">Demo · Priya</span>
-            <Link to="/start" className="shrink-0 text-xs font-medium text-purple hover:underline">Switch view</Link>
+          <div className="ml-auto min-w-0">
+            <DemoAccount />
           </div>
         </div>
       </header>
       <main className="app-page mx-auto w-full max-w-[1280px] px-4 pb-8 pt-6 sm:px-6 lg:px-8 lg:pt-8">{children}</main>
       </div>
       <ParticipantMessageBox />
-      <nav className="mobile-bottom-nav fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-border bg-card md:hidden" aria-label="Participant sections">
+      <nav className="mobile-bottom-nav fixed inset-x-0 bottom-0 z-30 grid grid-cols-3 border-t border-border bg-card md:hidden" aria-label="Participant sections">
         {NAV.map(({ to, label, Icon, exact }) => {
           const active = exact ? pathname === to : pathname.startsWith(to);
           return <Link key={to} to={to} aria-current={active ? "page" : undefined} className={cn("flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition-colors", active ? "bg-secondary text-primary" : "text-muted-foreground hover:bg-secondary")}><Icon className="size-5" aria-hidden />{label}</Link>;

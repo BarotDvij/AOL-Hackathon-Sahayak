@@ -1,6 +1,6 @@
 import { createContext, useEffect, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react";
 import { buildSessions, seedOutcomes, messageOutcome, broughtBack, differentChannel, VOLUNTEERS, type SentRecord, type Session, type CheckIn, type AssignmentProposal } from "./operations";
-import { useDemoSession, SHIVAM_ID } from './demo-session';
+import { useDemoSession } from './demo-session';
 import { buildGroups, connectionOf, alsoKnowsOf, deriveAssignments, unassignedViews, type VolunteerGroup } from "./groups";
 import { buildCatalog } from "./catalog";
 import { JOURNEY_CONFIG as C, STAGE_PRIORITY, STAGES } from "./config";
@@ -154,6 +154,7 @@ function initial(programCatalog: ProgramCatalog) {
 }
 
 export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATALOG }: { children: ReactNode; programCatalog?: ProgramCatalog }) {
+  const demoSession = useDemoSession();
   const [{ data, catalogList, suggestions: s0, pickerIds, seed }] = useState(() => initial(programCatalog));
   const [participants, setParticipants] = useState(data.participants);
   const [events, setEvents] = useState(data.events);
@@ -172,7 +173,9 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
   const [activity, setActivity] = useState<ActivityEntry[]>([]);
   const [groupMessages, setGroupMessages] = useState<GroupMessage[]>([]);
   const [city, setCity] = useState("all");
-  const [meId, setMeId] = useState<string | null>(TEMP_PARTICIPANT_ID);
+  const [fallbackMeId, setFallbackMeId] = useState<string | null>(TEMP_PARTICIPANT_ID);
+  const meId = demoSession?.participantId ?? fallbackMeId;
+  const setMeId = (id:string|null) => {if (id && demoSession) demoSession.selectParticipant(id);else setFallbackMeId(id);};
   const [sahayak, setSahayak] = useState<SahayakState>(SAHAYAK_DEFAULTS);
   const [inbox, setInbox] = useState<InboxMessage[]>(() => buildInbox());
 
@@ -434,14 +437,15 @@ export function useJourney() {
   const session = useDemoSession();
   if (!s) throw new Error("useJourney must be used inside JourneyProvider");
   if (session?.role === 'volunteer') {
-    const views = s.views.filter(v => v.connection?.volunteerId === SHIVAM_ID);
+    const volunteerId = session.volunteerId;
+    const views = s.views.filter(v => v.connection?.volunteerId === volunteerId);
     const ids = new Set(views.map(v => v.participant.id));
     const pending = s.pending.filter(v => ids.has(v.participantId));
     const sentMessages = s.sentMessages.filter(v => ids.has(v.participantId));
     const inbox = s.inbox.filter(v => ids.has(v.participantId));
-    const groups = s.groups.filter(g => g.volunteer.id === SHIVAM_ID);
+    const groups = s.groups.filter(g => g.volunteer.id === volunteerId);
     return { ...s, views, groups, unassigned: [], pending, sentMessages, inbox,
-      activeVolunteer: SHIVAM_ID, myFollowUps: true, setActiveVolunteer: (_id: string) => {}, setMyFollowUps: (_on: boolean) => {},
+      activeVolunteer: volunteerId, myFollowUps: true, setActiveVolunteer: session.selectVolunteer, setMyFollowUps: (_on: boolean) => {},
       activity: s.activity.filter(v => ids.has(v.participantId)), replies: s.replies.filter(v => ids.has(v.participantId)),
       practice: s.practice.filter(v => ids.has(v.participantId)), checkIns: s.checkIns.filter(v => !v.participantId || ids.has(v.participantId)),
       needsFollowUp: s.needsFollowUp.filter(v => ids.has(v.participant.id)), priority: s.priority.filter(v => ids.has(v.participant.id)),

@@ -79,7 +79,7 @@ const EVENT_PREVIEW_COUNT = 4;
 
 type UpcomingEvent = ReturnType<typeof useDemoParticipant>["data"]["upcoming"][number];
 
-function UpcomingEventsCard({ events, location }: { events: UpcomingEvent[]; location: string }) {
+export function UpcomingEventsCard({ events, location }: { events: UpcomingEvent[]; location: string }) {
   const [showAll, setShowAll] = useState(false);
   const shown = showAll ? events : events.slice(0, EVENT_PREVIEW_COUNT);
 
