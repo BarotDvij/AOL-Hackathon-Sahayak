@@ -9,13 +9,14 @@ import { ParticipantsTable } from "./ParticipantsTable";
 
 const noop = () => {};
 
-/** The table links to group pages, so it needs a router around it. */
-function renderTable(props: { stage?: "all" | "paused"; title?: string } = {}) {
+/** The table links to group pages, so it needs a started router around it. */
+async function renderTable(props: { stage?: "all" | "paused"; title?: string } = {}) {
   const router = createRouter({
     routeTree,
     history: createMemoryHistory({ initialEntries: ["/participants"] }),
     context: { queryClient: new QueryClient() },
   });
+  await router.start();
   return render(
     <JourneyProvider>
       <RouterProvider router={router}>
