@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 export type AppLanguage = 'English' | 'French';
 const FRENCH: Record<string,string> = {
+  'Pressure phrases':'Formulations insistantes','Consider gentler wording.':'Envisagez une formulation plus douce.',
   'Demo data · not real participant records':'Données fictives · pas de vrais dossiers de participants',
   'People, groups, attendance and messages are sample records. Approvals and replies only update this demo; no email, SMS or WhatsApp is sent.':'Les personnes, groupes, présences et messages sont fictifs. Les approbations et réponses restent dans cette démo ; aucun courriel, SMS ou WhatsApp n’est envoyé.',
   'Profile':'Profil','Centre':'Centre','Appearance':'Apparence','Notifications':'Notifications','Privacy and data':'Confidentialité et données','Saved':'Enregistré','Manage your centre, preferences and how Journey Companion works':'Gérez votre centre, vos préférences et le fonctionnement de Journey Companion',
