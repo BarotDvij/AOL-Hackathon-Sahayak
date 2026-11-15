@@ -122,4 +122,15 @@ describe("No-login participant demo", () => {
     expect(result.current.sahayakConsentOpen).toBe(false);
     unmount();
   });
+
+  it("keeps the intake overlay closed until the participant asks for it", () => {
+    const { result, unmount } = renderHook(() => useDemoParticipant(), { wrapper });
+
+    expect(result.current.welcomeOpen).toBe(false);
+    act(() => result.current.openWelcome());
+    expect(result.current.welcomeOpen).toBe(true);
+    act(() => result.current.closeWelcome());
+    expect(result.current.welcomeOpen).toBe(false);
+    unmount();
+  });
 });
