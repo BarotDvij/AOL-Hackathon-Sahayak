@@ -1,5 +1,8 @@
 # Roadmap
 
+## In progress
+- Add three browser-local demo roles, role-specific navigation and home redirects, participant sessions, shared account controls, and verify role isolation and reload/sign-out.
+
 ## Done
 - Renamed the visible app and page titles to Journey.
 - Polished phone and tablet layouts with five-tab coordinator navigation, a More sheet, compact region header, participant/program cards, filter sheets, full-screen profile and chat, bottom-sheet dialogs, stacked review actions, larger tap targets, responsive charts and QR check-in. All 19 public content pages checked at 375px without overflow; key pages checked at 430px, 768px and 1280px. Verified filter → profile, edited approval, and check-in readback; 114 tests pass.
