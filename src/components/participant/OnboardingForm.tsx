@@ -54,7 +54,7 @@ export function OnboardingForm({ initialAnswers, onSave }: { initialAnswers: Onb
       <div className="mt-4 flex flex-wrap items-center gap-2">
         {index > 0 && <Button variant="outline" onClick={() => setIndex((current) => current - 1)}>Back</Button>}
         <Button onClick={() => index === ONBOARDING_QUESTIONS.length - 1 ? setReview(true) : setIndex((current) => current + 1)}>{index === ONBOARDING_QUESTIONS.length - 1 ? "Review answers" : "Continue"}</Button>
-        <Button variant="accent" onClick={() => { setAnswers((current) => { const next = { ...current }; delete next[question.id]; return next; }); index === ONBOARDING_QUESTIONS.length - 1 ? setReview(true) : setIndex((current) => current + 1); }}>Skip</Button>
+        <Button variant="accent" onClick={() => { setAnswers((current) => { const next = { ...current }; delete next[question.id]; return next; }); if (index === ONBOARDING_QUESTIONS.length - 1) setReview(true); else setIndex((current) => current + 1); }}>Skip</Button>
       </div>
     </div>
   );
