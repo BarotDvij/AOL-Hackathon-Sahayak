@@ -1,5 +1,5 @@
 import { QueryClient } from "@tanstack/react-query";
-import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/react-router";
+import { createMemoryHistory, createRouter, RouterContextProvider } from "@tanstack/react-router";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
@@ -9,19 +9,18 @@ import { ParticipantsTable } from "./ParticipantsTable";
 
 const noop = () => {};
 
-/** The table links to group pages, so it needs a started router around it. */
-async function renderTable(props: { stage?: "all" | "paused" } = {}) {
+/** The table links to group pages, so it needs a router in context around it. */
+function renderTable(props: { stage?: "all" | "paused" } = {}) {
   const router = createRouter({
     routeTree,
     history: createMemoryHistory({ initialEntries: ["/participants"] }),
     context: { queryClient: new QueryClient() },
   });
-  await router.load();
   return render(
     <JourneyProvider>
-      <RouterProvider router={router}>
+      <RouterContextProvider router={router}>
         <ParticipantsTable stage={props.stage ?? "all"} onStage={noop} onOpen={noop} />
-      </RouterProvider>
+      </RouterContextProvider>
     </JourneyProvider>,
   );
 }
