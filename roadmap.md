@@ -1,8 +1,8 @@
 # Roadmap
 
-## In progress
-- Rename the visible app to Journey, including navigation and page titles.
-- Polish all mobile and tablet pages: bottom navigation, compact header and filters, participant cards, full-screen panels, bottom-sheet dialogs, touch targets, charts, and QR check-in; preserve desktop layout and behavior.
+## Done
+- Renamed the visible app and page titles to Journey.
+- Polished phone and tablet layouts with five-tab coordinator navigation, a More sheet, compact region header, participant/program cards, filter sheets, full-screen profile and chat, bottom-sheet dialogs, stacked review actions, larger tap targets, responsive charts and QR check-in. All 19 public content pages checked at 375px without overflow; key pages checked at 430px, 768px and 1280px. Verified filter → profile, edited approval, and check-in readback; 114 tests pass.
 
 
 ## Done
