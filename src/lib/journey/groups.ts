@@ -196,7 +196,7 @@ export function groupSuggestions(group: VolunteerGroup): GroupSuggestion[] {
   if (group.goingQuiet > 0) {
     out.push({
       id: `quiet-${volunteer.id}`,
-      text: `${plural(group.goingQuiet, 'person')} in ${volunteer.name}'s group ${group.goingQuiet === 1 ? 'has' : 'have'} gone quiet. ${volunteer.name.split(' ')[0]} could reach out.`,
+      text: `${plural(group.goingQuiet, 'person', 'people')} in ${volunteer.name}'s group ${group.goingQuiet === 1 ? 'has' : 'have'} gone quiet. ${volunteer.name.split(' ')[0]} could reach out.`,
       why: `${group.goingQuiet === 1 ? 'They have' : 'They all have'} been away for 60 days or more, and ${volunteer.name.split(' ')[0]} is the one they last did something with.`,
     });
   }
@@ -212,7 +212,7 @@ export function groupSuggestions(group: VolunteerGroup): GroupSuggestion[] {
     ).length;
     out.push({
       id: `reunion-${volunteer.id}`,
-      text: `${plural(onProgram, 'person')} did ${newest.program} with ${volunteer.name} in ${monthOf(newest.date)}. A reunion satsang would bring them back together.`,
+      text: `${plural(onProgram, 'person', 'people')} did ${newest.program} with ${volunteer.name} in ${monthOf(newest.date)}. A reunion satsang would bring them back together.`,
       why: `They share one course and one teacher, so a gathering in ${volunteer.name.split(' ')[0]}'s name lands warmer than a note from the centre.`,
     });
   }
@@ -220,7 +220,7 @@ export function groupSuggestions(group: VolunteerGroup): GroupSuggestion[] {
   if (group.dormant > 0) {
     out.push({
       id: `dormant-${volunteer.id}`,
-      text: `${plural(group.dormant, 'person')} in ${volunteer.name}'s group have been away a long time.`,
+      text: `${plural(group.dormant, 'person', 'people')} in ${volunteer.name}'s group have been away a long time.`,
       why: 'A warm, low-pressure note from the person they know is usually enough to reopen the conversation.',
     });
   }

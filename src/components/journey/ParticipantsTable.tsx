@@ -20,7 +20,7 @@ type SortKey = "name" | "stage" | "contact" | "step";
 /** Volunteer is the default view: coordinators work through the people they know. */
 type GroupMode = "volunteer" | "city" | "none";
 
-const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+const plural = (n: number, one: string, many = one === "person" ? "people" : `${one}s`) => `${n} ${n === 1 ? one : many}`;
 
 /** Search, filters, sortable columns and grouping by volunteer, city or none. */
 export function ParticipantsTable({ stage, onStage, onOpen, title = "Participants" }: { stage: StageId | "all"; onStage: (s: StageId | "all") => void; onOpen: (id: string) => void; title?: string }) {

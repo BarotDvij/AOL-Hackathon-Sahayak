@@ -8,7 +8,7 @@ import { groupsNeedingAttention } from "@/lib/journey/groups";
 import { useJourney } from "@/lib/journey/store";
 import { MessageGroupDialog } from "./MessageGroupDialog";
 
-const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+const plural = (n: number, one: string, many = one === "person" ? "people" : `${one}s`) => `${n} ${n === 1 ? one : many}`;
 
 /**
  * The volunteer groups with people drifting away, most at-risk first.
