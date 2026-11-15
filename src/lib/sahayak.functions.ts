@@ -22,6 +22,9 @@ function textOf(res: Awaited<ReturnType<typeof generateResponse<"openai/gpt-6-as
   return parts.join(" ").trim();
 }
 
+/** Row text comes from the browser, so every field is cut to a short fixed length before it reaches the model. */
+const clip = (value: unknown) => String(value ?? "").slice(0, 200);
+
 export interface AskSahayakInput { question: string; rows: SahayakSnapshotRow[] }
 
 /**
@@ -31,7 +34,7 @@ export interface AskSahayakInput { question: string; rows: SahayakSnapshotRow[] 
 export const askSahayak = createServerFn({ method: "POST" })
   .inputValidator((data: AskSahayakInput) => ({
     question: String(data?.question ?? "").slice(0, 300),
-    rows: Array.isArray(data?.rows) ? data.rows.slice(0, 60) : [],
+    rows: Array.isArray(data?.rows) ? data.rows.slice(0, 60).map((r) => ({ name: clip(r?.name), city: clip(r?.city), stage: clip(r?.stage), lastContact: clip(r?.lastContact), nextStep: clip(r?.nextStep) })) : [],
   }))
   .handler(async ({ data }) => {
     if (!data.rows.length) return { text: null as string | null };
