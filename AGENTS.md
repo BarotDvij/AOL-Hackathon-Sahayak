@@ -45,3 +45,4 @@ use the editor.
 - Coordinator interface translations use a shared language provider and dictionary, separate from participant message language, so changing the interface never silently changes a draft.
 
 - Keep compact navigation and responsive variants below 768px in the shared shells and overlay controls; use mobile participant/program cards instead of shrinking tables so desktop layout and shared actions remain unchanged.
+- The inbox tone-check example is an explicitly labeled unsent coordinator draft; pressure detection is advisory, pure and updates alongside channel length notes from the current editor text.
