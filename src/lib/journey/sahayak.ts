@@ -149,6 +149,21 @@ export function briefItems({ views, upcoming, inbox, groups = [], now = today() 
     });
   }
 
+  /** Name the volunteer who actually knows them, not just the number. */
+  const quietGroup = groupsNeedingAttention(groups)[0];
+  if (quietGroup && quietGroup.goingQuiet > 0) {
+    const first = quietGroup.volunteer.name.split(" ")[0];
+    const goneQuiet = quietGroup.members.filter((m) => m.stage === "quiet");
+    items.push({
+      id: "brief-group",
+      text: `${plural(goneQuiet.length, "person")} from ${first}'s ${quietGroup.programs[0]?.name ?? "group"} group ${goneQuiet.length === 1 ? "has" : "have"} gone quiet. ${first} could reach out.`,
+      why: `${goneQuiet.map((m) => m.participant.firstName).join(", ")} ${goneQuiet.length === 1 ? "has" : "have"} nothing on record for ${C.quietMinDays} days or more. ${goneQuiet[0]?.connection?.reason ?? ""}`.trim(),
+      to: "/groups",
+      volunteerId: quietGroup.volunteer.id,
+      actionLabel: "Open the group",
+    });
+  }
+
   const answered = views.filter((v) => v.history.contacts.some((c) => c.direction === "in" && c.outcome === "replied" && daysSince(c.date, now) < 7));
   if (answered.length) {
     items.push({
