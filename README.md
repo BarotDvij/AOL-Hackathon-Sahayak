@@ -1,4 +1,4 @@
-# Journey Companion
+# Journey
 
 Personal, caring follow-ups for Art of Living centres. Built for the Art of Living Hackathon, November 14–15, 2026 (#BuildForGood).
 
@@ -57,6 +57,16 @@ Use the links in the app to move between pages. A browser reload resets the demo
 5. Press **Switch view**, then choose **I'm a participant**. Open **Messages** (bottom right): the approved message is there. Type a reply.
 6. Log today's practice, then open **My journey** and **My Progress**.
 7. Switch back to the coordinator. Priya now shows as Paused ("contacted recently"). Open **Activity Log** and **Impact** to see the approval and the totals.
+
+## Repository layout
+
+- `src/routes/`: pages. Coordinator at `/`, participant under `/me`, role switcher at `/start`, MCP server at `/mcp`
+- `src/lib/journey/`: stage rules, next-step scoring, message drafts, sample data and the shared store
+- `src/lib/sahayak/`: the one core that the screens, server functions and MCP tools all call
+- `src/components/`: screen building blocks (`ui/` is shadcn/ui)
+- `drizzle/`, `supabase/`: database schema and migrations
+- `docs/`: the original product spec (the build has since grown past it) and the hackathon opening presentation
+- `roadmap.md`: what was built, in order. `AGENTS.md`: project rules
 
 ## Responsible use
 
