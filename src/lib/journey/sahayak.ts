@@ -1,6 +1,6 @@
 import { JOURNEY_CONFIG as C } from "./config";
 import { contactText, daysSinceActivity, daysSinceLastContact } from "./contact";
-import { daysSince, isoDaysFrom, parseIso, today } from "./dates";
+import { daysSince, formatLong, isoDaysFrom, parseIso, today } from "./dates";
 import { groupsNeedingAttention, quietProgram, type VolunteerGroup } from "./groups";
 import { needsReply, type InboxMessage } from "./inbox-seed";
 import { draftMessage } from "./messages";
@@ -134,7 +134,7 @@ export function briefItems({ views, upcoming, inbox, groups = [], now = today() 
     items.push({
       id: "brief-waiting",
       text: `You have not replied to ${oldest.from} in ${plural(daysSince(oldest.date, now), "day")}.`,
-      why: `Their message arrived on ${oldest.date} and is still marked "needs reply".`,
+      why: `Their message arrived on ${formatLong(oldest.date)} and is still marked "needs reply".`,
       to: "/inbox", actionLabel: "Reply",
     });
   }
@@ -181,7 +181,7 @@ export function briefItems({ views, upcoming, inbox, groups = [], now = today() 
   if (newSky.length) {
     items.push({
       id: "brief-newsky",
-      text: `${plural(newSky.length, "person")} finished ${C.skyCourseName} in the last two weeks and hasn't heard from us yet.`,
+      text: `${plural(newSky.length, "person")} finished ${C.skyCourseName} in the last two weeks and ${newSky.length === 1 ? "hasn't" : "haven't"} heard from us yet.`,
       why: "The first fortnight after a course is when a welcome message matters most.",
       to: "/review", actionLabel: "Review",
     });

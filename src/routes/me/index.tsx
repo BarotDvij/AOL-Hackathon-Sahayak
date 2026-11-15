@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { OnboardingForm } from "@/components/participant/OnboardingForm";
 import { cn } from "@/lib/utils";
+import { useGreeting } from "@/components/journey/bits";
 import { isMontreal, MONTREAL_CALENDAR } from "@/lib/sahayak/montreal-events";
 
 export const Route = createFileRoute("/me/")({
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/me/")({
 function ParticipantHome() {
   const { data, logToday, saveAnswers, welcomeOpen, openWelcome, closeWelcome } = useDemoParticipant();
   const navigate = useNavigate();
+  const greeting = useGreeting();
   const today = new Date().toISOString().slice(0, 10);
   const practisedToday = data.practice.entries.some((entry) => entry.date === today);
 
@@ -40,7 +42,7 @@ function ParticipantHome() {
           <Button variant="ghost" className="w-full" onClick={closeWelcome}>Maybe later</Button>
         </DialogContent>
       </Dialog>
-      <header className="brand-gradient mb-2 rounded-lg border border-border px-5 py-5"><p className="font-heading text-xs font-semibold text-purple">Your journey · Demo</p><h1 className="mt-1 font-display text-[32px] font-normal leading-tight text-primary">Hello, {data.participant.firstName}</h1><p className="mt-1 text-sm text-muted-foreground">A little awareness today is enough.</p></header>
+      <header className="brand-gradient mb-2 rounded-lg border border-border px-5 py-5"><p className="font-heading text-xs font-semibold text-purple">Your journey · Demo</p><h1 className="mt-1 font-display text-[32px] font-normal leading-tight text-primary">{greeting}, {data.participant.firstName}</h1><p className="mt-1 text-sm text-muted-foreground">A little awareness today is enough.</p></header>
       <ParticipantCard>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
