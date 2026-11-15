@@ -1,5 +1,5 @@
 import { Link, useRouterState, type LinkProps } from "@tanstack/react-router";
-import { CalendarDays, ChartNoAxesColumnIncreasing, Home, Route as JourneyIcon, Settings, Sparkles } from "lucide-react";
+import { CalendarDays, Home, Route as JourneyIcon, Sparkles, MessageSquare } from "lucide-react";
 import type { ReactNode } from "react";
 import { Switch } from "@/components/ui/switch";
 import { useDemoParticipant } from "@/components/participant/DemoParticipantContext";
@@ -8,9 +8,9 @@ import { ParticipantMessageBox } from "./ParticipantMessageBox";
 import { DemoAccount } from '@/components/journey/DemoAccount';
 
 const NAV = [
-  { to: "/me/journey", label: "My Journey", Icon: JourneyIcon },
-  { to: "/me/sessions", label: "Upcoming Sessions", Icon: CalendarDays },
-  { to: "/me/messages", label: "Messages", Icon: Home },
+  { to: "/me/journey", label: "My Journey", Icon: JourneyIcon, exact:false },
+  { to: "/me/sessions", label: "Upcoming Sessions", Icon: CalendarDays, exact:false },
+  { to: "/me/messages", label: "Messages", Icon: MessageSquare, exact:false },
 ] satisfies { to: LinkProps["to"]; label: string; Icon: typeof Home; exact?: boolean }[];
 
 export function ParticipantShell({ children }: { children: ReactNode }) {

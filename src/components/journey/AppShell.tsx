@@ -1,4 +1,4 @@
-import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { BarChart3, CalendarDays, UserRound, Bell, BookOpen, History, Inbox, LayoutDashboard, Mail, Menu, MoreHorizontal, Settings, Sparkles, Users } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -13,7 +13,6 @@ import { RemindersPanel } from "./RemindersPanel";
 import { SahayakChat } from "./SahayakChat";
 import { SahayakIntro } from "./SahayakIntro";
 import { useDemoSession, demoPageVisible } from '@/lib/journey/demo-session';
-import { DemoLogin } from './DemoLogin';
 import { DemoAccount } from './DemoAccount';
 
 type To = "/" | "/impact" | "/sessions" | "/team" | "/participants" | "/programs" | "/review" | "/inbox" | "/activity" | "/settings";
@@ -103,9 +102,8 @@ function BellButton({ count, onClick, className }: { count: number; onClick: () 
 /** The coordinator's frame: a fixed 240px sidebar on wide screens, a slide-out menu on phones. */
 export function AppShell({ children }: { children: ReactNode }) {
   const session = useDemoSession();
-  const navigate = useNavigate();
   const volunteer = session?.role === 'volunteer';
-  const navigation = NAV.filter(item => demoPageVisible(session?.role ?? null, item.to)).map(item=>({...item,label:volunteer && item.to==='/'?'My Dashboard':volunteer && item.to==='/participants'?'My People':item.label}));
+  const navigation = NAV.filter(item => demoPageVisible(session?.role ?? null, item.to,session?.volunteerId)).map(item=>({...item,label:volunteer && item.to==='/'?'My Dashboard':volunteer && item.to==='/participants'?'My People':item.label}));
   if (volunteer) navigation.sort((a,b)=>['/','/participants','/review','/inbox','/sessions'].indexOf(a.to)-['/','/participants','/review','/inbox','/sessions'].indexOf(b.to));
   const account = <DemoAccount />;
   const {t} = useLanguage();
@@ -121,7 +119,6 @@ export function AppShell({ children }: { children: ReactNode }) {
   const badgeFor = (to: To) => (to === "/review" ? waiting : to === "/inbox" ? unread : undefined);
 
   if (session && !session.ready) return <div className="min-h-dvh bg-background" />;
-  if (session && !session.role) return <DemoLogin />;
 
   return (
     <div className="coordinator-shell min-h-screen bg-background">
@@ -149,7 +146,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="flex justify-end border-b border-border bg-card px-4 md:hidden">{account}</div>
 
       <main className="md:pl-[240px]">
-        <div className="sticky top-0 z-20 hidden h-12 items-center justify-between gap-3 border-b border-border bg-card/90 px-8 backdrop-blur md:flex">
+        <div className="sticky top-0 z-20 hidden min-h-12 flex-wrap items-center justify-between gap-3 border-b border-border bg-card/90 px-8 py-2 backdrop-blur md:flex">
           {sahayak.on ? (
             <Link to={volunteer ? '/' : '/sahayak'} className="inline-flex items-center gap-1.5 text-xs font-medium text-purple hover:underline">
               <Sparkles className="size-3.5" aria-hidden />
@@ -164,7 +161,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             {sahayak.on && <BellButton count={reminders.length} onClick={() => setRemindersOpen(true)} />}
           </div>
         </div>
-        <div className="mx-auto w-full max-w-[1280px] app-page px-4 pb-40 pt-4 md:px-6 md:pb-24 md:pt-6 lg:px-8 lg:pt-8">{volunteer && <p className="mb-5 border-l-2 border-purple bg-secondary px-4 py-3 text-sm text-primary">Signed in as Shivam Kapoor. You are seeing only the people you know.</p>}{demoPageVisible(session?.role ?? null, pathname) ? children : <p className="text-sm text-muted-foreground">This page is available in the Admin demo view.</p>}</div>
+        <div className="mx-auto w-full max-w-[1280px] app-page px-4 pb-40 pt-4 md:px-6 md:pb-24 md:pt-6 lg:px-8 lg:pt-8">{demoPageVisible(session?.role ?? null, pathname,session?.volunteerId) ? children : null}</div>
       </main>
 
       <nav aria-label="Mobile sections" className="mobile-bottom-nav fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border bg-card md:hidden">

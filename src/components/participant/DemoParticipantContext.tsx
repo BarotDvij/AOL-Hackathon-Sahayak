@@ -1,6 +1,6 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, useState, type ReactNode, type SetStateAction, type Dispatch } from "react";
 import { ALL_SAHAYAK_ACCESS_IDS, SahayakConsentDialog, type SahayakAccessId } from "@/components/participant/SahayakConsentDialog";
-import { TEMP_PARTICIPANT_ID } from "@/lib/journey/demo-seed";
+import { useDemoSession } from '@/lib/journey/demo-session';
 import type { Program } from "@/lib/journey/programs";
 import type { NextStep } from "@/lib/journey/types";
 import { useJourney } from "@/lib/journey/store";
@@ -47,7 +47,7 @@ function useDemoData(
     if (!me) return null;
     const history = { ...me.history, contacts: [] };
     const rows = me.practice.map((entry) => ({ id: `${entry.participantId}-${entry.date}`, practiced_on: entry.date, minutes: entry.minutes }));
-    const upcoming = participantEvents(TEMP_PARTICIPANT_ID, "https://demo.invalid", 20, catalogList, { prefersOnline: prefersOnline(answers), location: answers.location, courseLevel: answers.course_level }).map((event) => ({
+    const upcoming = participantEvents(me.participant.id, "https://demo.invalid", 20, catalogList, { prefersOnline: prefersOnline(answers), location: answers.location, courseLevel: answers.course_level }).map((event) => ({
       ...event,
       calendarUrl: event.calendarUrl?.startsWith("data:") ? event.calendarUrl : event.calendarUrl ? new URL(event.calendarUrl).pathname : null,
     }));
@@ -73,19 +73,27 @@ function useDemoData(
   }, [me, answers, goals, interests, catalogList, programs]);
 }
 
-/** A fixed fictional participant for the no-login demo. Nothing here leaves the browser. */
+/** Each selected participant retains separate browser-memory answers and progress. */
+function useParticipantState<T>(initial:T):[T,Dispatch<SetStateAction<T>>] {
+ const id=useDemoSession()?.participantId ?? 'p05';
+ const [values,setValues]=useState<Record<string,T>>({});
+ const value=values[id] ?? initial;
+ const setValue:Dispatch<SetStateAction<T>>=next=>setValues(all=>({...all,[id]:typeof next==='function'?(next as (old:T)=>T)(all[id] ?? initial):next}));
+ return [value,setValue];
+}
+/** Selected fictional participant for the browser-local demo. */
 export function DemoParticipantProvider({ children }: { children: ReactNode }) {
   const { me, catalogList, programCatalog, logPractice, markInterested, replyToMessage } = useJourney();
-  const [answers, setAnswers] = useState<OnboardingAnswers>({});
-  const [goals, setGoals] = useState<DemoGoal[]>([]);
-  const [interests, setInterests] = useState<string[]>([]);
+  const [answers, setAnswers] = useParticipantState<OnboardingAnswers>({});
+  const [goals, setGoals] = useParticipantState<DemoGoal[]>([]);
+  const [interests, setInterests] = useParticipantState<string[]>([]);
   // The intake overlay never opens by itself: the participant asks for it from Home.
-  const [welcomeOpen, setWelcomeOpen] = useState(false);
-  const [sahayakOn, setSahayakOn] = useState(false);
-  const [sahayakAccess, setSahayakAccess] = useState<SahayakAccessId[]>([]);
-  const [consentOpen, setConsentOpen] = useState(false);
-  const [chatReplies, setChatReplies] = useState<DemoChatReply[]>([]);
-  const [completedDays, setCompletedDays] = useState<string[]>([]);
+  const [welcomeOpen, setWelcomeOpen] = useParticipantState(false);
+  const [sahayakOn, setSahayakOn] = useParticipantState(false);
+  const [sahayakAccess, setSahayakAccess] = useParticipantState<SahayakAccessId[]>([]);
+  const [consentOpen, setConsentOpen] = useParticipantState(false);
+  const [chatReplies, setChatReplies] = useParticipantState<DemoChatReply[]>([]);
+  const [completedDays, setCompletedDays] = useParticipantState<string[]>([]);
   const data = useDemoData(me, answers, goals, interests, catalogList, programCatalog.programs);
 
   if (!data) return <main className="p-8 text-sm text-muted-foreground">Loading the sample journey…</main>;

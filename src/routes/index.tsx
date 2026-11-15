@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { JOURNEY_CONFIG } from "@/lib/journey/config";
 import { useJourney } from "@/lib/journey/store";
 import type { StageId } from "@/lib/journey/types";
+import { useDemoSession } from '@/lib/journey/demo-session';
+import { VOLUNTEERS } from '@/lib/journey/operations';
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -32,6 +34,8 @@ export const Route = createFileRoute("/")({
 function DashboardPage() {
   const {t} = useLanguage();
   const { views, pending } = useJourney();
+  const session=useDemoSession();
+  const displayName=session?.role==='volunteer'?VOLUNTEERS.find(v=>v.id===session.volunteerId)?.name ?? 'Volunteer':JOURNEY_CONFIG.coordinatorName;
   const greeting = useGreeting();
   const [stage, setStage] = useState<StageId | "all">("all");
   const [openId, setOpenId] = useState<string | null>(null);
@@ -42,7 +46,7 @@ function DashboardPage() {
       <div className="space-y-4">
         <header className="brand-gradient mb-2 flex flex-wrap items-end justify-between gap-4 rounded-lg border border-border px-5 py-5">
           <div>
-            <h1 className="font-display text-[32px] font-normal leading-tight text-primary">{t(greeting)}, {JOURNEY_CONFIG.coordinatorName}</h1>
+            <h1 className="font-display text-[32px] font-normal leading-tight text-primary">{t(greeting)}, {displayName}</h1>
             <p className="mt-1 text-sm text-muted-foreground">{t('Here is who needs a caring next step today.')}</p>
           </div>
           <Button asChild size="lg"><Link to="/review">Review follow-ups ({pending.length})</Link></Button>
