@@ -76,5 +76,5 @@
 ## Done
 - Organized coordinator Settings into six sections, browser-saved profile/centre/appearance/reminder preferences, global dark and large-text tokens, consolidated Sahayak with legacy link redirect, CSV export and confirmed demo reset. Verified saved name/theme on reload, CSV download, sidebar settings redirect, desktop/phone appearance and participant calendar; 21 focused tests passed. Real-data import and external notification delivery remain explicitly unavailable in this demo; profile role is not a permission grant.
 
-## In progress
-- Clearly label coordinator and participant demo records and state that demo messages are not sent externally.
+## Done
+- Added shared coordinator and participant notices identifying fictional records and simulated sending, a visible mobile participant demo badge, and an explicit no-sending notice in the reply composer. Verified both views on a 394px phone without overflow or runtime errors.
