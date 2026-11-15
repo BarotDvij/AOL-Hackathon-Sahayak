@@ -72,3 +72,6 @@
 - The floating "Ask Sahayak" button sits over the bottom-right of the participants table while scrolling (the spec asked for bottom right); move or shrink it if it gets in the way.
 - Every CSV Source cell contains an organization or listing name rather than a URL, so program source links remain unavailable until real URLs are supplied.
 - Coordinator and no-login participant demo state reset on reload; authenticated participant/MCP records remain protected in Lovable Cloud for later account-based use.
+
+## In progress
+- Organize coordinator Settings into Profile, Centre, Appearance, Notifications, Sahayak, and Privacy/data; save browser preferences, apply global appearance, consolidate Sahayak, and verify CSV export/reset and mobile layout.
