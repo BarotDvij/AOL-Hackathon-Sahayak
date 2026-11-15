@@ -1,6 +1,8 @@
 import { QueryClient } from "@tanstack/react-query";
 import { createMemoryHistory, createRouter, RouterContextProvider } from "@tanstack/react-router";
 import { fireEvent, render, screen, within } from "@testing-library/react";
+import { useState } from "react";
+import type { StageId } from "@/lib/journey/types";
 import { describe, expect, it } from "vitest";
 
 import { routeTree } from "@/routeTree.gen";
@@ -9,6 +11,11 @@ import { ParticipantsTable } from "./ParticipantsTable";
 
 const noop = () => {};
 
+function ChipTable() {
+  const [stage, setStage] = useState<StageId | "all">("all");
+  return <ParticipantsTable stage={stage} onStage={setStage} onOpen={noop} stageChips />;
+}
+
 /** Shows what the group invite actually recorded, so the test can read it back. */
 function GroupRecord() {
   const { groupMessages } = useJourney();
@@ -16,7 +23,7 @@ function GroupRecord() {
 }
 
 /** The table links to group pages, so it needs a router in context around it. */
-function renderTable(props: { stage?: "all" | "paused" } = {}) {
+function renderTable(props: { stage?: "all" | "paused"; chips?: boolean } = {}) {
   const router = createRouter({
     routeTree,
     history: createMemoryHistory({ initialEntries: ["/participants"] }),
@@ -26,7 +33,7 @@ function renderTable(props: { stage?: "all" | "paused" } = {}) {
     <JourneyProvider>
       <RouterContextProvider router={router}>
         <GroupRecord />
-        <ParticipantsTable stage={props.stage ?? "all"} onStage={noop} onOpen={noop} />
+        {props.chips ? <ChipTable /> : <ParticipantsTable stage={props.stage ?? "all"} onStage={noop} onOpen={noop} />}
       </RouterContextProvider>
     </JourneyProvider>,
   );
@@ -35,6 +42,16 @@ function renderTable(props: { stage?: "all" | "paused" } = {}) {
 const section = (container: HTMLElement, name: string) => container.querySelector<HTMLElement>(`section[aria-label="${name}"]`);
 
 describe("participants table", () => {
+  it("filters to all five going-quiet people when the stage chip is selected", () => {
+    const { container } = renderTable({ chips: true });
+    fireEvent.click(screen.getByRole("button", { name: "Going quiet 5", exact: true }));
+    const rows = [...container.querySelectorAll("tbody tr")].filter((r) => !r.textContent?.includes("No one matches"));
+    expect(rows).toHaveLength(5);
+    expect(rows.every((r) => r.textContent?.includes("Going quiet"))).toBe(true);
+    fireEvent.click(screen.getByRole("button", { name: "All 31", exact: true }));
+    expect(container.querySelectorAll("tbody tr")).toHaveLength(31);
+  });
+
   it("groups people under the volunteer they did their most recent program with", async () => {
     const { container } = await renderTable();
     for (const name of ["Maya Desai", "Alex Tremblay", "Claire Roy", "Shivam Kapoor", "Camille Martin"]) {
