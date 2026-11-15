@@ -7,6 +7,8 @@ import { saveOnboarding } from "@/lib/sahayak/save-onboarding";
 import { fetchProgramCatalog } from "@/lib/program-catalog";
 import { buildCatalog } from "@/lib/journey/catalog";
 
+const eventOptions = (answers: ReturnType<typeof normalizeOnboardingAnswers>) => ({ prefersOnline: prefersOnline(answers), location: answers.location, courseLevel: answers.course_level });
+
 const participantIdSchema = z.string().regex(/^p\d{2}$/);
 
 export const getMyJourney = createServerFn({ method: "GET" })
@@ -48,7 +50,7 @@ export const getMyJourney = createServerFn({ method: "GET" })
       practice,
       goals: (goalsResult.data ?? []).map((g) => ({ id: g.id, period: g.period, text: g.text, createdAt: g.created_at })),
       messages: (messagesResult.data ?? []).map((m) => ({ id: m.id, coordinatorName: m.coordinator_name, text: m.text, sentAt: m.sent_at, reply: m.reply })),
-      upcoming: participantEvents(account.participant_id, getRequestUrl().origin, 20, catalog, { prefersOnline: prefersOnline(answers), location: answers.location, courseLevel: answers.course_level }),
+      upcoming: participantEvents(account.participant_id, getRequestUrl().origin, 20, catalog, eventOptions(answers)),
       interests: (interestsResult.data ?? []).map((i) => i.event_id),
       milestones: milestones(bundle.participant, bundle.history, logs),
       timeline,
@@ -62,9 +64,13 @@ export const claimMyParticipant = createServerFn({ method: "POST" })
     if (!participantBundle(data.participantId)) throw new Error("Choose one of the sample participants.");
     const { supabase, userId } = context;
     const { error } = await supabase.from("participant_accounts").insert({ user_id: userId, participant_id: data.participantId });
-    if (error) throw new Error("This sample participant is already linked to an account. Please choose another.");
+    if (error) {
+      // A retry after a failed role save finds this person's own link already in place.
+      const { data: mine } = await supabase.from("participant_accounts").select("participant_id").eq("user_id", userId).maybeSingle();
+      if (mine?.participant_id !== data.participantId) throw new Error(error.code === "23505" ? "This sample participant is already linked to an account. Please choose another." : "Your participant link could not be saved. Please try again.");
+    }
     const { error: roleError } = await supabase.from("user_roles").insert({ user_id: userId, role: "participant" });
-    if (roleError) throw new Error("Your participant role could not be saved. Please try again.");
+    if (roleError && roleError.code !== "23505") throw new Error("Your participant role could not be saved. Please try again.");
     return { ok: true };
   });
 
@@ -110,7 +116,7 @@ export const markMyInterest = createServerFn({ method: "POST" })
     if (onboarding.error) throw new Error("Your preferences could not be loaded.");
     const answers = normalizeOnboardingAnswers(onboarding.data?.answers ?? {});
     const catalog = buildCatalog(programCatalog.programs, programCatalog.prerequisites);
-    if (!participantEvents(account.participant_id, "https://events.invalid", 50, catalog, { prefersOnline: prefersOnline(answers), location: answers.location, courseLevel: answers.course_level }).some((e) => e.id === data.eventId)) throw new Error("That event is not in your upcoming list.");
+    if (!participantEvents(account.participant_id, "https://events.invalid", 50, catalog, eventOptions(answers)).some((e) => e.id === data.eventId)) throw new Error("That event is not in your upcoming list.");
     const { error } = await context.supabase.from("participant_interests").upsert({ user_id: context.userId, event_id: data.eventId }, { onConflict: "user_id,event_id" });
     if (error) throw new Error("Your interest could not be saved.");
     return { ok: true };
