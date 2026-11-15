@@ -1,7 +1,7 @@
 # Roadmap
 
 ## In progress
-- Replace sign-in with one remembered Admin/Volunteer/Participant Switch view control; add volunteer and participant selectors, scope records to the selection, preserve existing features, and verify navigation and reload.
+- Use the latest three-card Participant/Volunteer/Admin sign-in with no personal names; remove the switcher and identity selectors, fix Volunteer to Shivam and Participant to Priya, retain features, and verify scoped navigation, redirects and sign-out.
 
 ## Done
 - Renamed the visible app and page titles to Journey.
