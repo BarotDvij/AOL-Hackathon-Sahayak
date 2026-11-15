@@ -143,7 +143,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <BellButton count={sahayak.on ? reminders.length : 0} onClick={() => setRemindersOpen(true)} />
         </div>
       </header>
-      <div className="flex justify-end border-b border-border bg-card px-4 md:hidden">{account}</div>
+      <div className="flex justify-end border-b border-border bg-card px-4 py-2 md:hidden">{account}</div>
 
       <main className="md:pl-[240px]">
         <div className="sticky top-0 z-20 hidden min-h-12 flex-wrap items-center justify-between gap-3 border-b border-border bg-card/90 px-8 py-2 backdrop-blur md:flex">
@@ -183,7 +183,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <SahayakIntro open={introOpen} onOpenChange={setIntroOpen} />
       <RemindersPanel open={remindersOpen} onOpenChange={setRemindersOpen} />
-      <SahayakChat />
+      <SahayakChat key={volunteer ? session?.volunteerId : 'admin'} />
     </div>
   );
 }
