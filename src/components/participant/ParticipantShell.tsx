@@ -18,8 +18,8 @@ export function ParticipantShell({ children }: { children: ReactNode }) {
   const { sahayakOn, sahayakAccess, requestSahayak } = useDemoParticipant();
 
   return (
-    <div className="min-h-screen bg-background pb-24 lg:pb-0">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[240px] flex-col border-r border-border bg-card lg:flex">
+    <div className="min-h-screen bg-background pb-24 md:pb-0">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[240px] flex-col border-r border-border bg-card md:flex">
         <div className="brand-gradient border-b border-border px-5 py-5">
           <Link to="/me" className="font-heading text-base font-semibold text-primary">Journey Companion</Link>
         </div>
@@ -41,21 +41,21 @@ export function ParticipantShell({ children }: { children: ReactNode }) {
           ))}
         </nav>
       </aside>
-      <div className="lg:pl-[240px]">
+      <div className="md:pl-[240px]">
       <header className="sticky top-0 z-30 border-b border-border bg-card">
         <div className="flex min-h-12 items-center gap-3 px-4 py-3 sm:px-6 lg:px-8 lg:py-2">
-          <Link to="/me" className="font-heading text-sm font-semibold text-primary lg:hidden">Journey Companion</Link>
-          <span className="hidden items-center gap-1.5 text-xs font-medium text-purple lg:inline-flex"><Sparkles className="size-3.5" aria-hidden />Your Sahayak journey</span>
+          <Link to="/me" className="font-heading text-sm font-semibold text-primary md:hidden">Journey Companion</Link>
+          <span className="hidden items-center gap-1.5 text-xs font-medium text-purple md:inline-flex"><Sparkles className="size-3.5" aria-hidden />Your Sahayak journey</span>
           <div className="ml-auto flex items-center gap-3">
             <span className="hidden rounded-full bg-stage-new px-2 py-0.5 text-xs font-medium text-stage-new-foreground sm:inline-flex">Demo · Priya</span>
             <Link to="/start" className="shrink-0 text-xs font-medium text-purple hover:underline">Switch view</Link>
           </div>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-[1280px] px-4 pb-8 pt-6 sm:px-6 lg:px-8 lg:pt-8">{children}</main>
+      <main className="app-page mx-auto w-full max-w-[1280px] px-4 pb-8 pt-6 sm:px-6 lg:px-8 lg:pt-8">{children}</main>
       </div>
       <ParticipantMessageBox />
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-border bg-card lg:hidden" aria-label="Participant sections">
+      <nav className="mobile-bottom-nav fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-border bg-card md:hidden" aria-label="Participant sections">
         {NAV.map(({ to, label, Icon, exact }) => {
           const active = exact ? pathname === to : pathname.startsWith(to);
           return <Link key={to} to={to} aria-current={active ? "page" : undefined} className={cn("flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition-colors", active ? "bg-secondary text-primary" : "text-muted-foreground hover:bg-secondary")}><Icon className="size-5" aria-hidden />{label}</Link>;

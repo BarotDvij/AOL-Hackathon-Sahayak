@@ -221,3 +221,10 @@
   .app-page td, .app-page th { overflow-wrap: anywhere; }
   .stage-segments button { min-height: 0; }
 }
+
+@media (max-width: 767px) {
+  .mobile-bottom-nav .text-xs { font-size: 11px; }
+  .mobile-bottom-nav a { padding-left: 2px; padding-right: 2px; }
+  .mobile-filter-sheet { padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+  .impact-reference text { display: none; }
+}

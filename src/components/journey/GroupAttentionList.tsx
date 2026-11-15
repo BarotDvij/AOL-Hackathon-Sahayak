@@ -22,7 +22,7 @@ export function GroupAttentionList() {
   const messagingGroup = groups.find((g) => g.volunteer.id === messaging);
 
   return (
-    <section aria-label={t("Volunteer groups needing attention")} className="flex h-full flex-col rounded-lg border border-border bg-card p-5 shadow-soft">
+    <section aria-label={t("Volunteer groups needing attention")} className="flex h-full min-w-0 flex-col rounded-lg border border-border bg-card p-5 shadow-soft">
       <h2 className="font-heading text-base font-semibold text-primary">{t("Volunteer groups needing attention")}</h2>
       <p className="mt-0.5 text-xs text-muted-foreground">{t("Groups with people drifting away, most at-risk first.")}</p>
 
@@ -37,7 +37,7 @@ export function GroupAttentionList() {
               g.dormant > 0 ? `${plural(g.dormant, "person")} ${t("away for longer")}` : null,
             ].filter(Boolean).join(" · ");
             return (
-              <li key={g.volunteer.id} className="flex flex-wrap items-center gap-3 py-3">
+              <li key={g.volunteer.id} className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 py-3 md:flex">
                 <Initials name={g.volunteer.name} className="size-9 bg-secondary text-purple" />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-medium text-foreground">{g.volunteer.name}</span>
@@ -46,7 +46,7 @@ export function GroupAttentionList() {
                   </span>
                   <StageBreakdown counts={g.stageCounts} className="mt-1.5 w-full max-w-40" />
                 </span>
-                <span className="flex shrink-0 items-center gap-2">
+                <span className="col-start-2 flex shrink-0 items-center gap-2">
                   <Button asChild size="sm" variant="accent"><Link to="/groups/$volunteerId" params={{ volunteerId: g.volunteer.id }}>{t("Open group")}</Link></Button>
                   <Button size="sm" variant="outline" onClick={() => setMessaging(g.volunteer.id)} disabled={g.members.length === 0}>
                     <Mail className="size-4" aria-hidden /><span className="sr-only">{t("Message group")}</span>

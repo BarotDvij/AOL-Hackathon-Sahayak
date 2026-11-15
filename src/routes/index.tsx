@@ -53,7 +53,7 @@ function DashboardPage() {
         <StageBar active={stage} onChange={setStage} />
 
         <div className="grid gap-4 lg:grid-cols-3">
-          <div className="lg:col-span-2"><GroupAttentionList /></div>
+          <div className="min-w-0 lg:col-span-2"><GroupAttentionList /></div>
           <UpcomingList />
         </div>
 
