@@ -71,16 +71,33 @@ export function SahayakTag({ className }: { className?: string }) {
  * Typed navigation for whatever page a Sahayak suggestion points at.
  * TanStack needs a literal `to`, so each allowed page gets its own branch.
  */
-export function SahayakLink({ to, className, children }: { to: SahayakLinkTo; className?: string; children: ReactNode }) {
+export function SahayakLink({ to, volunteerId, className, children }: { to: SahayakLinkTo; volunteerId?: string | undefined; className?: string; children: ReactNode }) {
   switch (to) {
     case "/impact": return <Link to="/impact" className={className}>{children}</Link>;
     case "/inbox": return <Link to="/inbox" className={className}>{children}</Link>;
     case "/review": return <Link to="/review" className={className}>{children}</Link>;
     case "/participants": return <Link to="/participants" className={className}>{children}</Link>;
+    case "/groups": return volunteerId ? <Link to="/groups/$volunteerId" params={{ volunteerId }} className={className}>{children}</Link> : <Link to="/participants" className={className}>{children}</Link>;
     case "/activity": return <Link to="/activity" className={className}>{children}</Link>;
     case "/sahayak": return <Link to="/sahayak" className={className}>{children}</Link>;
     default: return <Link to="/" className={className}>{children}</Link>;
   }
+}
+
+/**
+ * A slim segmented bar of how one group's people sit across the stages.
+ * Colours come from the same stage classes the badges use, so the two always match.
+ */
+export function StageBreakdown({ counts, className }: { counts: { id: StageId; label: string; count: number }[]; className?: string }) {
+  const total = counts.reduce((n, c) => n + c.count, 0);
+  if (total === 0) return null;
+  return (
+    <span className={cn("flex h-1.5 w-full overflow-hidden rounded-full bg-muted", className)} aria-hidden>
+      {counts.filter((c) => c.count > 0).map((c) => (
+        <span key={c.id} className={STAGE_CLASSES[c.id].split(" ")[0]} style={{ width: `${(c.count / total) * 100}%` }} />
+      ))}
+    </span>
+  );
 }
 
 /** Set after mount so the server and the first client render say the same thing. */
