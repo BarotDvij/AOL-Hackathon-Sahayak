@@ -1,7 +1,7 @@
 # Roadmap
 
-## In progress
-- Use the latest three-card Participant/Volunteer/Admin sign-in with no personal names; remove the switcher and identity selectors, fix Volunteer to Shivam and Participant to Priya, retain features, and verify scoped navigation, redirects and sign-out.
+## Done
+- Added the latest three-card Participant/Volunteer/Admin demo sign-in without personal names, removed old switchers and identity selectors, fixed Volunteer to Shivam and Participant to Priya, and retained existing participant features through personal-page links. Verified all roles, volunteer-only group, hidden sections, blocked-page redirects, reload, Admin Impact, sign-out and stacked mobile cards; 27 focused tests pass with no browser errors.
 
 ## Done
 - Renamed the visible app and page titles to Journey.
