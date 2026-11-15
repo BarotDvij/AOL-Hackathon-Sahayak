@@ -17,7 +17,7 @@ export function DailyBrief() {
   if (!sahayak.on || brief.length === 0) return null;
 
   return (
-    <section aria-label="Sahayak daily brief" className="brand-gradient rounded-lg border border-border p-5 shadow-soft">
+    <section aria-label="Sahayak daily brief" className="brand-gradient rounded-lg border border-border p-4 md:p-5 shadow-soft">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <h2 className="font-display text-[22px] font-normal leading-tight text-primary">

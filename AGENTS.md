@@ -43,3 +43,5 @@ use the editor.
 - Session attendance, outreach outcomes, assignment proposals and Impact calculations share the Journey store and pure operations rules so coordinator surfaces cannot maintain conflicting totals; QR demo synchronization is same-origin browser-tab only, not a public database write.
 - Volunteer grouping comes from `src/lib/journey/groups.ts` alone: a person belongs to the volunteer on their most recent attributed course, event or contact, and every surface (table sections, group pages, dashboard attention card, Sahayak brief) reads that same module, so membership can never disagree between screens.
 - Coordinator interface translations use a shared language provider and dictionary, separate from participant message language, so changing the interface never silently changes a draft.
+
+- Keep compact navigation and responsive variants below 768px in the shared shells and overlay controls; use mobile participant/program cards instead of shrinking tables so desktop layout and shared actions remain unchanged.
