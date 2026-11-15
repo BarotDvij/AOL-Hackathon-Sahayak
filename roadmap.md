@@ -1,6 +1,11 @@
 # Roadmap
 
 ## Done
+- Renamed the visible app and page titles to Journey.
+- Polished phone and tablet layouts with five-tab coordinator navigation, a More sheet, compact region header, participant/program cards, filter sheets, full-screen profile and chat, bottom-sheet dialogs, stacked review actions, larger tap targets, responsive charts and QR check-in. All 19 public content pages checked at 375px without overflow; key pages checked at 430px, 768px and 1280px. Verified filter → profile, edited approval, and check-in readback; 114 tests pass.
+
+
+## Done
 - Grouping by volunteer is now the main way to see people. The People table opens as collapsible sections per volunteer (avatar, city, count, stage bar, "N people going quiet" badge, "Open group" and "Message group") above an Unassigned section with Auto-assign, plus Volunteer / City / None controls and Expand/Collapse all. Membership comes from the most recent program a person did with a volunteer; profiles show the connected volunteer and the reason ("Did Art of Silence with Shivam in October") plus "Also knows", and rows can be dragged to another volunteer. Every volunteer has a group page with what they led, weekly capacity, stage breakdown, members and Sahayak's group suggestions. Group invites are drafted, editable and approved by the coordinator before anything is recorded, and the dashboard card and Sahayak's daily brief lead with the groups that are drifting. Verified in the preview: card copy, group page, approve → activity log entry, auto-assign proposals and the brief line; 114 tests pass.
 
 ## Done

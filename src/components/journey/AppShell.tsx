@@ -1,7 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { BarChart3, CalendarDays, UserRound, Bell, BookOpen, History, Inbox, LayoutDashboard, Mail, Menu, Settings, Sparkles, Users } from "lucide-react";
+import { BarChart3, CalendarDays, UserRound, Bell, BookOpen, History, Inbox, LayoutDashboard, Mail, Menu, MoreHorizontal, Settings, Sparkles, Users } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { needsReply } from "@/lib/journey/inbox-seed";
 import { useJourney } from "@/lib/journey/store";
@@ -61,9 +63,9 @@ function SahayakSwitch({ onNavigate, onMeet }: { onNavigate?: () => void; onMeet
         <Switch checked={sahayak.on} onCheckedChange={setSahayakOn} aria-label="Turn Sahayak on or off" />
       </div>
       <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
-        <button type="button" onClick={onMeet} className="text-xs font-medium text-purple hover:underline">
+        <Button variant="link" size="sm" onClick={onMeet} className="h-auto p-0 text-xs font-medium text-purple hover:underline">
           {t("Meet Sahayak")}
-        </button>
+        </Button>
         <Link
           to="/sahayak"
           onClick={onNavigate}
@@ -82,7 +84,7 @@ function BellButton({ count, onClick, className }: { count: number; onClick: () 
       type="button"
       onClick={onClick}
       aria-label={count > 0 ? `Sahayak reminders, ${count} waiting` : "Sahayak reminders, none waiting"}
-      className={cn("relative grid size-9 shrink-0 place-items-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground", className)}
+      className={cn("relative grid size-11 md:size-9 shrink-0 place-items-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground", className)}
     >
       <Bell className="size-4" aria-hidden />
       {count > 0 && (
@@ -97,7 +99,10 @@ function BellButton({ count, onClick, className }: { count: number; onClick: () 
 /** The coordinator's frame: a fixed 240px sidebar on wide screens, a slide-out menu on phones. */
 export function AppShell({ children }: { children: ReactNode }) {
   const {t} = useLanguage();
-  const { summary, sahayak, reminders, inbox } = useJourney();
+  const { summary, sahayak, reminders, inbox, city, setCity, views } = useJourney();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const pageTitle = NAV.find((n) => n.exact ? pathname === n.to : pathname.startsWith(n.to))?.label ?? (pathname.startsWith("/groups") ? "Volunteer group" : "Sahayak");
+  const cities = [...new Set(views.map((v) => v.participant.city))].sort();
   const [open, setOpen] = useState(false);
   const [remindersOpen, setRemindersOpen] = useState(false);
   const [introOpen, setIntroOpen] = useState(false);
@@ -106,10 +111,10 @@ export function AppShell({ children }: { children: ReactNode }) {
   const badgeFor = (to: To) => (to === "/review" ? waiting : to === "/inbox" ? unread : undefined);
 
   return (
-    <div className="min-h-screen bg-background">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[240px] flex-col border-r border-border bg-card lg:flex">
+    <div className="coordinator-shell min-h-screen bg-background">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[240px] flex-col border-r border-border bg-card md:flex">
         <div className="brand-gradient border-b border-border px-5 py-5">
-          <Link to="/" className="font-heading text-base font-semibold tracking-tight text-primary">Journey Companion</Link>
+          <Link to="/" className="font-heading text-base font-semibold tracking-tight text-primary">Journey</Link>
         </div>
         <SahayakSwitch onMeet={() => setIntroOpen(true)} />
         <nav className="mt-2 flex flex-1 flex-col gap-1 px-3" aria-label="Sections">
@@ -118,31 +123,19 @@ export function AppShell({ children }: { children: ReactNode }) {
         <p className="px-5 py-4 text-xs leading-relaxed text-muted-foreground">{t("Nothing is ever sent without you approving it.")}</p>
       </aside>
 
-      <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-border bg-card px-4 py-3 lg:hidden">
-        <Link to="/" className="font-heading text-base font-semibold tracking-tight text-primary">Journey Companion</Link>
-        <div className="flex items-center gap-2">
-          {sahayak.on && <BellButton count={reminders.length} onClick={() => setRemindersOpen(true)} />}
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-              <button type="button" aria-label="Open menu" className="grid size-9 place-items-center rounded-lg border border-border text-muted-foreground hover:bg-secondary">
-                <Menu className="size-4" aria-hidden />
-              </button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[240px] gap-0 p-0 sm:max-w-[240px]">
-              <SheetTitle className="sr-only">Menu</SheetTitle>
-              <div className="brand-gradient border-b border-border px-5 py-5 font-heading text-base font-semibold tracking-tight text-primary">Journey Companion</div>
-              <SahayakSwitch onNavigate={() => setOpen(false)} onMeet={() => { setOpen(false); setIntroOpen(true); }} />
-              <nav className="mt-2 flex flex-1 flex-col gap-1 px-3" aria-label="Sections">
-                {NAV.map((n) => <NavItemLink key={n.to} {...n} waiting={badgeFor(n.to)} onNavigate={() => setOpen(false)} />)}
-              </nav>
-              <p className="px-5 py-4 text-xs leading-relaxed text-muted-foreground">{t("Nothing is ever sent without you approving it.")}</p>
-            </SheetContent>
-          </Sheet>
+      <header className="sticky top-0 z-30 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-border bg-card px-4 py-2 md:hidden">
+        <span className="min-w-0 truncate font-heading text-base font-semibold text-primary">{t(pageTitle)}</span>
+        <div className="flex min-w-0 items-center gap-2">
+          <Select value={city} onValueChange={setCity}>
+            <SelectTrigger aria-label="Centre or region" className="w-28 min-w-0 bg-card"><SelectValue /></SelectTrigger>
+            <SelectContent><SelectItem value="all">{t("All cities")}</SelectItem>{cities.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+          </Select>
+          <BellButton count={sahayak.on ? reminders.length : 0} onClick={() => setRemindersOpen(true)} />
         </div>
       </header>
 
-      <main className="lg:pl-[240px]">
-        <div className="sticky top-0 z-20 hidden h-12 items-center justify-between gap-3 border-b border-border bg-card/90 px-8 backdrop-blur lg:flex">
+      <main className="md:pl-[240px]">
+        <div className="sticky top-0 z-20 hidden h-12 items-center justify-between gap-3 border-b border-border bg-card/90 px-8 backdrop-blur md:flex">
           {sahayak.on ? (
             <Link to="/sahayak" className="inline-flex items-center gap-1.5 text-xs font-medium text-purple hover:underline">
               <Sparkles className="size-3.5" aria-hidden />
@@ -156,8 +149,25 @@ export function AppShell({ children }: { children: ReactNode }) {
             {sahayak.on && <BellButton count={reminders.length} onClick={() => setRemindersOpen(true)} />}
           </div>
         </div>
-        <div className="mx-auto w-full max-w-[1280px] px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pb-24 lg:pt-8">{children}</div>
+        <div className="mx-auto w-full max-w-[1280px] app-page px-4 pb-40 pt-4 md:px-6 md:pb-24 md:pt-6 lg:px-8 lg:pt-8">{children}</div>
       </main>
+
+      <nav aria-label="Mobile sections" className="mobile-bottom-nav fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border bg-card md:hidden">
+        {(["/", "/participants", "/sessions", "/impact"] as To[]).map((to) => {
+          const item = NAV.find((n) => n.to === to);
+          if (!item) return null;
+          return <Link key={to} to={to} activeOptions={{ exact: to === "/" }} className="flex min-h-16 min-w-0 flex-col items-center justify-center gap-1 text-muted-foreground" activeProps={{ className: "bg-secondary text-purple" }}><item.Icon className="size-5 shrink-0" aria-hidden /><span className="max-w-full truncate text-xs font-medium">{t(item.label)}</span></Link>;
+        })}
+        <Button variant="ghost" onClick={() => setOpen(true)} aria-label="More sections" className="h-16 min-w-0 flex-col gap-1 rounded-none px-1 text-muted-foreground"><MoreHorizontal className="size-5" /><span className="text-xs">{t("More")}</span></Button>
+      </nav>
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent side="bottom" className="mobile-more-sheet max-h-[85dvh] overflow-y-auto rounded-t-lg p-4">
+          <SheetTitle className="pr-12 font-heading">{t("More")}</SheetTitle>
+          <nav className="mt-4 grid grid-cols-2 gap-2" aria-label="More sections">{NAV.filter((n) => !["/", "/participants", "/sessions", "/impact"].includes(n.to)).map((n) => <NavItemLink key={n.to} {...n} waiting={badgeFor(n.to)} onNavigate={() => setOpen(false)} />)}</nav>
+          <SahayakSwitch onNavigate={() => setOpen(false)} onMeet={() => { setOpen(false); setIntroOpen(true); }} />
+          <Link to="/start" onClick={() => setOpen(false)} className="mt-3 flex min-h-11 items-center px-3 text-sm font-medium text-purple">{t("Switch view")}</Link>
+        </SheetContent>
+      </Sheet>
 
       <SahayakIntro open={introOpen} onOpenChange={setIntroOpen} />
       <RemindersPanel open={remindersOpen} onOpenChange={setRemindersOpen} />

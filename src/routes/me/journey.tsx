@@ -14,9 +14,9 @@ import { answerLabel, GOAL_QUESTION, type GoalPeriod } from "@/lib/sahayak/core"
 
 export const Route = createFileRoute("/me/journey")({
   head: () => ({ meta: [
-    { title: "My journey · Sahayak" },
+    { title: "My journey · Journey" },
     { name: "description", content: "Your course milestones, journey timeline and weekly, monthly, quarterly and annual goals." },
-    { property: "og:title", content: "My journey · Sahayak" },
+    { property: "og:title", content: "My journey · Journey" },
     { property: "og:description", content: "Your course milestones, journey timeline and weekly, monthly, quarterly and annual goals." },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
   ] }),

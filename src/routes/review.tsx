@@ -17,9 +17,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/review")({
   head: () => ({
     meta: [
-      { title: "Review queue · Journey Companion" },
+      { title: "Review queue · Journey" },
       { name: "description", content: "Read each drafted follow-up one at a time, then approve, edit or skip it. Nothing is sent without you." },
-      { property: "og:title", content: "Review queue · Journey Companion" },
+      { property: "og:title", content: "Review queue · Journey" },
       { property: "og:description", content: "Read each drafted follow-up one at a time, then approve, edit or skip it. Nothing is sent without you." },
       { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
     ],
@@ -114,7 +114,7 @@ function ReviewPage() {
           <div className="mt-3">
             <Textarea value={draft} onChange={(e) => setDraft(e.target.value)} rows={9} aria-label="Message text" className="bg-card font-normal" />
             <p className={cn("mt-1 text-xs", limit?.ok ? "text-muted-foreground" : "text-destructive")}>{limit?.label}</p>
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="review-actions mt-3 flex flex-wrap gap-2">
               <Button size="sm" onClick={() => { editMessage(s.id, draft); done(); }}>{t("Save changes")}</Button>
               <Button size="sm" variant="ghost" onClick={done}>{t("Cancel")}</Button>
             </div>
@@ -123,7 +123,7 @@ function ReviewPage() {
           <div className="mt-3 rounded-lg border border-border p-4">
             <p className="text-sm font-medium">Why are you skipping this one?</p>
             <p className="text-xs text-muted-foreground">Optional — it helps us suggest better next time.</p>
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="review-actions mt-3 flex flex-wrap gap-2">
               {SKIP_REASONS.map((r) => (
                 <button
                   key={r}
@@ -138,7 +138,7 @@ function ReviewPage() {
             {reason === "Other" && (
               <Inputish value={other} onChange={setOther} placeholder="Tell us in your words" />
             )}
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="review-actions mt-3 flex flex-wrap gap-2">
               <Button size="sm" onClick={skipNow}>{t("Skip for now")}</Button>
               <Button size="sm" variant="ghost" onClick={done}>{t("Back")}</Button>
             </div>
@@ -146,7 +146,7 @@ function ReviewPage() {
         ) : (
           <div className="mt-3">
             <p className="whitespace-pre-wrap rounded-lg border border-border bg-background p-4 text-sm leading-relaxed">{text}</p>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="review-actions mt-4 flex flex-wrap gap-2">
               <Button onClick={approveNow}><Check className="size-4" aria-hidden />{t("Approve and send")}</Button>
               <Button variant="outline" onClick={() => { setDraft(text); setMode("edit"); }}><Pencil className="size-4" aria-hidden />{t("Edit")}</Button>
               <Button variant="accent" onClick={() => setMode("skip")}>{t("Skip for now")}</Button>

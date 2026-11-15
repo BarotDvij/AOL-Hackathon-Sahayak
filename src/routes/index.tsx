@@ -17,9 +17,9 @@ import type { StageId } from "@/lib/journey/types";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Dashboard · Journey Companion" },
+      { title: "Dashboard · Journey" },
       { name: "description", content: "Who needs a caring next step today, how the stages break down, and what is waiting for your review." },
-      { property: "og:title", content: "Dashboard · Journey Companion" },
+      { property: "og:title", content: "Dashboard · Journey" },
       { property: "og:description", content: "Who needs a caring next step today, how the stages break down, and what is waiting for your review." },
       { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
     ],
@@ -53,7 +53,7 @@ function DashboardPage() {
         <StageBar active={stage} onChange={setStage} />
 
         <div className="grid gap-4 lg:grid-cols-3">
-          <div className="lg:col-span-2"><GroupAttentionList /></div>
+          <div className="min-w-0 lg:col-span-2"><GroupAttentionList /></div>
           <UpcomingList />
         </div>
 

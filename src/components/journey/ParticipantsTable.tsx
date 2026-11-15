@@ -1,6 +1,7 @@
-import { ChevronDown, ChevronUp, ChevronsDownUp, ChevronsUpDown, Mail, Search, Sparkles, Users } from "lucide-react";
+import { ChevronDown, ChevronUp, ChevronsDownUp, ChevronsUpDown, Mail, SlidersHorizontal, Search, Sparkles, Users } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChannelIcon, channelLabel, Initials, StageBadge, StageBreakdown } from "@/components/journey/bits";
@@ -27,6 +28,7 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
   const { views, catalog, assignments, activeVolunteer, setActiveVolunteer, myFollowUps, setMyFollowUps, groups, unassigned, assign, confirmAssignments } = useJourney();
   const {t} = useLanguage();
   const [q, setQ] = useState("");
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [city, setCity] = useState("all");
   const [channel, setChannel] = useState("all");
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: "contact", dir: -1 });
@@ -120,6 +122,24 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
     );
   };
 
+  const MobileCards = ({ rows }: { rows: ParticipantView[] }) => (
+    <ul className="divide-y divide-border md:hidden">
+      {rows.map((v) => {
+        const p = v.participant;
+        const step = stepOf(v);
+        return <li key={p.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 p-3">
+          <button onClick={() => onOpen(p.id)} className="min-w-0 text-left">
+            <span className="flex min-w-0 items-center gap-2"><span className="min-w-0 flex-1 truncate font-medium">{p.firstName} {p.lastName}</span><StageBadge stage={v.stage} /></span>
+            <span className="mt-2 block truncate text-sm text-muted-foreground">{contactText(v.history)}</span>
+            <span className="block truncate text-sm text-muted-foreground">{step?.shortTitle ?? "—"}</span>
+          </button>
+          <Button size="sm" variant="accent" onClick={() => onOpen(p.id)}>{t("Review")}</Button>
+        </li>;
+      })}
+      {!rows.length && <li className="p-4 text-sm text-muted-foreground">{t("No one matches these filters.")}</li>}
+    </ul>
+  );
+
   const TableBody = ({ rows, empty }: { rows: ParticipantView[]; empty: string }) => (
     <tbody>
       {rows.map((v) => <Row key={v.participant.id} v={v} />)}
@@ -151,21 +171,21 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
         onDrop={() => { if (drop && dragging) { assign(dragging, volunteerId); setDragging(null); } }}
         className={cn("overflow-hidden rounded-lg border border-border bg-card shadow-soft", drop && dragging && "border-purple ring-1 ring-purple/30")}
       >
-        <div className="flex flex-wrap items-center gap-3 border-b border-border p-4">
+        <div className="group-header grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-border p-3 md:flex md:flex-wrap md:gap-3 md:p-4">
           <button
             onClick={() => setCollapsed((c) => (c.includes(id) ? c.filter((x) => x !== id) : [...c, id]))}
             aria-expanded={isOpen}
-            className="flex min-w-0 flex-1 items-center gap-3 text-left"
+            className="group-collapse col-span-2 flex min-w-0 flex-1 items-center gap-2 text-left md:gap-3"
           >
-            <Initials name={name} className="size-9 bg-secondary text-purple" />
+            <Initials name={name} className="hidden size-9 bg-secondary text-purple md:grid" />
             <span className="min-w-0">
-              <span className="flex flex-wrap items-center gap-2">
-                <span className="truncate font-heading text-base font-semibold text-primary">{name}</span>
-                {quiet > 0 && <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-stage-quiet px-2 py-0.5 text-xs font-medium text-stage-quiet-foreground">{plural(quiet, "person")} {t("going quiet")}</span>}
+              <span className="flex min-w-0 items-center gap-2">
+                <span className="min-w-0 flex-1 truncate font-heading text-base font-semibold text-primary">{name}</span>
+                {quiet > 0 && <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-stage-quiet px-2 py-0.5 text-xs font-medium text-stage-quiet-foreground"><span className="md:hidden">{quiet} {t("going quiet")}</span><span className="hidden md:inline">{plural(quiet, "person")} {t("going quiet")}</span></span>}
               </span>
               <span className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
-                {sub} · {plural(rows.length, "person")}
-                {counts.some((c) => c.count > 0) && <StageBreakdown counts={counts} className="ml-1 w-24" />}
+                <span className="truncate"><span className="hidden md:inline">{sub} · </span>{plural(rows.length, "person")}</span>
+                {counts.some((c) => c.count > 0) && <StageBreakdown counts={counts} className="ml-1 hidden w-24 md:flex" />}
               </span>
             </span>
             <ChevronDown className={cn("ml-auto size-4 shrink-0 text-muted-foreground transition-transform", isOpen && "rotate-180")} aria-hidden />
@@ -180,11 +200,14 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
           )}
         </div>
         {isOpen && (
-          <div className="overflow-x-auto">
+          <div>
+          <MobileCards rows={rows} />
+          <div className="hidden overflow-x-auto md:block">
             <table className="w-full table-fixed">
               <Columns />
               <TableBody rows={rows} empty="No one matches these filters." />
             </table>
+          </div>
           </div>
         )}
       </section>
@@ -217,14 +240,7 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
   const unassignedRows = filtered.filter((v) => !v.connection);
   const messagingGroup = groups.find((g) => g.volunteer.id === messaging);
 
-  return (
-    <section aria-label={title} className="space-y-4">
-      <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card p-4 shadow-soft">
-        <h2 className="mr-auto font-heading text-base font-semibold text-primary">{t(title)}</h2>
-        <div className="relative min-w-0 basis-56 flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
-          <Input value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} placeholder={t("Search name, city or email")} aria-label="Search participants" className="bg-card pl-9" />
-        </div>
+  const filterControls = <>
         <Select value={stage} onValueChange={(s) => { onStage(s as StageId | "all"); setPage(1); }}>
           <SelectTrigger className={cn("w-40 bg-card", stage !== "all" && "border-purple text-purple")} aria-label="Filter by stage"><SelectValue /></SelectTrigger>
           <SelectContent>
@@ -246,6 +262,18 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
             {(["whatsapp", "email", "sms"] as Channel[]).map((c) => <SelectItem key={c} value={c}>{channelLabel(c)}</SelectItem>)}
           </SelectContent>
         </Select>
+  </>;
+
+  return (
+    <section aria-label={title} className="space-y-4">
+      <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card p-4 shadow-soft">
+        <h2 className="mr-auto font-heading text-base font-semibold text-primary">{t(title)}</h2>
+        <div className="relative min-w-0 basis-56 flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+          <Input value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} placeholder={t("Search name, city or email")} aria-label="Search participants" className="bg-card pl-9" />
+        </div>
+        <Button variant="outline" className="md:hidden" onClick={() => setFiltersOpen(true)}><SlidersHorizontal className="size-4" />{t("Filters")}</Button>
+        <div className="hidden flex-wrap gap-3 md:flex">{filterControls}</div>
       </div>
 
       <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card px-4 py-2 shadow-soft">
@@ -276,7 +304,8 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
 
       {mode === "none" ? (
         <div className="rounded-lg border border-border bg-card shadow-soft">
-          <div className="overflow-x-auto">
+          <MobileCards rows={shown} />
+          <div className="hidden overflow-x-auto md:block">
             <table className="w-full table-fixed">
               <Columns />
               <TableBody rows={shown} empty="No one matches these filters." />
@@ -300,11 +329,11 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
           ))}
 
           <section aria-label={t("Unassigned")} className="overflow-hidden rounded-lg border border-dashed border-border bg-card/60 shadow-soft">
-            <div className="flex flex-wrap items-center gap-3 border-b border-border p-4">
+            <div className="group-header grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-border p-3 md:flex md:flex-wrap md:gap-3 md:p-4">
               <button
                 onClick={() => setCollapsed((c) => (c.includes("unassigned") ? c.filter((x) => x !== "unassigned") : [...c, "unassigned"]))}
                 aria-expanded={!collapsed.includes("unassigned")}
-                className="flex min-w-0 flex-1 items-center gap-3 text-left"
+                className="group-collapse col-span-2 flex min-w-0 flex-1 items-center gap-2 text-left md:gap-3"
               >
                 <span className="grid size-9 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground" aria-hidden><Users className="size-4" /></span>
                 <span className="min-w-0">
@@ -318,12 +347,13 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
               </Button>
             </div>
             {!collapsed.includes("unassigned") && (
-              <div className="overflow-x-auto">
+              <div><MobileCards rows={unassignedRows} />
+              <div className="hidden overflow-x-auto md:block">
                 <table className="w-full table-fixed">
                   <Columns />
                   <TableBody rows={unassignedRows} empty="No one matches these filters." />
                 </table>
-              </div>
+              </div></div>
             )}
           </section>
 
@@ -348,6 +378,7 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
         </div>
       )}
 
+      <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}><SheetContent side="bottom" className="mobile-filter-sheet rounded-t-lg"><SheetTitle>{t("Filters")}</SheetTitle><div className="mt-5 grid gap-4 [&>button]:w-full">{filterControls}</div><Button className="mt-5 w-full" onClick={() => setFiltersOpen(false)}>{t("Done")}</Button></SheetContent></Sheet>
       {messagingGroup && <MessageGroupDialog key={`${messagingGroup.volunteer.id}-${messagingGroup.members.length}`} group={messagingGroup} open={messaging !== null} onOpenChange={(o) => setMessaging(o ? messagingGroup.volunteer.id : null)} />}
     </section>
   );

@@ -13,7 +13,7 @@ export function SummaryCards() {
     { label: "Messages sent this week", value: summary.sentThisWeek, note: summary.sentTrend, Icon: Send },
   ];
   return (
-    <section aria-label="At a glance" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <section aria-label="At a glance" className="grid grid-cols-2 gap-3 lg:gap-4 xl:grid-cols-4">
       {items.map((it) => {
         const positive = it.note.trim().startsWith("+");
         return (

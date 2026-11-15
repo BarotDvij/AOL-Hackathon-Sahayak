@@ -50,17 +50,23 @@ describe("participants table", () => {
 
   it("moves a person to another volunteer's group when their row is dropped there", async () => {
     const { container } = await renderTable();
-    const row = screen.getByText("Priya Nair").closest("tr");
-    expect(row).not.toBeNull();
-    fireEvent.dragStart(row!);
-    fireEvent.drop(section(container, "Alex Tremblay")!);
+    const row = [...container.querySelectorAll("tbody tr")].find((r) => r.textContent?.includes("Priya Nair"));
+    const target = section(container, "Alex Tremblay");
+    expect(row).toBeDefined();
+    expect(target).not.toBeNull();
+    if (!row || !target) throw new Error("Missing source person or target volunteer");
+    fireEvent.dragStart(row);
+    const updatedTarget = section(container, "Alex Tremblay");
+    if (!updatedTarget) throw new Error("Missing refreshed target volunteer");
+    fireEvent.drop(updatedTarget);
     expect(section(container, "Alex Tremblay")?.textContent).toContain("Priya Nair");
     expect(section(container, "Maya Desai")?.textContent).not.toContain("Priya Nair");
   });
 
   it("records a group invite only once the coordinator approves it", async () => {
     const { container } = await renderTable();
-    const shivam = section(container, "Shivam Kapoor")!;
+    const shivam = section(container, "Shivam Kapoor");
+    if (!shivam) throw new Error("Missing volunteer group");
     expect(screen.getByTestId("group-record").textContent).toBe("0:0");
     fireEvent.click(within(shivam).getByRole("button", { name: "Message group" }));
     const approve = screen.getByRole("button", { name: /Approve and send to/ });

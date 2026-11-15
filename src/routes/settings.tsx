@@ -7,10 +7,10 @@ import { JOURNEY_CONFIG as C, STAGES, stageLabel } from "@/lib/journey/config";
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
-      { title: "Settings · Journey Companion" },
-      { name: "description", content: "How Journey Companion decides who needs a follow-up, and what it never does on its own." },
-      { property: "og:title", content: "Settings · Journey Companion" },
-      { property: "og:description", content: "How Journey Companion decides who needs a follow-up, and what it never does on its own." },
+      { title: "Settings · Journey" },
+      { name: "description", content: "How Journey decides who needs a follow-up, and what it never does on its own." },
+      { property: "og:title", content: "Settings · Journey" },
+      { property: "og:description", content: "How Journey decides who needs a follow-up, and what it never does on its own." },
       { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
     ],
   }),
