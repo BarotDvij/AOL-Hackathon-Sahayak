@@ -23,7 +23,7 @@ export const Route = createFileRoute("/me/")({
 });
 
 function ParticipantHome() {
-  const { data, logToday, saveAnswers, welcomeOpen, closeWelcome } = useDemoParticipant();
+  const { data, logToday, saveAnswers, welcomeOpen, openWelcome, closeWelcome } = useDemoParticipant();
   const navigate = useNavigate();
   const today = new Date().toISOString().slice(0, 10);
   const practisedToday = data.practice.entries.some((entry) => entry.date === today);
