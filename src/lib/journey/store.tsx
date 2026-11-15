@@ -278,8 +278,21 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
 
   const store: Store = {
     views, programCatalog, catalog, catalogList, practice, replies, pickerIds, city, setCity, meId, setMeId, me,
+    groups, unassigned, groupMessages,
     sentMessages, sessions, checkIns, assignments, activeVolunteer, setActiveVolunteer, myFollowUps, setMyFollowUps,
     assign: (id, volunteerId) => setAssignments(all => ({...all, [id]: volunteerId})),
+    sendGroupMessage: (volunteerId, text, channel) => {
+      const group = groups.find((g) => g.volunteer.id === volunteerId);
+      if (!group || group.members.length === 0) return;
+      const at = new Date().toISOString();
+      const memberIds = group.members.map((m) => m.participant.id);
+      const stageOf = (id: string) => views.find((v) => v.participant.id === id)?.stage ?? "new";
+      setGroupMessages((all) => [{ id: `group-${volunteerId}-${at}`, volunteerId, text, channel, at, memberIds }, ...all]);
+      setContacts((c) => [...c, ...memberIds.map((id) => ({ participantId: id, channel, direction: "out" as const, date: isoDaysFrom(0), outcome: "no reply" as const }))]);
+      setSentMessages((all) => [...all, ...memberIds.map((id) => ({ id: `group-msg-${volunteerId}-${id}`, participantId: id, suggestionId: null, coordinatorName: C.coordinatorName, text, sentAt: at, reply: null, channel, stageBefore: stageOf(id), volunteerId }))]);
+      setMessages((m) => [...m, ...memberIds.map((id) => ({ id: `group-msg-${volunteerId}-${id}`, participantId: id, suggestionId: null, coordinatorName: C.coordinatorName, text, sentAt: at, reply: null }))]);
+      log("approved", memberIds[0] ?? "", `Approved a group invite for ${group.volunteer.name}'s group · ${memberIds.length} ${memberIds.length === 1 ? "person" : "people"} · ${channel}`);
+    },
     confirmAssignments: proposals => setAssignments(all => ({...all, ...Object.fromEntries(proposals.map(p => [p.participantId, p.volunteerId]))})),
     endSession: id => setSessions(all => all.map(s => s.id === id ? {...s, ended: true} : s)),
     setParticipantLanguage: (id, language) => {
