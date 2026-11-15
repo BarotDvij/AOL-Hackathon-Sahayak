@@ -45,3 +45,5 @@ use the editor.
 - Coordinator interface translations use a shared language provider and dictionary, separate from participant message language, so changing the interface never silently changes a draft.
 
 - Keep compact navigation and responsive variants below 768px in the shared shells and overlay controls; use mobile participant/program cards instead of shrinking tables so desktop layout and shared actions remain unchanged.
+
+- Participants stage chips are an opt-in presentation of the shared table, with selection stored in validated route search; Dashboard stage navigation passes that search so other table instances retain their existing controls.
