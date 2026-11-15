@@ -79,8 +79,8 @@ export function MessageGroupDialog({ group, open, onOpenChange }: { group: Volun
           className="bg-card text-sm leading-relaxed"
         />
 
-        {previous.length > 0 && (
-          <p className="text-xs text-muted-foreground">{t("Last group invite sent")}: {new Date(previous[0].at).toLocaleDateString("en-CA", { month: "short", day: "numeric" })} · {channelLabel(previous[0].channel)}</p>
+        {lastInvite && (
+          <p className="text-xs text-muted-foreground">{t("Last group invite sent")}: {new Date(lastInvite.at).toLocaleDateString("en-CA", { month: "short", day: "numeric" })} · {channelLabel(lastInvite.channel)}</p>
         )}
 
         <DialogFooter className="gap-2 sm:gap-0">
