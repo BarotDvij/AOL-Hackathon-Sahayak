@@ -164,6 +164,56 @@
   --sidebar-ring: oklch(0.5157 0.1635 307.34);
 }
 
+.dark {
+  --background: oklch(0.244 0.04 279);
+  --card: oklch(0.29 0.047 278);
+  --popover: var(--card);
+  --foreground: oklch(0.958 0.007 304);
+  --card-foreground: var(--foreground);
+  --popover-foreground: var(--foreground);
+  --primary: var(--foreground);
+  --primary-foreground: var(--background);
+  --primary-strong: oklch(0.86 0.04 304);
+  --muted-foreground: oklch(0.749 0.032 280);
+  --secondary: oklch(0.34 0.044 281);
+  --secondary-foreground: var(--foreground);
+  --muted: var(--secondary);
+  --accent: var(--secondary);
+  --accent-foreground: var(--foreground);
+  --border: oklch(0.41 0.036 281);
+  --input: oklch(0.48 0.036 281);
+  --purple: oklch(0.78 0.115 307);
+  --ring: var(--purple);
+  --sun-orange-deep: oklch(0.81 0.115 61);
+  --destructive: oklch(0.77 0.13 15);
+  --destructive-foreground: var(--background);
+  --chart-1: var(--foreground);
+  --chart-2: var(--purple);
+  --chart-5: var(--destructive);
+  --sidebar: var(--card);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--secondary);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+  color-scheme: dark;
+}
+.dark .brand-gradient { --primary: oklch(0.3312 0.0515 277.19); --foreground: var(--primary); --muted-foreground: oklch(0.43 0.04 277); }
+.dark :is(.bg-sun-orange, .bg-sun-yellow) { --primary: oklch(0.3312 0.0515 277.19); }
+.large-text body { font-size: 16px; }
+.large-text .text-sm { font-size: 16px; }
+.large-text :is(.text-xs, .text-\[11px\], .text-\[10px\]) { font-size: 15px; }
+
+/* Fixed miniature previews do not change with the active appearance. */
+.appearance-light { --preview-page: oklch(0.9858 0.0045 78.3); --preview-card: oklch(1 0 0); --preview-ink: oklch(0.3312 0.0515 277.19); }
+.appearance-dark { --preview-page: oklch(0.244 0.04 279); --preview-card: oklch(0.29 0.047 278); --preview-ink: oklch(0.958 0.007 304); }
+.appearance-device { --preview-page: oklch(0.91 0.012 280); --preview-card: oklch(0.7 0.028 280); --preview-ink: oklch(0.3312 0.0515 277.19); }
+.appearance-preview { background: var(--preview-page); }
+.appearance-preview-panel { background: var(--preview-card); }
+.appearance-preview-line { background: var(--preview-ink); }
+
 @layer base {
   * {
     border-color: var(--color-border);

@@ -67,7 +67,7 @@ function SahayakSwitch({ onNavigate, onMeet }: { onNavigate?: () => void; onMeet
           {t("Meet Sahayak")}
         </Button>
         <Link
-          to="/sahayak"
+          to="/settings" search={{ tab: "sahayak" }}
           onClick={onNavigate}
           className="text-xs font-medium text-purple hover:underline"
         >
@@ -137,7 +137,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main className="md:pl-[240px]">
         <div className="sticky top-0 z-20 hidden h-12 items-center justify-between gap-3 border-b border-border bg-card/90 px-8 backdrop-blur md:flex">
           {sahayak.on ? (
-            <Link to="/sahayak" className="inline-flex items-center gap-1.5 text-xs font-medium text-purple hover:underline">
+            <Link to="/settings" search={{ tab: "sahayak" }} className="inline-flex items-center gap-1.5 text-xs font-medium text-purple hover:underline">
               <Sparkles className="size-3.5" aria-hidden />
               Sahayak is on · {reminders.length} {reminders.length === 1 ? "reminder" : "reminders"}
             </Link>

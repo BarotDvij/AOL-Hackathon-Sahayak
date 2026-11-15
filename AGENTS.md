@@ -45,3 +45,4 @@ use the editor.
 - Coordinator interface translations use a shared language provider and dictionary, separate from participant message language, so changing the interface never silently changes a draft.
 
 - Keep compact navigation and responsive variants below 768px in the shared shells and overlay controls; use mobile participant/program cards instead of shrinking tables so desktop layout and shared actions remain unchanged.
+- Coordinator preferences are browser-local in PreferencesProvider; global semantic tokens apply appearance without changing page layouts, and coordinator Sahayak controls live in Settings with the legacy URL redirecting there. Profile role and notification delivery are demo preferences, not authorization or external delivery.
