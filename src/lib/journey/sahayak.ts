@@ -1,9 +1,10 @@
 import { JOURNEY_CONFIG as C } from "./config";
 import { contactText, daysSinceActivity, daysSinceLastContact } from "./contact";
 import { daysSince, isoDaysFrom, parseIso, today } from "./dates";
+import { groupsNeedingAttention, type VolunteerGroup } from "./groups";
 import { needsReply, type InboxMessage } from "./inbox-seed";
 import { draftMessage } from "./messages";
-import type { History, NextStep, Participant, StageId, Suggestion } from "./types";
+import type { Connection, History, NextStep, Participant, StageId, Suggestion } from "./types";
 
 /* ------------------------------------------------------------------ */
 /*  Settings                                                           */
@@ -68,13 +69,15 @@ export interface SahayakPerson {
   history: History;
   stage: StageId;
   suggestion: Suggestion | null;
+  /** The volunteer this person is connected to, when there is one. */
+  connection?: Connection | undefined;
 }
 export interface UpcomingItem { step: NextStep; suggestedFor: number }
 
 /** Every page Sahayak is allowed to point the coordinator at. */
-export type SahayakLinkTo = "/" | "/inbox" | "/review" | "/participants" | "/activity" | "/sahayak" | "/impact";
+export type SahayakLinkTo = "/" | "/inbox" | "/review" | "/participants" | "/activity" | "/sahayak" | "/impact" | "/groups";
 
-export interface BriefItem { id: string; text: string; why: string; to: SahayakLinkTo; actionLabel: string }
+export interface BriefItem { id: string; text: string; why: string; to: SahayakLinkTo; actionLabel: string; volunteerId?: string | undefined }
 
 export type ReminderKind = "unanswered" | "new-sky" | "going-quiet" | "upcoming-event";
 export interface Reminder {
@@ -85,6 +88,7 @@ export interface Reminder {
   to: SahayakLinkTo;
   actionLabel: string;
   participantId?: string | undefined;
+  volunteerId?: string | undefined;
 }
 
 export interface SahayakRow { name: string; detail: string; to?: SahayakLinkTo | undefined }
@@ -115,6 +119,8 @@ export interface BriefInput {
   views: SahayakPerson[];
   upcoming: UpcomingItem[];
   inbox: InboxMessage[];
+  /** Volunteer groups, so the brief can name the person who actually knows them. */
+  groups?: VolunteerGroup[] | undefined;
   now?: Date | undefined;
 }
 
