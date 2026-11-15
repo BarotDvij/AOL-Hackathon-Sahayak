@@ -1,0 +1,10 @@
+import { useNavigate } from '@tanstack/react-router';
+import { ArrowRight, ShieldCheck, Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useDemoSession, type DemoRole } from '@/lib/journey/demo-session';
+import { useJourney } from '@/lib/journey/store';
+export function DemoLogin() {
+ const session=useDemoSession(); const navigate=useNavigate(); const {setActiveVolunteer,setMyFollowUps,setCity}=useJourney();
+ const choose=(role:DemoRole)=>{setActiveVolunteer(role==='volunteer'?'v4':'v1');setMyFollowUps(role==='volunteer');setCity('all');session?.signIn(role);void navigate({to:'/'});};
+ return <main className="demo-login-background flex min-h-dvh items-center justify-center px-5 py-12"><div className="w-full max-w-3xl"><header className="text-center"><h1 className="font-display text-[32px] font-normal text-primary">Journey Companion</h1><p className="mt-3 text-base text-muted-foreground">Sign in to continue</p></header><div className="mt-10 grid gap-5 sm:grid-cols-2">{([{role:'admin',title:'Sign in as Admin',name:'Meera, Centre coordinator',description:'See all participants, volunteers and impact',Icon:ShieldCheck},{role:'volunteer',title:'Sign in as Volunteer',name:'Shivam Kapoor',description:'See and follow up with the people you know',Icon:Users}] as const).map(({role,title,name,description,Icon})=><Button key={role} variant="outline" className="h-auto min-w-0 flex-col items-start whitespace-normal rounded-lg border-border bg-card p-6 text-left shadow-soft hover:border-purple" onClick={()=>choose(role)}><Icon className="mb-3 size-7 text-purple"/><span className="font-heading text-lg font-semibold">{title}</span><span className="mt-1 font-sans text-sm font-medium">{name}</span><span className="mt-3 font-sans text-sm font-normal text-muted-foreground">{description}</span><ArrowRight className="mt-4 self-end text-purple"/></Button>)}</div><p className="mt-8 text-center text-sm text-muted-foreground">Demo sign-in. No password needed.</p></div></main>;
+}
