@@ -159,7 +159,7 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
   const [courses, setCourses] = useState(data.courses);
   const [sessions, setSessions] = useState(buildSessions);
   const [checkIns, setCheckIns] = useState<CheckIn[]>([]);
-  const [assignments, setAssignments] = useState<Record<string,string>>(() => Object.fromEntries(data.participants.filter((p,i) => i < 10).map((p,i) => [p.id, VOLUNTEERS[i % 5]?.id ?? "v1"])));
+  const [assignments, setAssignments] = useState<Record<string,string>>(() => deriveAssignments(data.participants, (id) => historyFor(id, data.courses, data.events, data.contacts)));
   const [activeVolunteer, setActiveVolunteer] = useState("v1");
   const [myFollowUps, setMyFollowUps] = useState(false);
   const [sentMessages, setSentMessages] = useState<SentRecord[]>(() => seedOutcomes([...data.participants.filter(p=>["p23","p24","p28"].includes(p.id)), ...data.participants.filter(p=>!["p23","p24","p28"].includes(p.id))], id => historyFor(id, data.courses, data.events, data.contacts), id => { const p = data.participants.find(x => x.id === id); return id === "p28" ? "dormant" : ["p23","p24"].includes(id) ? "quiet" : p ? computeStage(p, historyFor(id, data.courses, data.events, data.contacts)).stage : "new"; }));
@@ -169,6 +169,7 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
   const [messages, setMessages] = useState<Message[]>(() => [...seed.messages, ...sentMessages]);
   const [replies, setReplies] = useState<ParticipantReply[]>([]);
   const [activity, setActivity] = useState<ActivityEntry[]>([]);
+  const [groupMessages, setGroupMessages] = useState<GroupMessage[]>([]);
   const [city, setCity] = useState("all");
   const [meId, setMeId] = useState<string | null>(TEMP_PARTICIPANT_ID);
   const [sahayak, setSahayak] = useState<SahayakState>(SAHAYAK_DEFAULTS);
@@ -194,8 +195,13 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
   const views = useMemo<ParticipantView[]>(() => participants.map((p) => {
     const history = historyFor(p.id, courses, events, contacts);
     const { stage, reasons } = computeStage(p, history);
-    return { participant: p, history, stage, why: explainReasons(reasons), suggestion: suggestions.find((s) => s.participantId === p.id) ?? null };
-  }), [participants, courses, events, contacts, suggestions]);
+    const connection = connectionOf(p.id, history, assignments);
+    return { participant: p, history, stage, why: explainReasons(reasons), suggestion: suggestions.find((s) => s.participantId === p.id) ?? null, connection, alsoKnows: alsoKnowsOf(history, connection?.volunteerId) };
+  }), [participants, courses, events, contacts, suggestions, assignments]);
+
+  /** Volunteer sections, straight from the same views the tables show. */
+  const groups = useMemo<VolunteerGroup[]>(() => buildGroups(views), [views]);
+  const unassigned = useMemo<ParticipantView[]>(() => unassignedViews(views), [views]);
 
   const me = useMemo(() => meId ? mySlice(meId, { participants: participants, history: (id) => historyFor(id, courses, events, contacts), practice, messages }) : null, [meId, participants, courses, events, contacts, practice, messages]);
 
@@ -244,9 +250,9 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
   /** The morning brief: nothing at all while Sahayak is off, or once it has been dismissed for today. */
   const brief = useMemo<BriefItem[]>(
     () => (sahayak.on && sahayak.features.dailyBrief && sahayak.briefDismissedOn !== isoDaysFrom(0)
-      ? [{id: "brief-impact", text: `Your messages brought back ${new Set(sentMessages.filter(m => broughtBack(m) && m.attendedAt && daysSince(m.attendedAt) < 7).map(m => m.participantId)).size} people this week`, why: "Visits recorded after an approved message to someone going quiet or dormant.", to: "/impact" as const, actionLabel: "Recent wins"}, ...briefItems({ views, upcoming, inbox })]
+      ? [{id: "brief-impact", text: `Your messages brought back ${new Set(sentMessages.filter(m => broughtBack(m) && m.attendedAt && daysSince(m.attendedAt) < 7).map(m => m.participantId)).size} people this week`, why: "Visits recorded after an approved message to someone going quiet or dormant.", to: "/impact" as const, actionLabel: "Recent wins"}, ...briefItems({ views, upcoming, inbox, groups })]
       : []),
-    [sahayak, views, upcoming, inbox, sentMessages],
+    [sahayak, views, upcoming, inbox, sentMessages, groups],
   );
 
   /** Live reminders, already trimmed to the chosen nudge frequency. */
