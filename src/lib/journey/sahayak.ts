@@ -1,9 +1,10 @@
 import { JOURNEY_CONFIG as C } from "./config";
 import { contactText, daysSinceActivity, daysSinceLastContact } from "./contact";
 import { daysSince, isoDaysFrom, parseIso, today } from "./dates";
+import { groupsNeedingAttention, quietProgram, type VolunteerGroup } from "./groups";
 import { needsReply, type InboxMessage } from "./inbox-seed";
 import { draftMessage } from "./messages";
-import type { History, NextStep, Participant, StageId, Suggestion } from "./types";
+import type { Connection, History, NextStep, Participant, StageId, Suggestion } from "./types";
 
 /* ------------------------------------------------------------------ */
 /*  Settings                                                           */
@@ -68,13 +69,15 @@ export interface SahayakPerson {
   history: History;
   stage: StageId;
   suggestion: Suggestion | null;
+  /** The volunteer this person is connected to, when there is one. */
+  connection?: Connection | null | undefined;
 }
 export interface UpcomingItem { step: NextStep; suggestedFor: number }
 
 /** Every page Sahayak is allowed to point the coordinator at. */
-export type SahayakLinkTo = "/" | "/inbox" | "/review" | "/participants" | "/activity" | "/sahayak" | "/impact";
+export type SahayakLinkTo = "/" | "/inbox" | "/review" | "/participants" | "/activity" | "/sahayak" | "/impact" | "/groups";
 
-export interface BriefItem { id: string; text: string; why: string; to: SahayakLinkTo; actionLabel: string }
+export interface BriefItem { id: string; text: string; why: string; to: SahayakLinkTo; actionLabel: string; volunteerId?: string | undefined }
 
 export type ReminderKind = "unanswered" | "new-sky" | "going-quiet" | "upcoming-event";
 export interface Reminder {
@@ -85,6 +88,7 @@ export interface Reminder {
   to: SahayakLinkTo;
   actionLabel: string;
   participantId?: string | undefined;
+  volunteerId?: string | undefined;
 }
 
 export interface SahayakRow { name: string; detail: string; to?: SahayakLinkTo | undefined }
@@ -105,7 +109,7 @@ export const WAITING_AFTER_DAYS = 2;
 export const waitingDays = (m: InboxMessage, now = today()) => (needsReply(m) ? daysSince(m.date, now) : null);
 
 const weekdayOf = (iso: string) => parseIso(iso).toLocaleDateString("en-CA", { weekday: "long" });
-const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+const plural = (n: number, one: string, many = one === "person" ? "people" : `${one}s`) => `${n} ${n === 1 ? one : many}`;
 
 /* ------------------------------------------------------------------ */
 /*  Daily brief                                                        */
@@ -115,11 +119,13 @@ export interface BriefInput {
   views: SahayakPerson[];
   upcoming: UpcomingItem[];
   inbox: InboxMessage[];
+  /** Volunteer groups, so the brief can name the person who actually knows them. */
+  groups?: VolunteerGroup[] | undefined;
   now?: Date | undefined;
 }
 
 /** Three to five short, honest lines drawn straight from the data. */
-export function briefItems({ views, upcoming, inbox, now = today() }: BriefInput): BriefItem[] {
+export function briefItems({ views, upcoming, inbox, groups = [], now = today() }: BriefInput): BriefItem[] {
   const items: BriefItem[] = [];
 
   const waiting = inbox.filter(needsReply).sort((a, b) => a.date.localeCompare(b.date));
@@ -140,6 +146,21 @@ export function briefItems({ views, upcoming, inbox, now = today() }: BriefInput
       text: `${plural(quiet.length, "person")} ${quiet.length === 1 ? "is" : "are"} going quiet and could use a check-in.`,
       why: `No one in this group has come to anything for ${C.quietMinDays} to ${C.quietMaxDays} days.`,
       to: "/review", actionLabel: "Review",
+    });
+  }
+
+  /** Name the volunteer who actually knows them, not just the number. */
+  const quietGroup = groupsNeedingAttention(groups)[0];
+  if (quietGroup && quietGroup.goingQuiet > 0) {
+    const first = quietGroup.volunteer.name.split(" ")[0];
+    const goneQuiet = quietGroup.members.filter((m) => m.stage === "quiet");
+    items.push({
+      id: "brief-group",
+      text: `${plural(goneQuiet.length, "person")} from ${first}'s ${quietProgram(quietGroup) ?? "group"} group ${goneQuiet.length === 1 ? "has" : "have"} gone quiet. ${first} could reach out.`,
+      why: `${goneQuiet.map((m) => m.participant.firstName).join(", ")} ${goneQuiet.length === 1 ? "has" : "have"} nothing on record for ${C.quietMinDays} days or more. ${goneQuiet[0]?.connection?.reason ?? ""}`.trim(),
+      to: "/groups",
+      volunteerId: quietGroup.volunteer.id,
+      actionLabel: "Open the group",
     });
   }
 
@@ -221,8 +242,9 @@ export function buildReminders({ views, upcoming, inbox, state, now = today() }:
       out.push({
         id: `rem-quiet-${v.participant.id}`, kind: "going-quiet",
         title: `${v.participant.firstName} ${v.participant.lastName} has gone quiet`,
-        why: contactText(v.history),
+        why: contactText(v.history) + (v.connection ? ` · ${v.connection.volunteerName} could reach out` : ""),
         to: "/review", actionLabel: "Review message", participantId: v.participant.id,
+        volunteerId: v.connection?.volunteerId,
       });
     }
 

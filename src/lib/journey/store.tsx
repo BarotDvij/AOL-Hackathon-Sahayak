@@ -1,5 +1,6 @@
 import { createContext, useEffect, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react";
 import { buildSessions, seedOutcomes, messageOutcome, broughtBack, differentChannel, VOLUNTEERS, type SentRecord, type Session, type CheckIn, type AssignmentProposal } from "./operations";
+import { buildGroups, connectionOf, alsoKnowsOf, deriveAssignments, unassignedViews, type VolunteerGroup } from "./groups";
 import { buildCatalog } from "./catalog";
 import { JOURNEY_CONFIG as C, STAGE_PRIORITY, STAGES } from "./config";
 import { contactText, daysSinceLastContact } from "./contact";
@@ -14,7 +15,7 @@ import { buildSuggestion, computeStage, explainReasons, participantStage } from 
 import { EMPTY_PROGRAM_CATALOG, type ProgramCatalog } from "@/lib/journey/programs";
 import { supabase } from "@/integrations/supabase/client";
 import { saveApprovedMessage } from "@/lib/participant.functions";
-import type { ActivityEntry, Channel, Contact, History, Message, NextStep, Participant, ParticipantReply, PracticeLog, StageId, Suggestion } from "./types";
+import type { ActivityEntry, Channel, Connection, Contact, GroupMessage, History, Message, NextStep, Participant, ParticipantReply, PracticeLog, StageId, Suggestion } from "./types";
 
 export { contactText, daysSinceLastContact };
 
@@ -27,6 +28,10 @@ export interface ParticipantView {
   stage: StageId;
   why: string;
   suggestion: Suggestion | null;
+  /** The volunteer this person is connected to, and why. */
+  connection: Connection | null;
+  /** Other volunteers they have done something with. */
+  alsoKnows: string[];
 }
 
 export interface Summary {
@@ -47,6 +52,14 @@ interface Store {
   endSession: (id: string) => void; setParticipantLanguage: (id: string, language: string) => void;
   setMessageLanguage: (id: string, language: string) => void; secondFollowUp: (messageId: string) => void;
   views: ParticipantView[];
+  /** One section per volunteer, with the people connected to them. */
+  groups: VolunteerGroup[];
+  /** People not yet connected to any volunteer. */
+  unassigned: ParticipantView[];
+  /** Group invites the coordinator has approved, newest first. */
+  groupMessages: GroupMessage[];
+  /** Approving a group invite is the only thing that records it as sent. */
+  sendGroupMessage: (volunteerId: string, text: string, channel: Channel) => void;
   programCatalog: ProgramCatalog;
   catalog: Map<string, NextStep>;
   catalogList: NextStep[];
@@ -146,7 +159,7 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
   const [courses, setCourses] = useState(data.courses);
   const [sessions, setSessions] = useState(buildSessions);
   const [checkIns, setCheckIns] = useState<CheckIn[]>([]);
-  const [assignments, setAssignments] = useState<Record<string,string>>(() => Object.fromEntries(data.participants.filter((p,i) => i < 10).map((p,i) => [p.id, VOLUNTEERS[i % 5]?.id ?? "v1"])));
+  const [assignments, setAssignments] = useState<Record<string,string>>(() => deriveAssignments(data.participants, (id) => historyFor(id, data.courses, data.events, data.contacts)));
   const [activeVolunteer, setActiveVolunteer] = useState("v1");
   const [myFollowUps, setMyFollowUps] = useState(false);
   const [sentMessages, setSentMessages] = useState<SentRecord[]>(() => seedOutcomes([...data.participants.filter(p=>["p23","p24","p28"].includes(p.id)), ...data.participants.filter(p=>!["p23","p24","p28"].includes(p.id))], id => historyFor(id, data.courses, data.events, data.contacts), id => { const p = data.participants.find(x => x.id === id); return id === "p28" ? "dormant" : ["p23","p24"].includes(id) ? "quiet" : p ? computeStage(p, historyFor(id, data.courses, data.events, data.contacts)).stage : "new"; }));
@@ -156,6 +169,7 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
   const [messages, setMessages] = useState<Message[]>(() => [...seed.messages, ...sentMessages]);
   const [replies, setReplies] = useState<ParticipantReply[]>([]);
   const [activity, setActivity] = useState<ActivityEntry[]>([]);
+  const [groupMessages, setGroupMessages] = useState<GroupMessage[]>([]);
   const [city, setCity] = useState("all");
   const [meId, setMeId] = useState<string | null>(TEMP_PARTICIPANT_ID);
   const [sahayak, setSahayak] = useState<SahayakState>(SAHAYAK_DEFAULTS);
@@ -181,8 +195,13 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
   const views = useMemo<ParticipantView[]>(() => participants.map((p) => {
     const history = historyFor(p.id, courses, events, contacts);
     const { stage, reasons } = computeStage(p, history);
-    return { participant: p, history, stage, why: explainReasons(reasons), suggestion: suggestions.find((s) => s.participantId === p.id) ?? null };
-  }), [participants, courses, events, contacts, suggestions]);
+    const connection = connectionOf(p.id, history, assignments);
+    return { participant: p, history, stage, why: explainReasons(reasons), suggestion: suggestions.find((s) => s.participantId === p.id) ?? null, connection, alsoKnows: alsoKnowsOf(history, connection?.volunteerId) };
+  }), [participants, courses, events, contacts, suggestions, assignments]);
+
+  /** Volunteer sections, straight from the same views the tables show. */
+  const groups = useMemo<VolunteerGroup[]>(() => buildGroups(views), [views]);
+  const unassigned = useMemo<ParticipantView[]>(() => unassignedViews(views), [views]);
 
   const me = useMemo(() => meId ? mySlice(meId, { participants: participants, history: (id) => historyFor(id, courses, events, contacts), practice, messages }) : null, [meId, participants, courses, events, contacts, practice, messages]);
 
@@ -231,9 +250,9 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
   /** The morning brief: nothing at all while Sahayak is off, or once it has been dismissed for today. */
   const brief = useMemo<BriefItem[]>(
     () => (sahayak.on && sahayak.features.dailyBrief && sahayak.briefDismissedOn !== isoDaysFrom(0)
-      ? [{id: "brief-impact", text: `Your messages brought back ${new Set(sentMessages.filter(m => broughtBack(m) && m.attendedAt && daysSince(m.attendedAt) < 7).map(m => m.participantId)).size} people this week`, why: "Visits recorded after an approved message to someone going quiet or dormant.", to: "/impact" as const, actionLabel: "Recent wins"}, ...briefItems({ views, upcoming, inbox })]
+      ? [{id: "brief-impact", text: `Your messages brought back ${new Set(sentMessages.filter(m => broughtBack(m) && m.attendedAt && daysSince(m.attendedAt) < 7).map(m => m.participantId)).size} people this week`, why: "Visits recorded after an approved message to someone going quiet or dormant.", to: "/impact" as const, actionLabel: "Recent wins"}, ...briefItems({ views, upcoming, inbox, groups })]
       : []),
-    [sahayak, views, upcoming, inbox, sentMessages],
+    [sahayak, views, upcoming, inbox, sentMessages, groups],
   );
 
   /** Live reminders, already trimmed to the chosen nudge frequency. */
@@ -259,8 +278,21 @@ export function JourneyProvider({ children, programCatalog = EMPTY_PROGRAM_CATAL
 
   const store: Store = {
     views, programCatalog, catalog, catalogList, practice, replies, pickerIds, city, setCity, meId, setMeId, me,
+    groups, unassigned, groupMessages,
     sentMessages, sessions, checkIns, assignments, activeVolunteer, setActiveVolunteer, myFollowUps, setMyFollowUps,
     assign: (id, volunteerId) => setAssignments(all => ({...all, [id]: volunteerId})),
+    sendGroupMessage: (volunteerId, text, channel) => {
+      const group = groups.find((g) => g.volunteer.id === volunteerId);
+      if (!group || group.members.length === 0) return;
+      const at = new Date().toISOString();
+      const memberIds = group.members.map((m) => m.participant.id);
+      const stageOf = (id: string) => views.find((v) => v.participant.id === id)?.stage ?? "new";
+      setGroupMessages((all) => [{ id: `group-${volunteerId}-${at}`, volunteerId, text, channel, at, memberIds }, ...all]);
+      setContacts((c) => [...c, ...memberIds.map((id) => ({ participantId: id, channel, direction: "out" as const, date: isoDaysFrom(0), outcome: "no reply" as const }))]);
+      setSentMessages((all) => [...all, ...memberIds.map((id) => ({ id: `group-msg-${volunteerId}-${id}`, participantId: id, suggestionId: null, coordinatorName: C.coordinatorName, text, sentAt: at, reply: null, channel, stageBefore: stageOf(id), volunteerId }))]);
+      setMessages((m) => [...m, ...memberIds.map((id) => ({ id: `group-msg-${volunteerId}-${id}`, participantId: id, suggestionId: null, coordinatorName: C.coordinatorName, text, sentAt: at, reply: null }))]);
+      log("approved", memberIds[0] ?? "", `Approved a group invite for ${group.volunteer.name}'s group · ${memberIds.length} ${memberIds.length === 1 ? "person" : "people"} · ${channel}`);
+    },
     confirmAssignments: proposals => setAssignments(all => ({...all, ...Object.fromEntries(proposals.map(p => [p.participantId, p.volunteerId]))})),
     endSession: id => setSessions(all => all.map(s => s.id === id ? {...s, ended: true} : s)),
     setParticipantLanguage: (id, language) => {
