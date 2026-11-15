@@ -3,8 +3,8 @@ export type DemoRole = 'admin' | 'volunteer' | 'participant';
 export const DEMO_SESSION_KEY = 'journey-demo-session';
 export const SHIVAM_ID = 'v4';
 export function readDemoRole(value: string | null): DemoRole | null { return value === 'admin' || value === 'volunteer' || value === 'participant' ? value : null; }
-export function demoHome(role: DemoRole | null) { return role === 'participant' ? '/me' : '/'; }
-export function demoPageVisible(role: DemoRole | null, path: string, volunteerId='v1') {
+export function demoHome(role: DemoRole | null) { return role === 'participant' ? '/me' : role ? '/' : '/demo-login'; }
+export function demoPageVisible(role: DemoRole | null, path: string, volunteerId=SHIVAM_ID) {
  if (!role) return false;
  if (role === 'participant') return path === '/me' || path.startsWith('/me/');
  if (role === 'admin') return true;
@@ -12,11 +12,11 @@ export function demoPageVisible(role: DemoRole | null, path: string, volunteerId
 }
 const Context = createContext<{ role: DemoRole | null; ready: boolean; volunteerId:string; participantId:string; selectVolunteer:(id:string)=>void; selectParticipant:(id:string)=>void; signIn:(role:DemoRole)=>void; signOut:()=>void } | null>(null);
 export function DemoSessionProvider({children}:{children:ReactNode}) {
- const [role,setRole]=useState<DemoRole|null>('admin'); const [ready,setReady]=useState(false);
- const [volunteerId,setVolunteerId]=useState('v1'); const [participantId,setParticipantId]=useState('p05');
- useEffect(()=>{try {setRole(readDemoRole(localStorage.getItem(DEMO_SESSION_KEY)) ?? 'admin');setVolunteerId(localStorage.getItem('journey-demo-volunteer') ?? 'v1');setParticipantId(localStorage.getItem('journey-demo-participant') ?? 'p05');} catch {} setReady(true);},[]);
- const signIn=(value:DemoRole)=>{setRole(value);try {localStorage.setItem(DEMO_SESSION_KEY,value);} catch {}};
- const signOut=()=>signIn('admin');
+ const [role,setRole]=useState<DemoRole|null>(null); const [ready,setReady]=useState(false);
+ const [volunteerId,setVolunteerId]=useState(SHIVAM_ID); const [participantId,setParticipantId]=useState('p05');
+ useEffect(()=>{try {setRole(readDemoRole(localStorage.getItem(DEMO_SESSION_KEY)));} catch {} setReady(true);},[]);
+ const signIn=(value:DemoRole)=>{setRole(value);setVolunteerId(SHIVAM_ID);setParticipantId('p05');try {localStorage.setItem(DEMO_SESSION_KEY,value);} catch {}};
+ const signOut=()=>{setRole(null);try{localStorage.removeItem(DEMO_SESSION_KEY);}catch{}};
  const selectVolunteer=(id:string)=>{setVolunteerId(id);try{localStorage.setItem('journey-demo-volunteer',id);}catch{}};
  const selectParticipant=(id:string)=>{setParticipantId(id);try{localStorage.setItem('journey-demo-participant',id);}catch{}};
  return <Context.Provider value={{role,ready,volunteerId,participantId,selectVolunteer,selectParticipant,signIn,signOut}}>{children}</Context.Provider>;
