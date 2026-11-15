@@ -26,6 +26,7 @@ import { Route as StartRouteImport } from './routes/start'
 import { Route as TeamRouteImport } from './routes/team'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as CheckInSessionIdRouteImport } from './routes/check-in.$sessionId'
+import { Route as GroupsVolunteerIdRouteImport } from './routes/groups.$volunteerId'
 import { Route as MeIndexRouteImport } from './routes/me/index'
 import { Route as MeJourneyRouteImport } from './routes/me/journey'
 import { Route as MeMessagesRouteImport } from './routes/me/messages'
@@ -121,6 +122,11 @@ const CheckInSessionIdRoute = CheckInSessionIdRouteImport.update({
   path: '/check-in/$sessionId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GroupsVolunteerIdRoute = GroupsVolunteerIdRouteImport.update({
+  id: '/groups/$volunteerId',
+  path: '/groups/$volunteerId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MeIndexRoute = MeIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -182,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/team': typeof TeamRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/check-in/$sessionId': typeof CheckInSessionIdRoute
+  '/groups/$volunteerId': typeof GroupsVolunteerIdRoute
   '/me/journey': typeof MeJourneyRoute
   '/me/messages': typeof MeMessagesRoute
   '/me/settings': typeof MeSettingsRoute
@@ -208,6 +215,7 @@ export interface FileRoutesByTo {
   '/team': typeof TeamRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/check-in/$sessionId': typeof CheckInSessionIdRoute
+  '/groups/$volunteerId': typeof GroupsVolunteerIdRoute
   '/me/journey': typeof MeJourneyRoute
   '/me/messages': typeof MeMessagesRoute
   '/me/settings': typeof MeSettingsRoute
@@ -236,6 +244,7 @@ export interface FileRoutesById {
   '/team': typeof TeamRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/check-in/$sessionId': typeof CheckInSessionIdRoute
+  '/groups/$volunteerId': typeof GroupsVolunteerIdRoute
   '/me/journey': typeof MeJourneyRoute
   '/me/messages': typeof MeMessagesRoute
   '/me/settings': typeof MeSettingsRoute
@@ -265,6 +274,7 @@ export interface FileRouteTypes {
     | '/team'
     | '/.well-known/oauth-protected-resource'
     | '/check-in/$sessionId'
+    | '/groups/$volunteerId'
     | '/me/journey'
     | '/me/messages'
     | '/me/settings'
@@ -291,6 +301,7 @@ export interface FileRouteTypes {
     | '/team'
     | '/.well-known/oauth-protected-resource'
     | '/check-in/$sessionId'
+    | '/groups/$volunteerId'
     | '/me/journey'
     | '/me/messages'
     | '/me/settings'
@@ -318,6 +329,7 @@ export interface FileRouteTypes {
     | '/team'
     | '/.well-known/oauth-protected-resource'
     | '/check-in/$sessionId'
+    | '/groups/$volunteerId'
     | '/me/journey'
     | '/me/messages'
     | '/me/settings'
@@ -346,6 +358,7 @@ export interface RootRouteChildren {
   TeamRoute: typeof TeamRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   CheckInSessionIdRoute: typeof CheckInSessionIdRoute
+  GroupsVolunteerIdRoute: typeof GroupsVolunteerIdRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   SessionsSessionIdCheckInRoute: typeof SessionsSessionIdCheckInRoute
   ApiPublicCalendarEventIdRoute: typeof ApiPublicCalendarEventIdRoute
@@ -472,6 +485,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckInSessionIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/groups/$volunteerId': {
+      id: '/groups/$volunteerId'
+      path: '/groups/$volunteerId'
+      fullPath: '/groups/$volunteerId'
+      preLoaderRoute: typeof GroupsVolunteerIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/me/': {
       id: '/me/'
       path: '/'
@@ -569,6 +589,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   CheckInSessionIdRoute: CheckInSessionIdRoute,
+  GroupsVolunteerIdRoute: GroupsVolunteerIdRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   SessionsSessionIdCheckInRoute: SessionsSessionIdCheckInRoute,
   ApiPublicCalendarEventIdRoute: ApiPublicCalendarEventIdRoute,
