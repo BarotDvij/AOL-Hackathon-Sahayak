@@ -56,7 +56,9 @@ describe("participants table", () => {
     expect(target).not.toBeNull();
     if (!row || !target) throw new Error("Missing source person or target volunteer");
     fireEvent.dragStart(row);
-    fireEvent.drop(target);
+    const updatedTarget = section(container, "Alex Tremblay");
+    if (!updatedTarget) throw new Error("Missing refreshed target volunteer");
+    fireEvent.drop(updatedTarget);
     expect(section(container, "Alex Tremblay")?.textContent).toContain("Priya Nair");
     expect(section(container, "Maya Desai")?.textContent).not.toContain("Priya Nair");
   });
