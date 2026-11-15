@@ -11,6 +11,8 @@
 
 @custom-variant dark (&:is(.dark *));
 
+.demo-login-background { background-image: var(--brand-gradient); }
+
 /*
  * Design system definition — the hackathon palette.
  *

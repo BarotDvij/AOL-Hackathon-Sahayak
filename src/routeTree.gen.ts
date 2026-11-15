@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ActivityRouteImport } from './routes/activity'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as DemoLoginRouteImport } from './routes/demo-login'
 import { Route as ImpactRouteImport } from './routes/impact'
 import { Route as InboxRouteImport } from './routes/inbox'
 import { Route as McpRouteImport } from './routes/mcp'
@@ -49,6 +50,11 @@ const ActivityRoute = ActivityRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoLoginRoute = DemoLoginRouteImport.update({
+  id: '/demo-login',
+  path: '/demo-login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ImpactRoute = ImpactRouteImport.update({
@@ -175,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/me': typeof MeRouteRouteWithChildren
   '/activity': typeof ActivityRoute
   '/auth': typeof AuthRoute
+  '/demo-login': typeof DemoLoginRoute
   '/impact': typeof ImpactRoute
   '/inbox': typeof InboxRoute
   '/mcp': typeof McpRoute
@@ -202,6 +209,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/activity': typeof ActivityRoute
   '/auth': typeof AuthRoute
+  '/demo-login': typeof DemoLoginRoute
   '/impact': typeof ImpactRoute
   '/inbox': typeof InboxRoute
   '/mcp': typeof McpRoute
@@ -231,6 +239,7 @@ export interface FileRoutesById {
   '/me': typeof MeRouteRouteWithChildren
   '/activity': typeof ActivityRoute
   '/auth': typeof AuthRoute
+  '/demo-login': typeof DemoLoginRoute
   '/impact': typeof ImpactRoute
   '/inbox': typeof InboxRoute
   '/mcp': typeof McpRoute
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/activity'
     | '/auth'
+    | '/demo-login'
     | '/impact'
     | '/inbox'
     | '/mcp'
@@ -288,6 +298,7 @@ export interface FileRouteTypes {
     | '/'
     | '/activity'
     | '/auth'
+    | '/demo-login'
     | '/impact'
     | '/inbox'
     | '/mcp'
@@ -316,6 +327,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/activity'
     | '/auth'
+    | '/demo-login'
     | '/impact'
     | '/inbox'
     | '/mcp'
@@ -345,6 +357,7 @@ export interface RootRouteChildren {
   MeRouteRoute: typeof MeRouteRouteWithChildren
   ActivityRoute: typeof ActivityRoute
   AuthRoute: typeof AuthRoute
+  DemoLoginRoute: typeof DemoLoginRoute
   ImpactRoute: typeof ImpactRoute
   InboxRoute: typeof InboxRoute
   McpRoute: typeof McpRoute
@@ -385,6 +398,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo-login': {
+      id: '/demo-login'
+      path: '/demo-login'
+      fullPath: '/demo-login'
+      preLoaderRoute: typeof DemoLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/impact': {
@@ -575,6 +595,7 @@ const rootRouteChildren: RootRouteChildren = {
   MeRouteRoute: MeRouteRouteWithChildren,
   ActivityRoute: ActivityRoute,
   AuthRoute: AuthRoute,
+  DemoLoginRoute: DemoLoginRoute,
   ImpactRoute: ImpactRoute,
   InboxRoute: InboxRoute,
   McpRoute: McpRoute,
