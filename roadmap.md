@@ -79,5 +79,5 @@
 ## Done
 - Added shared coordinator and participant notices identifying fictional records and simulated sending, a visible mobile participant demo badge, and an explicit no-sending notice in the reply composer. Verified both views on a 394px phone without overflow or runtime errors.
 
-## In progress
-- Flag pressure phrases beside coordinator message length notes while editing.
+## Done
+- Added advisory pressure warnings beside live channel length notes in Review, Inbox replies and group messages. Detects “last chance”, “don’t miss out” and related urgency wording, clears as wording changes and does not block approval. Three detector tests pass; verified warning, removal and saved-message readback in the Review editor.
