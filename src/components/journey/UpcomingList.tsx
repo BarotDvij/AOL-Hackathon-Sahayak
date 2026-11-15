@@ -17,7 +17,7 @@ export function UpcomingList() {
         <ul className="mt-2 divide-y divide-border">
           {upcoming.map(({ step, suggestedFor }) => (
             <li key={step.id} className="flex h-14 items-center gap-3">
-              <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-secondary text-[11px] font-semibold text-primary">
+              <span className="grid h-9 w-12 shrink-0 place-items-center whitespace-nowrap rounded-lg bg-secondary text-[11px] font-semibold leading-none text-primary">
                 {step.startDate ? formatShort(step.startDate) : "—"}
               </span>
               <span className="min-w-0 flex-1">
