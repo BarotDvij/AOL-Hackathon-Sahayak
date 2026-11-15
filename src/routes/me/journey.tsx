@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { BookOpen, CalendarHeart, Check, Circle, MapPin, Plus, Target } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -40,6 +40,7 @@ function JourneyPage() {
   return (
     <div className="space-y-5">
       <header><h1 className="font-display text-[32px] font-normal text-primary">My journey</h1><p className="mt-1 text-sm text-muted-foreground">Where you are, where you'd like to go, and a gentle week to get there.</p></header>
+      <div className="flex flex-wrap gap-3"><Button variant="outline" asChild><Link to="/me">Home & journey questions</Link></Button><Button variant="outline" asChild><Link to="/me/weekly-progress">My Progress</Link></Button><Button variant="link" asChild><Link to="/me/settings">My settings</Link></Button></div>
       <div className="grid gap-5 lg:grid-cols-2">
         <div><GoalsOverview action={
           <Dialog open={goalsOpen} onOpenChange={setGoalsOpen}>

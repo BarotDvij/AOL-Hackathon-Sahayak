@@ -46,4 +46,4 @@ use the editor.
 
 - Keep compact navigation and responsive variants below 768px in the shared shells and overlay controls; use mobile participant/program cards instead of shrinking tables so desktop layout and shared actions remain unchanged.
 - The inbox tone-check example is an explicitly labeled unsent coordinator draft; pressure detection is advisory, pure and updates alongside channel length notes from the current editor text.
-- DemoSessionProvider stores only a browser-local role choice; AppShell gates the coordinator demo and useJourney projects volunteer-facing records through existing connection membership. This is simulated access, never real authentication or database authorization, and participant routes stay unchanged.
+- DemoSessionProvider stores only a browser-local Admin/Volunteer/Participant choice; DemoAccess gates content before rendering and redirects to role homes, while useJourney projects volunteer records through shared connection membership. This is simulated navigation access, never real authentication or database authorization.

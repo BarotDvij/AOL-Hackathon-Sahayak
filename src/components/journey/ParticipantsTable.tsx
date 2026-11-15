@@ -15,6 +15,7 @@ import { VolunteerAvatar } from "./OperationsBits";
 import { MessageGroupDialog } from "./MessageGroupDialog";
 import { cn } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
+import { useDemoSession } from '@/lib/journey/demo-session';
 
 const PAGE_SIZE = 10;
 type SortKey = "name" | "stage" | "contact" | "step";
@@ -27,6 +28,7 @@ const plural = (n: number, one: string, many = one === "person" ? "people" : `${
 export function ParticipantsTable({ stage, onStage, onOpen, title = "Participants" }: { stage: StageId | "all"; onStage: (s: StageId | "all") => void; onOpen: (id: string) => void; title?: string }) {
   const { views, catalog, assignments, activeVolunteer, setActiveVolunteer, myFollowUps, setMyFollowUps, groups, unassigned, assign, confirmAssignments } = useJourney();
   const {t} = useLanguage();
+  const volunteer = useDemoSession()?.role === 'volunteer';
   const [q, setQ] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [city, setCity] = useState("all");
@@ -54,7 +56,7 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
     return views
       .filter((v) => {
         const p = v.participant;
-        if (myFollowUps && assignments[p.id] !== activeVolunteer) return false;
+        if (myFollowUps && v.connection?.volunteerId !== activeVolunteer) return false;
         if (needle && !`${p.firstName} ${p.lastName} ${p.city} ${p.email ?? ""} ${p.phone ?? ""}`.toLowerCase().includes(needle)) return false;
         if (stage !== "all" && v.stage !== stage) return false;
         if (city !== "all" && p.city !== city) return false;
@@ -277,7 +279,7 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
       </div>
 
       <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card px-4 py-2 shadow-soft">
-        <span className="text-xs font-medium text-muted-foreground">{t("Group by")}</span>
+        {!volunteer && <><span className="text-xs font-medium text-muted-foreground">{t("Group by")}</span>
         <div role="group" aria-label={t("Group by")} className="flex items-center gap-1 rounded-full border border-border bg-secondary/60 p-0.5">
           {(["volunteer", "city", "none"] as GroupMode[]).map((m) => (
             <button
@@ -290,6 +292,7 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
             </button>
           ))}
         </div>
+        </>}
         {mode !== "none" && (
           <Button size="sm" variant="outline" onClick={() => setCollapsed(collapsed.length ? [] : sections.map((s) => s.id).concat("unassigned"))}>
             {collapsed.length ? <ChevronsUpDown className="size-4" aria-hidden /> : <ChevronsDownUp className="size-4" aria-hidden />}
@@ -298,7 +301,7 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
         )}
         <span className="mx-1 h-5 w-px bg-border" aria-hidden />
         <Button variant={myFollowUps ? "default" : "outline"} size="sm" onClick={() => { setMyFollowUps(!myFollowUps); setPage(1); }} aria-pressed={myFollowUps}>{t("My follow-ups")}</Button>
-        {myFollowUps && <Select value={activeVolunteer} onValueChange={setActiveVolunteer}><SelectTrigger className="w-48" aria-label="Volunteer"><SelectValue /></SelectTrigger><SelectContent>{VOLUNTEERS.map((v) => <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>)}</SelectContent></Select>}
+        {myFollowUps && !volunteer && <Select value={activeVolunteer} onValueChange={setActiveVolunteer}><SelectTrigger className="w-48" aria-label="Volunteer"><SelectValue /></SelectTrigger><SelectContent>{VOLUNTEERS.map((v) => <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>)}</SelectContent></Select>}
         <span className="text-xs text-muted-foreground">{myFollowUps ? VOLUNTEERS.find((v) => v.id === activeVolunteer)?.name : t("All participants")}</span>
       </div>
 
@@ -328,7 +331,7 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
             <Section key={s.id} id={s.id} name={s.name} sub={s.sub} rows={s.rows} quiet={s.quiet} counts={s.counts} volunteerId={s.volunteerId} onMessage={s.onMessage} />
           ))}
 
-          <section aria-label={t("Unassigned")} className="overflow-hidden rounded-lg border border-dashed border-border bg-card/60 shadow-soft">
+          {!volunteer && <section aria-label={t("Unassigned")} className="overflow-hidden rounded-lg border border-dashed border-border bg-card/60 shadow-soft">
             <div className="group-header grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-border p-3 md:flex md:flex-wrap md:gap-3 md:p-4">
               <button
                 onClick={() => setCollapsed((c) => (c.includes("unassigned") ? c.filter((x) => x !== "unassigned") : [...c, "unassigned"]))}
@@ -355,7 +358,7 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
                 </table>
               </div></div>
             )}
-          </section>
+          </section>}
 
           {proposals !== null && (
             <section aria-label={t("Review suggested assignments")} className="rounded-lg border border-border bg-card p-4 shadow-soft">

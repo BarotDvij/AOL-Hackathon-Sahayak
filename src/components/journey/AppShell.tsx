@@ -14,6 +14,7 @@ import { SahayakChat } from "./SahayakChat";
 import { SahayakIntro } from "./SahayakIntro";
 import { useDemoSession, demoPageVisible } from '@/lib/journey/demo-session';
 import { DemoLogin } from './DemoLogin';
+import { DemoAccount } from './DemoAccount';
 
 type To = "/" | "/impact" | "/sessions" | "/team" | "/participants" | "/programs" | "/review" | "/inbox" | "/activity" | "/settings";
 type NavItem = { to: To; label: string; Icon: typeof LayoutDashboard; exact?: boolean; alsoActive?: string };
@@ -104,8 +105,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   const session = useDemoSession();
   const navigate = useNavigate();
   const volunteer = session?.role === 'volunteer';
-  const navigation = NAV.filter(item => demoPageVisible(session?.role ?? null, item.to));
-  const account = <div className="flex min-w-0 items-center gap-2"><span className="text-xs text-muted-foreground">{volunteer ? 'Shivam Kapoor · Volunteer' : 'Meera · Admin'}</span><Button variant="link" size="sm" className="shrink-0 px-1" onClick={()=>{session?.signOut();void navigate({to:'/demo-login',replace:true});}}>Sign out</Button></div>;
+  const navigation = NAV.filter(item => demoPageVisible(session?.role ?? null, item.to)).map(item=>({...item,label:volunteer && item.to==='/'?'My Dashboard':volunteer && item.to==='/participants'?'My People':item.label}));
+  if (volunteer) navigation.sort((a,b)=>['/','/participants','/review','/inbox','/sessions'].indexOf(a.to)-['/','/participants','/review','/inbox','/sessions'].indexOf(b.to));
+  const account = <DemoAccount />;
   const {t} = useLanguage();
   const { summary, sahayak, reminders, inbox, city, setCity, views } = useJourney();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -149,7 +151,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main className="md:pl-[240px]">
         <div className="sticky top-0 z-20 hidden h-12 items-center justify-between gap-3 border-b border-border bg-card/90 px-8 backdrop-blur md:flex">
           {sahayak.on ? (
-            <Link to="/sahayak" className="inline-flex items-center gap-1.5 text-xs font-medium text-purple hover:underline">
+            <Link to={volunteer ? '/' : '/sahayak'} className="inline-flex items-center gap-1.5 text-xs font-medium text-purple hover:underline">
               <Sparkles className="size-3.5" aria-hidden />
               Sahayak is on · {reminders.length} {reminders.length === 1 ? "reminder" : "reminders"}
             </Link>
@@ -159,7 +161,6 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="flex items-center gap-3">
             {account}
             <span className="rounded-full bg-stage-new px-2 py-0.5 text-xs font-medium text-stage-new-foreground">{t("Demo data · nothing is sent")}</span>
-            <Link to="/start" className="text-xs font-medium text-purple hover:underline">{t("Switch view")}</Link>
             {sahayak.on && <BellButton count={reminders.length} onClick={() => setRemindersOpen(true)} />}
           </div>
         </div>
@@ -179,7 +180,6 @@ export function AppShell({ children }: { children: ReactNode }) {
           <SheetTitle className="pr-12 font-heading">{t("More")}</SheetTitle>
           <nav className="mt-4 grid grid-cols-2 gap-2" aria-label="More sections">{navigation.filter((n) => !["/", "/participants", "/sessions", "/impact"].includes(n.to)).map((n) => <NavItemLink key={n.to} {...n} waiting={badgeFor(n.to)} onNavigate={() => setOpen(false)} />)}</nav>
           <SahayakSwitch onNavigate={() => setOpen(false)} onMeet={() => { setOpen(false); setIntroOpen(true); }} />
-          <Link to="/start" onClick={() => setOpen(false)} className="mt-3 flex min-h-11 items-center px-3 text-sm font-medium text-purple">{t("Switch view")}</Link>
           <p className="px-3 text-xs text-muted-foreground">{t("Demo data · nothing is sent")}</p>
         </SheetContent>
       </Sheet>
