@@ -49,7 +49,7 @@ function NavItemLink({ to, label, Icon, exact, alsoActive, waiting, onNavigate }
 }
 
 /** The one place Sahayak is turned on or off without leaving the page. */
-function SahayakSwitch({ onNavigate }: { onNavigate?: () => void }) {
+function SahayakSwitch({ onNavigate, onMeet }: { onNavigate?: () => void; onMeet: () => void }) {
   const {t} = useLanguage();
   const { sahayak, setSahayakOn } = useJourney();
   return (
@@ -60,13 +60,18 @@ function SahayakSwitch({ onNavigate }: { onNavigate?: () => void }) {
         <span className="text-xs font-medium text-muted-foreground">{t(sahayak.on ? "On" : "Off")}</span>
         <Switch checked={sahayak.on} onCheckedChange={setSahayakOn} aria-label="Turn Sahayak on or off" />
       </div>
-      <Link
-        to="/sahayak"
-        onClick={onNavigate}
-        className="mt-1.5 inline-block text-xs font-medium text-purple hover:underline"
-      >
-        {t("Sahayak settings")}
-      </Link>
+      <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+        <button type="button" onClick={onMeet} className="text-xs font-medium text-purple hover:underline">
+          {t("Meet Sahayak")}
+        </button>
+        <Link
+          to="/sahayak"
+          onClick={onNavigate}
+          className="text-xs font-medium text-purple hover:underline"
+        >
+          {t("Sahayak settings")}
+        </Link>
+      </div>
     </div>
   );
 }
@@ -95,6 +100,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { summary, sahayak, reminders, inbox } = useJourney();
   const [open, setOpen] = useState(false);
   const [remindersOpen, setRemindersOpen] = useState(false);
+  const [introOpen, setIntroOpen] = useState(false);
   const waiting = summary.waiting;
   const unread = sahayak.on ? inbox.filter(needsReply).length : 0;
   const badgeFor = (to: To) => (to === "/review" ? waiting : to === "/inbox" ? unread : undefined);
@@ -105,7 +111,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="brand-gradient border-b border-border px-5 py-5">
           <Link to="/" className="font-heading text-base font-semibold tracking-tight text-primary">Journey Companion</Link>
         </div>
-        <SahayakSwitch />
+        <SahayakSwitch onMeet={() => setIntroOpen(true)} />
         <nav className="mt-2 flex flex-1 flex-col gap-1 px-3" aria-label="Sections">
           {NAV.map((n) => <NavItemLink key={n.to} {...n} waiting={badgeFor(n.to)} />)}
         </nav>
@@ -125,7 +131,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <SheetContent side="left" className="w-[240px] gap-0 p-0 sm:max-w-[240px]">
               <SheetTitle className="sr-only">Menu</SheetTitle>
               <div className="brand-gradient border-b border-border px-5 py-5 font-heading text-base font-semibold tracking-tight text-primary">Journey Companion</div>
-              <SahayakSwitch onNavigate={() => setOpen(false)} />
+              <SahayakSwitch onNavigate={() => setOpen(false)} onMeet={() => { setOpen(false); setIntroOpen(true); }} />
               <nav className="mt-2 flex flex-1 flex-col gap-1 px-3" aria-label="Sections">
                 {NAV.map((n) => <NavItemLink key={n.to} {...n} waiting={badgeFor(n.to)} onNavigate={() => setOpen(false)} />)}
               </nav>
@@ -153,7 +159,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="mx-auto w-full max-w-[1280px] px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pb-24 lg:pt-8">{children}</div>
       </main>
 
-      <SahayakIntro />
+      <SahayakIntro open={introOpen} onOpenChange={setIntroOpen} />
       <RemindersPanel open={remindersOpen} onOpenChange={setRemindersOpen} />
       <SahayakChat />
     </div>

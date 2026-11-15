@@ -22,6 +22,7 @@ interface DemoParticipantValue {
   sendChatReply: (messageId: string, text: string) => boolean;
   saveAnswers: (answers: OnboardingAnswers) => void;
   welcomeOpen: boolean;
+  openWelcome: () => void;
   closeWelcome: () => void;
   sahayakOn: boolean;
   sahayakAccess: SahayakAccessId[];
@@ -78,7 +79,8 @@ export function DemoParticipantProvider({ children }: { children: ReactNode }) {
   const [answers, setAnswers] = useState<OnboardingAnswers>({});
   const [goals, setGoals] = useState<DemoGoal[]>([]);
   const [interests, setInterests] = useState<string[]>([]);
-  const [welcomeOpen, setWelcomeOpen] = useState(true);
+  // The intake overlay never opens by itself: the participant asks for it from Home.
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
   const [sahayakOn, setSahayakOn] = useState(false);
   const [sahayakAccess, setSahayakAccess] = useState<SahayakAccessId[]>([]);
   const [consentOpen, setConsentOpen] = useState(false);
@@ -125,6 +127,7 @@ export function DemoParticipantProvider({ children }: { children: ReactNode }) {
     },
     saveAnswers: (next) => setAnswers(normalizeOnboardingAnswers(next)),
     welcomeOpen,
+    openWelcome: () => setWelcomeOpen(true),
     closeWelcome: () => setWelcomeOpen(false),
     sahayakOn,
     sahayakAccess,

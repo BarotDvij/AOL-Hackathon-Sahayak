@@ -23,7 +23,7 @@ export const Route = createFileRoute("/me/")({
 });
 
 function ParticipantHome() {
-  const { data, logToday, saveAnswers, welcomeOpen, closeWelcome } = useDemoParticipant();
+  const { data, logToday, saveAnswers, welcomeOpen, openWelcome, closeWelcome } = useDemoParticipant();
   const navigate = useNavigate();
   const today = new Date().toISOString().slice(0, 10);
   const practisedToday = data.practice.entries.some((entry) => entry.date === today);
@@ -41,6 +41,15 @@ function ParticipantHome() {
         </DialogContent>
       </Dialog>
       <header className="brand-gradient mb-2 rounded-lg border border-border px-5 py-5"><p className="font-heading text-xs font-semibold text-purple">Your journey · Demo</p><h1 className="mt-1 font-display text-[32px] font-normal leading-tight text-primary">Hello, {data.participant.firstName}</h1><p className="mt-1 text-sm text-muted-foreground">A little awareness today is enough.</p></header>
+      <ParticipantCard>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="font-heading text-base font-semibold text-primary">Set up your journey</h2>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">A few quick questions about where you are, your practice and your goals — about a minute. Skip any of them; you can change your answers anytime in Settings.</p>
+          </div>
+          <Button className="shrink-0" onClick={openWelcome}>{data.answers.course_level ? "Update your answers" : "Answer a few questions"}</Button>
+        </div>
+      </ParticipantCard>
       <ParticipantCard><p className="font-heading text-xs font-semibold text-purple">Your journey today</p><p className="mt-2 font-heading text-lg font-semibold text-primary">{data.stage.name}</p><p className="mt-1 text-sm leading-relaxed text-muted-foreground">{data.stage.line}</p></ParticipantCard>
       <div className="grid gap-4 md:grid-cols-2">
         <ParticipantCard>

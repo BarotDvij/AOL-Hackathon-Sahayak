@@ -1,6 +1,9 @@
 # Roadmap
 
 ## Done
+- Nothing opens by itself any more. The coordinator's "Meet Sahayak" introduction sits behind a sidebar link (desktop and phone menu) and the participant's intake questions sit behind a "Set up your journey" card on Home; both open only when clicked and close on dismiss. Verified no dialog on load, open on request, and still closed after reload; 100 tests pass.
+
+## Done
 - Renamed the page My Progress, added a full month calendar left of the weekly plan with completed-day highlights and month navigation, and moved Your goals into a plus-triggered overlay above Your path. Verified overlay save/readback, calendar completion, desktop/phone layout; the existing URL and demo reset behavior remain unchanged.
 
 ## Done

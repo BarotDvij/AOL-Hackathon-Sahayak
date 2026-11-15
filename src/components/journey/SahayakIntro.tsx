@@ -3,13 +3,21 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from "@/components/ui/button";
 import { useJourney } from "@/lib/journey/store";
 
-/** The first-time question. Answering it once is what stops it coming back. */
-export function SahayakIntro() {
+/**
+ * What Sahayak does, shown only when the coordinator asks for it from the sidebar.
+ * It never opens on its own.
+ */
+export function SahayakIntro({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const {t} = useLanguage();
   const { sahayak, decideSahayak } = useJourney();
 
+  const choose = (on: boolean) => {
+    decideSahayak(on);
+    onOpenChange(false);
+  };
+
   return (
-    <Dialog open={!sahayak.decided}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-display text-[26px] font-normal text-primary">
@@ -23,11 +31,13 @@ export function SahayakIntro() {
         </DialogHeader>
 
         <div className="mt-2 flex flex-wrap gap-2">
-          <Button onClick={() => decideSahayak(true)}>{t("Yes, turn on Sahayak")}</Button>
-          <Button variant="outline" onClick={() => decideSahayak(false)}>{t("I will do it manually")}</Button>
+          <Button onClick={() => choose(true)}>{t("Yes, turn on Sahayak")}</Button>
+          <Button variant="outline" onClick={() => choose(false)}>{t("I will do it manually")}</Button>
         </div>
 
-        <p className="text-xs text-muted-foreground">{t("You can change this anytime in settings.")}</p>
+        <p className="text-xs text-muted-foreground">
+          {sahayak.decided ? t("You can change this anytime in settings.") : t("You can change this anytime in settings.")}
+        </p>
       </DialogContent>
     </Dialog>
   );
