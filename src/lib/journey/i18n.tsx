@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 export type AppLanguage = 'English' | 'French';
 const FRENCH: Record<string,string> = {
+  'Demo data · not real participant records':'Données fictives · pas de vrais dossiers de participants',
+  'People, groups, attendance and messages are sample records. Approvals and replies only update this demo; no email, SMS or WhatsApp is sent.':'Les personnes, groupes, présences et messages sont fictifs. Les approbations et réponses restent dans cette démo ; aucun courriel, SMS ou WhatsApp n’est envoyé.',
   'Profile':'Profil','Centre':'Centre','Appearance':'Apparence','Notifications':'Notifications','Privacy and data':'Confidentialité et données','Saved':'Enregistré','Manage your centre, preferences and how Journey Companion works':'Gérez votre centre, vos préférences et le fonctionnement de Journey Companion',
   'Email':'Courriel','Phone':'Téléphone','Role':'Rôle','National admin':'Administrateur national','Centre details':'Détails du centre','Centre name':'Nom du centre','Region':'Région','Default follow-up channel':'Canal de suivi par défaut','Volunteers':'Bénévoles','View Team':'Voir l’équipe','Data source':'Source des données','Sample data':'Données fictives','Import participants':'Importer des participants',
   'Theme':'Thème','Light':'Clair','Dark':'Sombre','Match my device':'Selon mon appareil','Text size':'Taille du texte','Default':'Par défaut','Large':'Grande','Weekly impact summary':'Bilan hebdomadaire','Delivery':'Diffusion','In the app':'Dans l’application','Both':'Les deux','Use Sahayak':'Utiliser Sahayak',
