@@ -1,7 +1,7 @@
 # Roadmap
 
 ## In progress
-- Add three browser-local demo roles, role-specific navigation and home redirects, participant sessions, shared account controls, and verify role isolation and reload/sign-out.
+- Replace sign-in with one remembered Admin/Volunteer/Participant Switch view control; add volunteer and participant selectors, scope records to the selection, preserve existing features, and verify navigation and reload.
 
 ## Done
 - Renamed the visible app and page titles to Journey.
