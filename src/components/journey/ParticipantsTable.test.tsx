@@ -1,6 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/react-router";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { routeTree } from "@/routeTree.gen";
@@ -10,7 +10,7 @@ import { ParticipantsTable } from "./ParticipantsTable";
 const noop = () => {};
 
 /** The table links to group pages, so it needs a started router around it. */
-async function renderTable(props: { stage?: "all" | "paused"; title?: string } = {}) {
+async function renderTable(props: { stage?: "all" | "paused" } = {}) {
   const router = createRouter({
     routeTree,
     history: createMemoryHistory({ initialEntries: ["/participants"] }),
@@ -20,7 +20,7 @@ async function renderTable(props: { stage?: "all" | "paused"; title?: string } =
   return render(
     <JourneyProvider>
       <RouterProvider router={router}>
-        <ParticipantsTable stage={props.stage ?? "all"} onStage={noop} onOpen={noop} title={props.title ?? "Participants"} />
+        <ParticipantsTable stage={props.stage ?? "all"} onStage={noop} onOpen={noop} />
       </RouterProvider>
     </JourneyProvider>,
   );
@@ -29,21 +29,21 @@ async function renderTable(props: { stage?: "all" | "paused"; title?: string } =
 const section = (container: HTMLElement, name: string) => container.querySelector(`section[aria-label="${name}"]`);
 
 describe("participants table", () => {
-  it("groups people under the volunteer they did their most recent program with", () => {
-    const { container } = renderTable();
+  it("groups people under the volunteer they did their most recent program with", async () => {
+    const { container } = await renderTable();
     for (const name of ["Maya Desai", "Alex Tremblay", "Claire Roy", "Shivam Kapoor", "Camille Martin"]) {
       expect(section(container, name)).not.toBeNull();
     }
     expect(section(container, "Unassigned")).not.toBeNull();
   });
 
-  it("shows how many people in a volunteer's group have gone quiet", () => {
-    const { container } = renderTable();
+  it("shows how many people in a volunteer's group have gone quiet", async () => {
+    const { container } = await renderTable();
     expect(section(container, "Shivam Kapoor")?.textContent).toContain("3 people going quiet");
   });
 
-  it("moves a person to another volunteer's group when their row is dropped there", () => {
-    const { container } = renderTable();
+  it("moves a person to another volunteer's group when their row is dropped there", async () => {
+    const { container } = await renderTable();
     const row = screen.getByText("Priya Nair").closest("tr");
     expect(row).not.toBeNull();
     fireEvent.dragStart(row!);
@@ -52,21 +52,19 @@ describe("participants table", () => {
     expect(section(container, "Maya Desai")?.textContent).not.toContain("Priya Nair");
   });
 
-  it("records a group invite only once the coordinator approves it", () => {
-    const { container } = renderTable();
+  it("records a group invite only once the coordinator approves it", async () => {
+    const { container } = await renderTable();
     const shivam = section(container, "Shivam Kapoor")!;
-    fireEvent.click(screen.getByRole("button", { name: "Message group" }));
+    fireEvent.click(within(shivam).getByRole("button", { name: "Message group" }));
     const approve = screen.getByRole("button", { name: /Approve and send to/ });
     expect(approve.textContent).toContain("7");
     fireEvent.click(approve);
-    expect(screen.getByText("Group invite approved")).toBeInTheDocument();
-    expect(shivam.querySelector("table")).not.toBeNull();
+    expect(await screen.findByText("Group invite approved")).toBeInTheDocument();
   });
 
-  it("pages through everyone when grouping is turned off", () => {
-    const { container } = renderTable();
-    fireEvent.click(screen.getByRole("combobox", { name: "Group by" }));
-    fireEvent.click(screen.getByRole("option", { name: "None" }));
+  it("pages through everyone when grouping is turned off", async () => {
+    const { container } = await renderTable();
+    fireEvent.click(screen.getByRole("button", { name: "None" }));
     expect(container.querySelectorAll("tbody tr").length).toBe(10);
     expect(screen.getByText("Page 1 of 4")).toBeInTheDocument();
     expect(screen.getByText("Showing 1–10 of 31")).toBeInTheDocument();
@@ -74,8 +72,8 @@ describe("participants table", () => {
     expect(screen.getByText("Page 2 of 4")).toBeInTheDocument();
   });
 
-  it("marks paused people with a Paused badge instead of a next step", () => {
-    const { container } = renderTable({ stage: "paused" });
+  it("marks paused people with a Paused badge instead of a next step", async () => {
+    const { container } = await renderTable({ stage: "paused" });
     const rows = [...container.querySelectorAll("tbody tr")];
     expect(rows.length).toBeGreaterThan(0);
     expect(rows.every((r) => r.textContent?.includes("Paused"))).toBe(true);

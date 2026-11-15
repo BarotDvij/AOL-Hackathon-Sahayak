@@ -250,14 +250,18 @@ export function ParticipantsTable({ stage, onStage, onOpen, title = "Participant
 
       <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card px-4 py-2 shadow-soft">
         <span className="text-xs font-medium text-muted-foreground">{t("Group by")}</span>
-        <Select value={mode} onValueChange={(m) => { setMode(m as GroupMode); setPage(1); setCollapsed([]); }}>
-          <SelectTrigger className="w-36 bg-card" aria-label="Group by"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="volunteer">{t("Volunteer")}</SelectItem>
-            <SelectItem value="city">{t("City")}</SelectItem>
-            <SelectItem value="none">{t("None")}</SelectItem>
-          </SelectContent>
-        </Select>
+        <div role="group" aria-label={t("Group by")} className="flex items-center gap-1 rounded-full border border-border bg-secondary/60 p-0.5">
+          {(["volunteer", "city", "none"] as GroupMode[]).map((m) => (
+            <button
+              key={m}
+              onClick={() => { setMode(m); setPage(1); setCollapsed([]); }}
+              aria-pressed={mode === m}
+              className={cn("rounded-full px-3 py-1 text-xs font-medium transition-colors", mode === m ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
+            >
+              {t(m === "volunteer" ? "Volunteer" : m === "city" ? "City" : "None")}
+            </button>
+          ))}
+        </div>
         {mode !== "none" && (
           <Button size="sm" variant="outline" onClick={() => setCollapsed(collapsed.length ? [] : sections.map((s) => s.id).concat("unassigned"))}>
             {collapsed.length ? <ChevronsUpDown className="size-4" aria-hidden /> : <ChevronsDownUp className="size-4" aria-hidden />}
