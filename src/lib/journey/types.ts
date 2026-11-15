@@ -20,8 +20,23 @@ export interface Participant {
   sevaRole: string | null;
   interests: string[];
 }
-export interface CourseCompletion { participantId: string; courseName: string; completedOn: string }
-export interface EventAttendance { participantId: string; eventType: EventType; date: string; city: string; online: boolean }
+export interface CourseCompletion { participantId: string; courseName: string; completedOn: string; volunteerId?: string | undefined }
+export interface EventAttendance { participantId: string; eventType: EventType; date: string; city: string; online: boolean; volunteerId?: string | undefined }
+/** Which volunteer a person is connected to, the program they share, and why Sahayak names that person. */
+export interface Connection {
+  volunteerId: string;
+  volunteerName: string;
+  /** The course or gathering they share, e.g. "Art of Silence". Null when a coordinator moved them by hand. */
+  program: string | null;
+  /** When that shared program happened. */
+  date: string | null;
+  /** Plain-language reason, e.g. "Did Art of Silence with Shivam in October". */
+  reason: string;
+  /** True when a coordinator moved them into this group rather than it coming from their records. */
+  moved: boolean;
+}
+/** A warm group invite a coordinator approved for one volunteer's group. */
+export interface GroupMessage { id: string; volunteerId: string; text: string; channel: Channel; at: string; memberIds: string[] }
 export interface Contact {
   participantId: string;
   channel: Channel;

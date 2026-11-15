@@ -11,7 +11,7 @@ export const VOLUNTEERS: Volunteer[] = [
   { id: 'v1', name: 'Maya Desai', city: 'Waterloo', languages: ['English'], capacity: 8 },
   { id: 'v2', name: 'Alex Tremblay', city: 'Toronto', languages: ['English', 'French'], capacity: 8 },
   { id: 'v3', name: 'Claire Roy', city: 'Kitchener', languages: ['English', 'French'], capacity: 7 },
-  { id: 'v4', name: 'Dev Shah', city: 'Mississauga', languages: ['English'], capacity: 8 },
+  { id: 'v4', name: 'Shivam Kapoor', city: 'Mississauga', languages: ['English'], capacity: 8 },
   { id: 'v5', name: 'Camille Martin', city: 'Online', languages: ['English', 'French'], capacity: 6 },
 ];
 export function buildSessions(): Session[] {
