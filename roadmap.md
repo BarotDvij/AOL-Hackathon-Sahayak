@@ -73,5 +73,5 @@
 - Every CSV Source cell contains an organization or listing name rather than a URL, so program source links remain unavailable until real URLs are supplied.
 - Coordinator and no-login participant demo state reset on reload; authenticated participant/MCP records remain protected in Lovable Cloud for later account-based use.
 
-## In progress
-- Organize coordinator Settings into Profile, Centre, Appearance, Notifications, Sahayak, and Privacy/data; save browser preferences, apply global appearance, consolidate Sahayak, and verify CSV export/reset and mobile layout.
+## Done
+- Organized coordinator Settings into six sections, browser-saved profile/centre/appearance/reminder preferences, global dark and large-text tokens, consolidated Sahayak with legacy link redirect, CSV export and confirmed demo reset. Verified saved name/theme on reload, CSV download, sidebar settings redirect, desktop/phone appearance and participant calendar; 21 focused tests passed. Real-data import and external notification delivery remain explicitly unavailable in this demo; profile role is not a permission grant.
