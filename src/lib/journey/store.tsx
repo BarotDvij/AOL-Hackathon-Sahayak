@@ -1,5 +1,6 @@
 import { createContext, useEffect, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react";
 import { buildSessions, seedOutcomes, messageOutcome, broughtBack, differentChannel, VOLUNTEERS, type SentRecord, type Session, type CheckIn, type AssignmentProposal } from "./operations";
+import { buildGroups, connectionOf, alsoKnowsOf, deriveAssignments, unassignedViews, type VolunteerGroup } from "./groups";
 import { buildCatalog } from "./catalog";
 import { JOURNEY_CONFIG as C, STAGE_PRIORITY, STAGES } from "./config";
 import { contactText, daysSinceLastContact } from "./contact";
@@ -14,7 +15,7 @@ import { buildSuggestion, computeStage, explainReasons, participantStage } from 
 import { EMPTY_PROGRAM_CATALOG, type ProgramCatalog } from "@/lib/journey/programs";
 import { supabase } from "@/integrations/supabase/client";
 import { saveApprovedMessage } from "@/lib/participant.functions";
-import type { ActivityEntry, Channel, Contact, History, Message, NextStep, Participant, ParticipantReply, PracticeLog, StageId, Suggestion } from "./types";
+import type { ActivityEntry, Channel, Connection, Contact, GroupMessage, History, Message, NextStep, Participant, ParticipantReply, PracticeLog, StageId, Suggestion } from "./types";
 
 export { contactText, daysSinceLastContact };
 
@@ -27,6 +28,10 @@ export interface ParticipantView {
   stage: StageId;
   why: string;
   suggestion: Suggestion | null;
+  /** The volunteer this person is connected to, and why. */
+  connection: Connection | null;
+  /** Other volunteers they have done something with. */
+  alsoKnows: string[];
 }
 
 export interface Summary {
@@ -47,6 +52,14 @@ interface Store {
   endSession: (id: string) => void; setParticipantLanguage: (id: string, language: string) => void;
   setMessageLanguage: (id: string, language: string) => void; secondFollowUp: (messageId: string) => void;
   views: ParticipantView[];
+  /** One section per volunteer, with the people connected to them. */
+  groups: VolunteerGroup[];
+  /** People not yet connected to any volunteer. */
+  unassigned: ParticipantView[];
+  /** Group invites the coordinator has approved, newest first. */
+  groupMessages: GroupMessage[];
+  /** Approving a group invite is the only thing that records it as sent. */
+  sendGroupMessage: (volunteerId: string, text: string, channel: Channel) => void;
   programCatalog: ProgramCatalog;
   catalog: Map<string, NextStep>;
   catalogList: NextStep[];
