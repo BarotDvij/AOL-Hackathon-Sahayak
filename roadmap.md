@@ -1,6 +1,9 @@
 # Roadmap
 
 ## Done
+- Grouping by volunteer is now the main way to see people. The People table opens as collapsible sections per volunteer (avatar, city, count, stage bar, "N people going quiet" badge, "Open group" and "Message group") above an Unassigned section with Auto-assign, plus Volunteer / City / None controls and Expand/Collapse all. Membership comes from the most recent program a person did with a volunteer; profiles show the connected volunteer and the reason ("Did Art of Silence with Shivam in October") plus "Also knows", and rows can be dragged to another volunteer. Every volunteer has a group page with what they led, weekly capacity, stage breakdown, members and Sahayak's group suggestions. Group invites are drafted, editable and approved by the coordinator before anything is recorded, and the dashboard card and Sahayak's daily brief lead with the groups that are drifting. Verified in the preview: card copy, group page, approve → activity log entry, auto-assign proposals and the brief line; 114 tests pass.
+
+## Done
 - Nothing opens by itself any more. The coordinator's "Meet Sahayak" introduction sits behind a sidebar link (desktop and phone menu) and the participant's intake questions sit behind a "Set up your journey" card on Home; both open only when clicked and close on dismiss. Verified no dialog on load, open on request, and still closed after reload; 100 tests pass.
 
 ## Done
