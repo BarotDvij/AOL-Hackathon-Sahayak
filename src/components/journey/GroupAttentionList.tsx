@@ -30,24 +30,31 @@ export function GroupAttentionList() {
         <p className="mt-4 rounded-lg bg-muted p-4 text-sm text-muted-foreground">{t("No group has anyone drifting away right now.")}</p>
       ) : (
         <ul className="mt-2 divide-y divide-border">
-          {ranked.map((g) => (
-            <li key={g.volunteer.id} className="flex flex-wrap items-center gap-3 py-3">
-              <Initials name={g.volunteer.name} className="size-9 bg-secondary text-purple" />
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-medium text-foreground">{g.volunteer.name}</span>
-                <span className="block truncate text-xs text-muted-foreground">
-                  {plural(g.goingQuiet, "person")} {t("going quiet")} · {g.members[0]?.connection?.reason ?? g.volunteer.city}
+          {ranked.map((g) => {
+            // Only the parts that are actually true, so a group never reads "0 people going quiet".
+            const parts = [
+              g.goingQuiet > 0 ? `${plural(g.goingQuiet, "person")} ${t("going quiet")}` : null,
+              g.dormant > 0 ? `${plural(g.dormant, "person")} ${t("away for longer")}` : null,
+            ].filter(Boolean).join(" · ");
+            return (
+              <li key={g.volunteer.id} className="flex flex-wrap items-center gap-3 py-3">
+                <Initials name={g.volunteer.name} className="size-9 bg-secondary text-purple" />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-medium text-foreground">{g.volunteer.name}</span>
+                  <span className="block truncate text-xs text-muted-foreground">
+                    {parts} · {g.members[0]?.connection?.reason ?? g.volunteer.city}
+                  </span>
+                  <StageBreakdown counts={g.stageCounts} className="mt-1.5 w-full max-w-40" />
                 </span>
-                <StageBreakdown counts={g.stageCounts} className="mt-1.5 w-full max-w-40" />
-              </span>
-              <span className="flex shrink-0 items-center gap-2">
-                <Button asChild size="sm" variant="accent"><Link to="/groups/$volunteerId" params={{ volunteerId: g.volunteer.id }}>{t("Open group")}</Link></Button>
-                <Button size="sm" variant="outline" onClick={() => setMessaging(g.volunteer.id)} disabled={g.members.length === 0}>
-                  <Mail className="size-4" aria-hidden /><span className="sr-only">{t("Message group")}</span>
-                </Button>
-              </span>
-            </li>
-          ))}
+                <span className="flex shrink-0 items-center gap-2">
+                  <Button asChild size="sm" variant="accent"><Link to="/groups/$volunteerId" params={{ volunteerId: g.volunteer.id }}>{t("Open group")}</Link></Button>
+                  <Button size="sm" variant="outline" onClick={() => setMessaging(g.volunteer.id)} disabled={g.members.length === 0}>
+                    <Mail className="size-4" aria-hidden /><span className="sr-only">{t("Message group")}</span>
+                  </Button>
+                </span>
+              </li>
+            );
+          })}
         </ul>
       )}
 
