@@ -5,9 +5,9 @@ import { ProgressCalendar } from "@/components/participant/ProgressCalendar";
 
 export const Route = createFileRoute("/me/weekly-progress")({
   head: () => ({ meta: [
-    { title: "My Progress · Journey" },
+    { title: "My Progress · Sahayak" },
     { name: "description", content: "Your monthly calendar, personal weekly plan and completed days." },
-    { property: "og:title", content: "My Progress · Journey" },
+    { property: "og:title", content: "My Progress · Sahayak" },
     { property: "og:description", content: "See your month, review your weekly plan and mark each day done." },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
   ] }),

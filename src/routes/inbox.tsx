@@ -18,9 +18,9 @@ import { messageLimitNote } from '@/lib/journey/messages';
 export const Route = createFileRoute("/inbox")({
   head: () => ({
     meta: [
-      { title: "Inbox · Journey" },
+      { title: "Inbox · Sahayak" },
       { name: "description", content: "Messages from your participants, with the ones still waiting for an answer marked for you." },
-      { property: "og:title", content: "Inbox · Journey" },
+      { property: "og:title", content: "Inbox · Sahayak" },
       { property: "og:description", content: "Messages from your participants, with the ones still waiting for an answer marked for you." },
       { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
     ],

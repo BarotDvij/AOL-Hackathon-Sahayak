@@ -21,12 +21,12 @@ export function ParticipantShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-background pb-24 md:pb-0">
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-[240px] flex-col border-r border-border bg-card md:flex">
         <div className="brand-gradient border-b border-border px-5 py-5">
-          <Link to="/me" className="font-heading text-base font-semibold text-primary">Journey</Link>
+          <Link to="/me" className="font-heading text-base font-semibold text-primary">Sahayak</Link>
         </div>
         <div className="mx-3 mt-3 rounded-lg border border-border bg-secondary/60 p-3">
           <div className="flex items-center gap-2">
             <Sparkles className="size-4 text-purple" aria-hidden />
-            <span className="font-heading text-sm font-semibold text-primary">Sahayak</span>
+            <span className="font-heading text-sm font-semibold text-primary">Sahayak in your Muse</span>
             <Switch className="ml-auto" aria-label="Use Sahayak with Muse" checked={sahayakOn} onCheckedChange={requestSahayak} />
           </div>
           <p className="mt-1 text-[11px] leading-snug text-muted-foreground">
@@ -44,7 +44,7 @@ export function ParticipantShell({ children }: { children: ReactNode }) {
       <div className="md:pl-[240px]">
       <header className="sticky top-0 z-30 border-b border-border bg-card">
         <div className="flex min-h-12 items-center gap-3 px-4 py-3 sm:px-6 lg:px-8 lg:py-2">
-          <Link to="/me" className="font-heading text-sm font-semibold text-primary md:hidden">Journey</Link>
+          <Link to="/me" className="font-heading text-sm font-semibold text-primary md:hidden">Sahayak</Link>
           <span className="hidden items-center gap-1.5 text-xs font-medium text-purple md:inline-flex"><Sparkles className="size-3.5" aria-hidden />Your Sahayak journey</span>
           <div className="ml-auto min-w-0">
             <DemoAccount />

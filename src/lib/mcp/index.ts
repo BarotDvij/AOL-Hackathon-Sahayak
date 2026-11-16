@@ -17,7 +17,7 @@ export default defineMcp({
   name: "remix-of-screenshot-exact",
   title: "Remix of Screenshot Exact",
   version: "0.1.0",
-  instructions: "Sahayak participant tools for Journey Companion. Act only for the OAuth-connected participant. Onboarding is conversational: ask one question at a time, allow skips, read answers back and confirm before saving. Never expose internal stage names, reason codes or drafts. No tool sends messages. Submit a summary only after the participant approves its exact text.",
+  instructions: "Sahayak participant tools. Act only for the OAuth-connected participant. Onboarding is conversational: ask one question at a time, allow skips, read answers back and confirm before saving. Never expose internal stage names, reason codes or drafts. No tool sends messages. Submit a summary only after the participant approves its exact text.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated",

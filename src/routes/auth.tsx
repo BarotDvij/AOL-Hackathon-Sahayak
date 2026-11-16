@@ -13,9 +13,9 @@ export const Route = createFileRoute("/auth")({
     if (data.session) throw redirect({ href: oauthReturnPath(search.next) });
   },
   head: () => ({ meta: [
-    { title: "Participant sign in · Journey" },
+    { title: "Participant sign in · Sahayak" },
     { name: "description", content: "Sign in securely to your own Sahayak participant journey or create an account." },
-    { property: "og:title", content: "Participant sign in · Journey" },
+    { property: "og:title", content: "Participant sign in · Sahayak" },
     { property: "og:description", content: "Sign in securely to your own Sahayak participant journey or create an account." },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
   ] }),

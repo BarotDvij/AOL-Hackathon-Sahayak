@@ -61,7 +61,7 @@ function SahayakSwitch({ onNavigate, onMeet }: { onNavigate?: () => void; onMeet
     <div className="mx-3 mt-3 rounded-lg border border-border bg-secondary/60 p-3">
       <div className="flex items-center gap-2">
         <Sparkles className={cn("size-4 shrink-0", sahayak.on ? "text-purple" : "text-muted-foreground")} aria-hidden />
-        <span className="min-w-0 flex-1 truncate font-heading text-sm font-semibold text-primary">Sahayak</span>
+        <span className="min-w-0 flex-1 truncate font-heading text-sm font-semibold text-primary">Sahayak assistant</span>
         <span className="text-xs font-medium text-muted-foreground">{t(sahayak.on ? "On" : "Off")}</span>
         <Switch checked={sahayak.on} onCheckedChange={setSahayakOn} aria-label="Turn Sahayak on or off" />
       </div>
@@ -124,7 +124,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="coordinator-shell min-h-screen bg-background">
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-[240px] flex-col border-r border-border bg-card md:flex">
         <div className="brand-gradient border-b border-border px-5 py-5">
-          <Link to="/" className="font-heading text-base font-semibold tracking-tight text-primary">Journey</Link>
+          <Link to="/" className="font-heading text-base font-semibold tracking-tight text-primary">Sahayak</Link>
         </div>
         <SahayakSwitch onMeet={() => setIntroOpen(true)} />
         <nav className="mt-2 flex flex-1 flex-col gap-1 px-3" aria-label="Sections">
