@@ -61,7 +61,7 @@ function SahayakSwitch({ onNavigate, onMeet }: { onNavigate?: () => void; onMeet
     <div className="mx-3 mt-3 rounded-lg border border-border bg-secondary/60 p-3">
       <div className="flex items-center gap-2">
         <Sparkles className={cn("size-4 shrink-0", sahayak.on ? "text-purple" : "text-muted-foreground")} aria-hidden />
-        <span className="min-w-0 flex-1 truncate font-heading text-sm font-semibold text-primary">Sahayak</span>
+        <span className="min-w-0 flex-1 truncate font-heading text-sm font-semibold text-primary">Sahayak assistant</span>
         <span className="text-xs font-medium text-muted-foreground">{t(sahayak.on ? "On" : "Off")}</span>
         <Switch checked={sahayak.on} onCheckedChange={setSahayakOn} aria-label="Turn Sahayak on or off" />
       </div>

@@ -26,7 +26,7 @@ export function ParticipantShell({ children }: { children: ReactNode }) {
         <div className="mx-3 mt-3 rounded-lg border border-border bg-secondary/60 p-3">
           <div className="flex items-center gap-2">
             <Sparkles className="size-4 text-purple" aria-hidden />
-            <span className="font-heading text-sm font-semibold text-primary">Sahayak</span>
+            <span className="font-heading text-sm font-semibold text-primary">Sahayak in your Muse</span>
             <Switch className="ml-auto" aria-label="Use Sahayak with Muse" checked={sahayakOn} onCheckedChange={requestSahayak} />
           </div>
           <p className="mt-1 text-[11px] leading-snug text-muted-foreground">
