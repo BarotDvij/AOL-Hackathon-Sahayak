@@ -9,9 +9,9 @@ import type { ActivityEntry } from "@/lib/journey/types";
 export const Route = createFileRoute("/activity")({
   head: () => ({
     meta: [
-      { title: "Activity log · Journey" },
+      { title: "Activity log · Sahayak" },
       { name: "description", content: "A simple history of the follow-ups you approved, edited or skipped, and when." },
-      { property: "og:title", content: "Activity log · Journey" },
+      { property: "og:title", content: "Activity log · Sahayak" },
       { property: "og:description", content: "A simple history of the follow-ups you approved, edited or skipped, and when." },
       { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
     ],

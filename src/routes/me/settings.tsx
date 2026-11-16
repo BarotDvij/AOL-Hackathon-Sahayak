@@ -8,9 +8,9 @@ import { ParticipantCard } from "@/components/participant/ParticipantShell";
 
 export const Route = createFileRoute("/me/settings")({
   head: () => ({ meta: [
-    { title: "My settings · Journey" },
+    { title: "My settings · Sahayak" },
     { name: "description", content: "Complete the no-login demo onboarding and review your suggested practice rhythm." },
-    { property: "og:title", content: "My settings · Journey" },
+    { property: "og:title", content: "My settings · Sahayak" },
     { property: "og:description", content: "Complete the no-login demo onboarding and review your suggested practice rhythm." },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
   ] }),

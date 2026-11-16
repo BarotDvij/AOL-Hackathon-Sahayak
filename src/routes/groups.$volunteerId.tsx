@@ -15,9 +15,9 @@ import { MessageGroupDialog } from "@/components/journey/MessageGroupDialog";
 export const Route = createFileRoute("/groups/$volunteerId")({
   head: () => ({
     meta: [
-      { title: "Volunteer group · Journey" },
+      { title: "Volunteer group · Sahayak" },
       { name: "description", content: "A volunteer's group: who they led, where everyone stands, and what to do next." },
-      { property: "og:title", content: "Volunteer group · Journey" },
+      { property: "og:title", content: "Volunteer group · Sahayak" },
       { property: "og:description", content: "A volunteer's group: who they led, where everyone stands, and what to do next." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

@@ -21,9 +21,9 @@ export const Route = createFileRoute("/.lovable/oauth/consent")({
     return data;
   },
   head: () => ({ meta: [
-    { title: "Connect an assistant · Journey" },
+    { title: "Connect an assistant · Sahayak" },
     { name: "description", content: "Review and approve an AI assistant's access to your own Sahayak participant tools." },
-    { property: "og:title", content: "Connect an assistant · Journey" },
+    { property: "og:title", content: "Connect an assistant · Sahayak" },
     { property: "og:description", content: "Review and approve an AI assistant's access to your own Sahayak participant tools." },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
   ] }),

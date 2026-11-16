@@ -12,9 +12,9 @@ import { useDemoSession } from '@/lib/journey/demo-session';
 export const Route = createFileRoute("/participants")({
   head: () => ({
     meta: [
-      { title: "Participants · Journey" },
+      { title: "Participants · Sahayak" },
       { name: "description", content: "Everyone in your centre with their stage, last contact and suggested next step." },
-      { property: "og:title", content: "Participants · Journey" },
+      { property: "og:title", content: "Participants · Sahayak" },
       { property: "og:description", content: "Everyone in your centre with their stage, last contact and suggested next step." },
       { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
     ],
