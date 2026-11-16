@@ -10,7 +10,7 @@ export function DemoLogin() {
  const {setMyFollowUps,setCity}=useJourney();
  const choose=(role:DemoRole)=>{setMyFollowUps(false);setCity('all');session?.signIn(role);void navigate({to:demoHome(role)});};
  return <main className="demo-login-background flex min-h-dvh items-center justify-center px-5 py-12"><div className="w-full max-w-5xl">
-  <header className="text-center"><h1 className="font-display text-[32px] font-normal text-primary">Journey</h1><p className="mt-3 text-base text-muted-foreground">Choose how you want to sign in</p></header>
+  <header className="text-center"><h1 className="font-display text-[32px] font-normal text-primary">Sahayak</h1><p className="mt-3 text-base text-muted-foreground">Choose how you want to sign in</p></header>
   <div className="mt-10 grid items-stretch gap-5 md:grid-cols-3">{([
    {role:'participant',title:'Participant',line:'See your journey and what is next for you',Icon:UserRound},
    {role:'volunteer',title:'Volunteer',line:'Follow up with the people you know',Icon:Users},

@@ -20,7 +20,7 @@ export async function withParticipant(tool: string, ctx: ToolContext, work: (inp
   try {
     const { data: account, error } = await supabase.from("participant_accounts").select("participant_id").eq("user_id", userId).maybeSingle();
     if (error) throw new ToolError("Your participant link could not be loaded.");
-    if (!account) throw new ToolError("Open Journey Companion and choose your sample participant first.");
+    if (!account) throw new ToolError("Open Sahayak and choose your sample participant first.");
     const bundle = participantBundle(account.participant_id);
     if (!bundle) throw new ToolError("Your participant record is unavailable.");
     await recordSahayakCall(supabase, { userId, role: "participant", tool });

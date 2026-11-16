@@ -89,9 +89,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Journey" },
+      { title: "Sahayak" },
       { name: "description", content: "Personal, caring follow-ups for Art of Living centre coordinators." },
-      { property: "og:title", content: "Journey" },
+      { property: "og:title", content: "Sahayak" },
       { property: "og:description", content: "Personal, caring follow-ups for Art of Living centre coordinators." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

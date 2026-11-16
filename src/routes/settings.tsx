@@ -8,9 +8,9 @@ export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
       { title: "Settings · Sahayak" },
-      { name: "description", content: "How Journey decides who needs a follow-up, and what it never does on its own." },
+      { name: "description", content: "How Sahayak decides who needs a follow-up, and what it never does on its own." },
       { property: "og:title", content: "Settings · Sahayak" },
-      { property: "og:description", content: "How Journey decides who needs a follow-up, and what it never does on its own." },
+      { property: "og:description", content: "How Sahayak decides who needs a follow-up, and what it never does on its own." },
       { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" },
     ],
   }),

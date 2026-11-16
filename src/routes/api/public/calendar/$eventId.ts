@@ -14,7 +14,7 @@ export const Route = createFileRoute("/api/public/calendar/$eventId")({
         const end = new Date(start.getTime() + 60 * 60 * 1000);
         const stamp = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
         const ics = [
-          "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Journey Companion//Sahayak//EN", "CALSCALE:GREGORIAN",
+          "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Sahayak//Sahayak//EN", "CALSCALE:GREGORIAN",
           "BEGIN:VEVENT", `UID:${escapeIcs(event.id)}@journey-companion`, `DTSTAMP:${stamp(new Date())}`, `DTSTART:${stamp(start)}`, `DTEND:${stamp(end)}`,
           `SUMMARY:${escapeIcs(event.shortTitle)}`, `DESCRIPTION:${escapeIcs(event.title)}`, `LOCATION:${escapeIcs(event.city)}`,
           event.link ? `URL:${escapeIcs(event.link)}` : "", "END:VEVENT", "END:VCALENDAR", "",
