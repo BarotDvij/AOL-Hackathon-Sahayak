@@ -1,7 +1,7 @@
 # Sahayak
 Personal, caring follow-ups for Art of Living centres. Built for the Art of Living Hackathon, November 14–15, 2026 (#BuildForGood).
 
-**Live demo:** https://stage-and-signal.lovable.app/start (no login needed; choose coordinator or participant)
+**Live demo:** https://aol-hackathon-sahayak.lovable.app (no login needed; choose coordinator or participant)
 
 <img width="1470" height="801" alt="AOL-hackathon-Journey-SS" src="https://github.com/user-attachments/assets/dfb77f4b-d680-4c8e-92b5-20d29f98f910" />
 
