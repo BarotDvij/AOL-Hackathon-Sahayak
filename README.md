@@ -1,4 +1,4 @@
-# Journey
+# Sahayak
 Personal, caring follow-ups for Art of Living centres. Built for the Art of Living Hackathon, November 14–15, 2026 (#BuildForGood).
 
 **Live demo:** https://stage-and-signal.lovable.app/start (no login needed; choose coordinator or participant)
